@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -20,7 +21,7 @@ import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 public class MainActivity extends AppCompatActivity {
 
     //public static String authorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
-    public static String authorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,notifications,offline&response_type=token&v=5.92&state=requestToken";
+    public static String authorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
 
     public String access_token;
 
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
                     InputStream inputStream = urlConnection.getInputStream();
                     readStream(inputStream);
                 } catch (IOException e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }).start();
@@ -99,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } catch (IOException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

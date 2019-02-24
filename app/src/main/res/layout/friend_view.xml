@@ -19,6 +19,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
+        android:layout_weight="1"
         android:text="TextView"
         android:textSize="24sp" />
+
+    <ImageView
+        android:id="@+id/onlineStatusImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/presence_offline" />
+
+    <TextView
+        android:id="@+id/onlineStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        tools:text="(offline)" />
+
 </LinearLayout>

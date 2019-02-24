@@ -12,12 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.FriendViewHolder> {
 
-    private List<UserInFriends> friendsListViewAdapter = new ArrayList<>();
+    private List<UserInFriends> friends = new ArrayList<>();
 
     @Override
     public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -28,38 +31,49 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
     @Override
     public void onBindViewHolder(FriendViewHolder holder, int position) {
-        holder.bind(friendsListViewAdapter.get(position));
+        holder.bind(friends.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return friendsListViewAdapter.size();
+        return friends.size();
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
         private ImageView friendPhotoView;
         private TextView friendNameView;
+        private TextView onlineStatusTextView;
+        private ImageView onlineStatusImageView;
 
         public FriendViewHolder(View itemView) {
             super(itemView);
-            friendPhotoView = itemView.findViewById(R.id.friendPhotoView);
-            friendNameView = itemView.findViewById(R.id.friendNameView);
+            this.friendPhotoView = itemView.findViewById(R.id.friendPhotoView);
+            this.friendNameView = itemView.findViewById(R.id.friendNameView);
+            this.onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
+            this.onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
         }
 
         public void bind(UserInFriends friend) {
-            friendNameView.setText(new StringBuilder().append(friend.getFirst_name()).append(" ").append(friend.getLast_name()).toString());
-            friendPhotoView.setVisibility(View.INVISIBLE);
-            new DownloadImageTask(friendPhotoView).execute(friend.getPhoto_200_orig());
+            this.friendNameView.setText(new StringBuilder().append(friend.getFirst_name()).append(" ").append(friend.getLast_name()).toString());
+            this.friendPhotoView.setVisibility(View.INVISIBLE);
+            new DownloadImageTask(this.friendPhotoView).execute(friend.getPhoto_200_orig());
+            if(friend.getOnline()==0) {
+                this.onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
+                this.onlineStatusTextView.setText("(offline)");
+            }else{
+                this.onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
+                this.onlineStatusTextView.setText("(online)");
+            }
         }
     }
 
     public void setItems(List<UserInFriends> friends) {
-        friendsListViewAdapter.addAll(friends);
+        this.friends.addAll(friends);
         notifyDataSetChanged();
     }
 
     public void clearItems() {
-        friendsListViewAdapter.clear();
+        this.friends.clear();
         notifyDataSetChanged();
     }
 }
