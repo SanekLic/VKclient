@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAccessGranted(String received_access_token) {
                 access_token = received_access_token;
+
                 loginWebView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -62,6 +63,20 @@ public class MainActivity extends AppCompatActivity {
                         friendsLayout.setVisibility(View.VISIBLE);
                     }
                 });
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            URL url = new URL(new StringBuilder().append("https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=").append(access_token).toString());
+                            URLConnection urlConnection = url.openConnection();
+                            InputStream inputStream = urlConnection.getInputStream();
+                            readStream(inputStream);
+                        } catch (IOException e) {
+                            Log.e("Error", e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
 
@@ -69,19 +84,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickButton(View view) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    URL url = new URL(new StringBuilder().append("https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=").append(access_token).toString());
-                    URLConnection urlConnection = url.openConnection();
-                    InputStream inputStream = urlConnection.getInputStream();
-                    readStream(inputStream);
-                } catch (IOException e) {
-                    Log.e("Error", e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     private void readStream(InputStream inputStream) {
