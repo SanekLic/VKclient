@@ -1,5 +1,6 @@
 package com.my.vkclient;
 
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,12 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
     }
 
     @Override
+    public void onViewRecycled(FriendViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.recycled();
+    }
+
+    @Override
     public int getItemCount() {
         return friends.size();
     }
@@ -36,6 +43,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
         private TextView friendNameView;
         private TextView onlineStatusTextView;
         private ImageView onlineStatusImageView;
+        private LoadImageToImageViewAsync loadImageToImageViewAsync;
 
         public FriendViewHolder(View itemView) {
             super(itemView);
@@ -48,14 +56,19 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
         public void bind(UserInFriends friend) {
             this.friendNameView.setText(new StringBuilder().append(friend.getFirst_name()).append(" ").append(friend.getLast_name()).toString());
             this.friendPhotoView.setAlpha(0f);
-            new LoadImageToImageViewAsync(this.friendPhotoView).execute(friend.getPhoto_200_orig());
-            if(friend.getOnline()==0) {
+            this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView);
+            this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_200_orig());
+            if (friend.getOnline() == 0) {
                 this.onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
                 this.onlineStatusTextView.setText("(offline)");
-            }else{
+            } else {
                 this.onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
                 this.onlineStatusTextView.setText("(online)");
             }
+        }
+
+        public void recycled(){
+            this.loadImageToImageViewAsync.cancel(false);
         }
     }
 

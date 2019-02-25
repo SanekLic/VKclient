@@ -38,7 +38,7 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
                 while ((length = inputStream.read(buffer)) != -1) {
                     result.write(buffer, 0, length);
                 }
-                bitmap = BitmapFactory.decodeByteArray(result.toByteArray(),0,result.size());
+                bitmap = BitmapFactory.decodeByteArray(result.toByteArray(), 0, result.size());
                 fileOutputStream.write(result.toByteArray());
                 fileOutputStream.flush();
                 fileOutputStream.close();
