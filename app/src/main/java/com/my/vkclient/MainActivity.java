@@ -20,17 +20,42 @@ import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 
 public class MainActivity extends AppCompatActivity {
 
-    //public static String authorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
-    public static String authorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
+    //public static final String apiVkGetAuthorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
+    public static final String apiVkGetAuthorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friendsList,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
+    public static final String apiVkGetFriendsListURL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
 
     public String access_token;
 
     private WebView loginWebView;
     private ConstraintLayout friendsLayout;
     private RecyclerView friendsRecyclerView;
-    private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
+    private FriendsRecyclerViewAdapter friendsRecyclerViewAdapter;
 
-    private List<UserInFriends> friends;
+    private List<UserInFriends> friendsList;
+
+    private volatile boolean runFriendsListUpdateThread;
+
+    private Thread friendsListUpdateThread;
+    private Runnable friendsListUpdateRunnable = new Runnable() {
+        public void run() {
+            while (runFriendsListUpdateThread) {
+                try {
+                    URL url = new URL(new StringBuilder()
+                            .append(apiVkGetFriendsListURL)
+                            .append(access_token).toString());
+                    URLConnection urlConnection = url.openConnection();
+                    InputStream inputStream = urlConnection.getInputStream();
+                    readStream(inputStream);
+                    Thread.sleep(5000);
+                } catch (IOException e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    runFriendsListUpdateThread = false;
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +65,15 @@ public class MainActivity extends AppCompatActivity {
         friendsLayout = findViewById(R.id.friendsLayout);
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        friendRecyclerViewAdapter = new FriendRecyclerViewAdapter();
-        friendsRecyclerView.setAdapter(friendRecyclerViewAdapter);
-
+        friendsRecyclerViewAdapter = new FriendsRecyclerViewAdapter();
+        friendsRecyclerView.setAdapter(friendsRecyclerViewAdapter);
         LoginWebViewClient loginWebViewClient = new LoginWebViewClient();
         loginWebView.setWebViewClient(loginWebViewClient);
 
         loginWebViewClient.addAccessGrantedListener(new LoginWebViewClient.AccessGrantedListener() {
             @Override
-            public void onAccessGranted(String received_access_token) {
-                access_token = received_access_token;
-
+            public void onAccessGranted(String receivedAccessToken) {
+                access_token = receivedAccessToken;
                 loginWebView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -63,24 +86,33 @@ public class MainActivity extends AppCompatActivity {
                         friendsLayout.setVisibility(View.VISIBLE);
                     }
                 });
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            URL url = new URL(new StringBuilder().append("https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=").append(access_token).toString());
-                            URLConnection urlConnection = url.openConnection();
-                            InputStream inputStream = urlConnection.getInputStream();
-                            readStream(inputStream);
-                        } catch (IOException e) {
-                            Log.e("Error", e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                if (friendsListUpdateThread == null) {
+                    runFriendsListUpdateThread = true;
+                    friendsListUpdateThread = new Thread(friendsListUpdateRunnable);
+                    friendsListUpdateThread.start();
+                }
             }
         });
+        loginWebView.loadUrl(apiVkGetAuthorizeURL);
+    }
 
-        loginWebView.loadUrl(authorizeURL);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (access_token != null && friendsListUpdateThread == null) {
+            runFriendsListUpdateThread = true;
+            friendsListUpdateThread = new Thread(friendsListUpdateRunnable);
+            friendsListUpdateThread.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (friendsListUpdateThread != null) {
+            runFriendsListUpdateThread = false;
+            friendsListUpdateThread = null;
+        }
     }
 
     public void onClickButton(View view) {
@@ -95,14 +127,14 @@ public class MainActivity extends AppCompatActivity {
                 result.write(buffer, 0, length);
             }
 
-            friends = importFriendsFromJson(result.toString());
-
-            friendsRecyclerView.post(new Runnable() {
-                @Override
-                public void run() {
-                    friendRecyclerViewAdapter.setItems(friends);
-                }
-            });
+            friendsList = importFriendsFromJson(result.toString());
+            if (friendsList != null)
+                friendsRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        friendsRecyclerViewAdapter.setItems(friendsList);
+                    }
+                });
         } catch (IOException e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();

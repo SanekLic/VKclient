@@ -5,14 +5,14 @@ import android.webkit.WebViewClient;
 
 import java.util.ArrayList;
 
-import static com.my.vkclient.MainActivity.authorizeURL;
+import static com.my.vkclient.MainActivity.apiVkGetAuthorizeURL;
 
 public class LoginWebViewClient extends WebViewClient {
 
     private ArrayList<AccessGrantedListener> mListeners;
 
     public interface AccessGrantedListener {
-        public void onAccessGranted(String received_access_token);
+         void onAccessGranted(String receivedAccessToken);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class LoginWebViewClient extends WebViewClient {
         //error on click cancel
         //https://oauth.vk.com/blank.html#error=access_denied&error_reason=user_denied&error_description=User%20denied%20your%20request&state=requestToken
         if (url.startsWith("https://oauth.vk.com/blank.html#error=access_denied&error_reason=user_denied") && url.endsWith("state=requestToken")) {
-            url = authorizeURL;
+            url = apiVkGetAuthorizeURL;
         }
 
         if (url.startsWith("https://oauth.vk.com/blank.html#access_token=")) {

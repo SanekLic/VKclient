@@ -19,7 +19,7 @@ public class JsonHelper {
             }
             return friends;
         } catch (JSONException e) {
+            return null;
         }
-        return null;
     }
 }

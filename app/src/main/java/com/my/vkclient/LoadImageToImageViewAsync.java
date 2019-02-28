@@ -28,8 +28,9 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
             String filePath = imageView.getContext().getCacheDir().toString();
             File file = new File(filePath, fileName);
             if (file.exists()) {
-                if (!this.isCancelled())
+                if (!this.isCancelled()) {
                     bitmap = BitmapFactory.decodeFile(file.getPath());
+                }
             } else {
                 InputStream inputStream = new java.net.URL(url).openStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -42,14 +43,15 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
                 fileOutputStream.write(result.toByteArray());
                 fileOutputStream.flush();
                 fileOutputStream.close();
-
-                if (!this.isCancelled())
+                if (!this.isCancelled()) {
                     bitmap = BitmapFactory.decodeByteArray(result.toByteArray(), 0, result.size());
+                }
             }
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();
         }
+
         return bitmap;
     }
 
