@@ -8,11 +8,11 @@
     android:layout_margin="8dp">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/friendCardView"
+        android:id="@+id/friendPhotoCardView"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="3dp"
-        app:cardBackgroundColor="@color/friendPhotoBackColor"
+        app:cardBackgroundColor="@color/bg_friendPhotoColor"
         app:cardCornerRadius="32dp">
 
         <ImageView

@@ -14,9 +14,11 @@ public class JsonHelper {
             JSONObject jsonObject = new JSONObject(jsonFriends);
             JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("items");
             List<UserInFriends> friends = new ArrayList<>();
+
             for (int i = 0; i < jsonArray.length(); i++) {
                 friends.add(new UserInFriends(jsonArray.getJSONObject(i)));
             }
+
             return friends;
         } catch (JSONException e) {
             return null;

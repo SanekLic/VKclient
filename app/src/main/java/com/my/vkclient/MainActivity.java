@@ -1,8 +1,8 @@
 package com.my.vkclient;
 
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,9 +20,9 @@ import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 
 public class MainActivity extends AppCompatActivity {
 
-    //public static final String apiVkGetAuthorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
-    public static final String apiVkGetAuthorizeURL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friendsList,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
-    public static final String apiVkGetFriendsListURL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
+    //public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
+    public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friendsList,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
+    public static final String API_VK_GET_FRIENDS_LIST_URL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
 
     public String access_token;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             while (runFriendsListUpdateThread) {
                 try {
                     URL url = new URL(new StringBuilder()
-                            .append(apiVkGetFriendsListURL)
+                            .append(API_VK_GET_FRIENDS_LIST_URL)
                             .append(access_token).toString());
                     URLConnection urlConnection = url.openConnection();
                     InputStream inputStream = urlConnection.getInputStream();
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         loginWebView = findViewById(R.id.loginWebView);
         friendsLayout = findViewById(R.id.friendsLayout);
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         friendsLayout.setVisibility(View.VISIBLE);
                     }
                 });
+
                 if (friendsListUpdateThread == null) {
                     runFriendsListUpdateThread = true;
                     friendsListUpdateThread = new Thread(friendsListUpdateRunnable);
@@ -93,12 +95,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        loginWebView.loadUrl(apiVkGetAuthorizeURL);
+        loginWebView.loadUrl(API_VK_GET_AUTHORIZE_URL);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         if (access_token != null && friendsListUpdateThread == null) {
             runFriendsListUpdateThread = true;
             friendsListUpdateThread = new Thread(friendsListUpdateRunnable);
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
         if (friendsListUpdateThread != null) {
             runFriendsListUpdateThread = false;
             friendsListUpdateThread = null;
@@ -128,13 +132,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             friendsList = importFriendsFromJson(result.toString());
-            if (friendsList != null)
+
+            if (friendsList != null) {
                 friendsRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
                         friendsRecyclerViewAdapter.setItems(friendsList);
                     }
                 });
+            }
         } catch (IOException e) {
             Log.e("Error", e.getMessage());
             e.printStackTrace();

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 public class UserInFriends {
     public enum FriendDifferences {
-        different_id,
-        different_first_name,
-        different_last_name,
-        different_photo_50,
-        different_photo_100,
-        different_photo_200_orig,
-        different_online
+        DIFFERENT_ID,
+        DIFFERENT_FIRST_NAME,
+        DIFFERENT_LAST_NAME,
+        DIFFERENT_PHOTO_50,
+        DIFFERENT_PHOTO_100,
+        DIFFERENT_PHOTO_200_ORIG,
+        DIFFERENT_ONLINE
     }
 
     private int id;
@@ -26,13 +26,13 @@ public class UserInFriends {
 
     public UserInFriends(JSONObject jsonUserInFriends) {
         try {
-            this.id = jsonUserInFriends.getInt("id");
-            this.first_name = jsonUserInFriends.getString("first_name");
-            this.last_name = jsonUserInFriends.getString("last_name");
-            this.photo_50 = jsonUserInFriends.getString("photo_50");
-            this.photo_100 = jsonUserInFriends.getString("photo_100");
-            this.photo_200_orig = jsonUserInFriends.getString("photo_200_orig");
-            this.online = jsonUserInFriends.getInt("online");
+            id = jsonUserInFriends.getInt("id");
+            first_name = jsonUserInFriends.getString("first_name");
+            last_name = jsonUserInFriends.getString("last_name");
+            photo_50 = jsonUserInFriends.getString("photo_50");
+            photo_100 = jsonUserInFriends.getString("photo_100");
+            photo_200_orig = jsonUserInFriends.getString("photo_200_orig");
+            online = jsonUserInFriends.getInt("online");
         } catch (JSONException e) {
         }
     }
@@ -71,26 +71,33 @@ public class UserInFriends {
 
     public ArrayList compare(UserInFriends object) {
         ArrayList<FriendDifferences> differences = new ArrayList<>();
-        if (this.getId() != object.getId()) {
-            differences.add(FriendDifferences.different_id);
+
+        if (getId() != object.getId()) {
+            differences.add(FriendDifferences.DIFFERENT_ID);
         }
-        if (!this.getFirst_name().equals(object.getFirst_name())) {
-            differences.add(FriendDifferences.different_first_name);
+
+        if (!getFirst_name().equals(object.getFirst_name())) {
+            differences.add(FriendDifferences.DIFFERENT_FIRST_NAME);
         }
-        if (!this.getLast_name().equals(object.getLast_name())) {
-            differences.add(FriendDifferences.different_last_name);
+
+        if (!getLast_name().equals(object.getLast_name())) {
+            differences.add(FriendDifferences.DIFFERENT_LAST_NAME);
         }
-        if (!this.getPhoto_50().equals(object.getPhoto_50())) {
-            differences.add(FriendDifferences.different_photo_50);
+
+        if (!getPhoto_50().equals(object.getPhoto_50())) {
+            differences.add(FriendDifferences.DIFFERENT_PHOTO_50);
         }
-        if (!this.getPhoto_100().equals(object.getPhoto_100())) {
-            differences.add(FriendDifferences.different_photo_100);
+
+        if (!getPhoto_100().equals(object.getPhoto_100())) {
+            differences.add(FriendDifferences.DIFFERENT_PHOTO_100);
         }
-        if (!this.getPhoto_200_orig().equals(object.getPhoto_200_orig())) {
-            differences.add(FriendDifferences.different_photo_200_orig);
+
+        if (!getPhoto_200_orig().equals(object.getPhoto_200_orig())) {
+            differences.add(FriendDifferences.DIFFERENT_PHOTO_200_ORIG);
         }
-        if (this.getOnline() != object.getOnline()) {
-            differences.add(FriendDifferences.different_online);
+
+        if (getOnline() != object.getOnline()) {
+            differences.add(FriendDifferences.DIFFERENT_ONLINE);
         }
 
         return differences;
