@@ -91,6 +91,7 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
         public FriendViewHolder(View itemView) {
             super(itemView);
+
             this.friendPhotoView = itemView.findViewById(R.id.friendPhotoView);
             this.friendNameView = itemView.findViewById(R.id.friendNameView);
             this.onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
@@ -126,6 +127,7 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
         public void recycled() {
             this.loadImageToImageViewAsync.cancel(false);
+            this.friendPhotoView.setAlpha(0f);
         }
     }
 }

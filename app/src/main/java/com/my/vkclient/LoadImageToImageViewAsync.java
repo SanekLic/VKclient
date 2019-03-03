@@ -24,27 +24,27 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
         String url = urls[0];
         Bitmap bitmap = null;
         try {
-            String fileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".") + 4);
-            String filePath = imageView.getContext().getCacheDir().toString();
-            File file = new File(filePath, fileName);
-            if (file.exists()) {
+            String imageFileName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".") + 4);
+            String imageFilePath = imageView.getContext().getCacheDir().toString();
+            File imageFile = new File(imageFilePath, imageFileName);
+            if (imageFile.exists()) {
                 if (!this.isCancelled()) {
-                    bitmap = BitmapFactory.decodeFile(file.getPath());
+                    bitmap = BitmapFactory.decodeFile(imageFile.getPath());
                 }
             } else {
-                InputStream inputStream = new java.net.URL(url).openStream();
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                InputStream urlInputStream = new java.net.URL(url).openStream();
+                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                ByteArrayOutputStream resultInputStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int length;
-                while ((length = inputStream.read(buffer)) != -1) {
-                    result.write(buffer, 0, length);
+                while ((length = urlInputStream.read(buffer)) != -1) {
+                    resultInputStream.write(buffer, 0, length);
                 }
-                fileOutputStream.write(result.toByteArray());
+                fileOutputStream.write(resultInputStream.toByteArray());
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 if (!this.isCancelled()) {
-                    bitmap = BitmapFactory.decodeByteArray(result.toByteArray(), 0, result.size());
+                    bitmap = BitmapFactory.decodeByteArray(resultInputStream.toByteArray(), 0, resultInputStream.size());
                 }
             }
         } catch (Exception e) {
