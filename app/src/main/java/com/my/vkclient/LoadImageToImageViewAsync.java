@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URL;
 
 public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
     private ImageView imageView;
@@ -32,19 +33,22 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
                     bitmap = BitmapFactory.decodeFile(imageFile.getPath());
                 }
             } else {
-                InputStream urlInputStream = new java.net.URL(url).openStream();
+                InputStream urlInputStream = new URL(url).openStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                ByteArrayOutputStream resultInputStream = new ByteArrayOutputStream();
+                ByteArrayOutputStream byteArrayFromUrl = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int length;
+
                 while ((length = urlInputStream.read(buffer)) != -1) {
-                    resultInputStream.write(buffer, 0, length);
+                    byteArrayFromUrl.write(buffer, 0, length);
                 }
-                fileOutputStream.write(resultInputStream.toByteArray());
+
+                fileOutputStream.write(byteArrayFromUrl.toByteArray());
                 fileOutputStream.flush();
                 fileOutputStream.close();
+
                 if (!this.isCancelled()) {
-                    bitmap = BitmapFactory.decodeByteArray(resultInputStream.toByteArray(), 0, resultInputStream.size());
+                    bitmap = BitmapFactory.decodeByteArray(byteArrayFromUrl.toByteArray(), 0, byteArrayFromUrl.size());
                 }
             }
         } catch (Exception e) {
