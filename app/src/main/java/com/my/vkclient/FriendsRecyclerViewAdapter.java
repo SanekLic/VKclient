@@ -52,25 +52,25 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
     }
 
     public void setItems(List<UserInFriends> friendsList) {
-        List<UserInFriends> prev_friends = this.friendsList;
+        List<UserInFriends> previousFriendsList = this.friendsList;
         this.friendsList = friendsList;
 
         for (int i = 0; i < this.friendsList.size(); i++) {
-            if (i >= prev_friends.size()) {
-                notifyItemRangeInserted(i, this.friendsList.size() - prev_friends.size());
+            if (i >= previousFriendsList.size()) {
+                notifyItemRangeInserted(i, this.friendsList.size() - previousFriendsList.size());
 
                 break;
             }
 
-            ArrayList friend_differences = this.friendsList.get(i).compare(prev_friends.get(i));
+            ArrayList friend_differences = this.friendsList.get(i).compare(previousFriendsList.get(i));
 
             if (friend_differences.size() != 0) {
                 notifyItemChanged(i, friend_differences);
             }
         }
 
-        if (prev_friends.size() > this.friendsList.size()) {
-            notifyItemRangeRemoved(this.friendsList.size(), prev_friends.size() - this.friendsList.size());
+        if (previousFriendsList.size() > this.friendsList.size()) {
+            notifyItemRangeRemoved(this.friendsList.size(), previousFriendsList.size() - this.friendsList.size());
         }
     }
 
@@ -110,7 +110,7 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
             if (differences == null || differences.contains(UserInFriends.FriendDifferences.DIFFERENT_PHOTO_200_ORIG)) {
                 this.friendPhotoView.setAlpha(0f);
-                this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView);
+                this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView,true);
                 this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_200_orig());
             }
 

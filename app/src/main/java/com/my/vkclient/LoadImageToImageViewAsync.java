@@ -2,9 +2,12 @@ package com.my.vkclient;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -15,10 +18,12 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
+    private boolean isCircular;
     private ImageView imageView;
 
-    LoadImageToImageViewAsync(ImageView imageView) {
+    LoadImageToImageViewAsync(ImageView imageView, boolean isCircular) {
         this.imageView = imageView;
+        this.isCircular = isCircular;
     }
 
     protected Bitmap doInBackground(String... urls) {
@@ -60,7 +65,14 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void onPostExecute(Bitmap result) {
-        imageView.setImageBitmap(result);
+        if (isCircular) {
+            RoundedBitmapDrawable circularDrawable = RoundedBitmapDrawableFactory.create(Resources.getSystem(), result);
+            circularDrawable.setCircular(true);
+            imageView.setImageDrawable(circularDrawable);
+        } else {
+            imageView.setImageBitmap(result);
+        }
+
         Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
         animator.setTarget(imageView);
         animator.start();
