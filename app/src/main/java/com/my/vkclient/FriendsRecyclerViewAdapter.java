@@ -109,8 +109,9 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
             }
 
             if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_200_ORIG)) {
+                this.friendPhotoView.setImageDrawable(null);
                 this.friendPhotoView.setAlpha(0f);
-                this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView,true);
+                this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView, true);
                 this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_200_orig());
             }
 
@@ -127,7 +128,6 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
         public void recycled() {
             this.loadImageToImageViewAsync.cancel(false);
-            this.friendPhotoView.setAlpha(0f);
         }
     }
 }
