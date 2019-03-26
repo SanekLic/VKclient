@@ -11,7 +11,7 @@ import android.webkit.WebView;
 public class MainActivity extends AppCompatActivity {
 
     //public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
-    public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friendsList,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
+    public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
     public static final String API_VK_GET_FRIENDS_LIST_URL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
 
     public static String accessToken;
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout friendsLayout;
     private RecyclerView friendsRecyclerView;
     private FriendsRecyclerViewAdapter friendsRecyclerViewAdapter;
-    private FriendsListUpdater friendsListUpdater;
+    private FriendListUpdater friendListUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         friendsRecyclerView.setAdapter(friendsRecyclerViewAdapter);
         LoginWebViewClient loginWebViewClient = new LoginWebViewClient();
         loginWebView.setWebViewClient(loginWebViewClient);
-        friendsListUpdater = new FriendsListUpdater(friendsRecyclerView, friendsRecyclerViewAdapter);
+        friendListUpdater = new FriendListUpdater(friendsRecyclerView, friendsRecyclerViewAdapter);
 
         loginWebViewClient.addAccessGrantedListener(new LoginWebViewClient.AccessGrantedListener() {
             @Override
@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                friendsListUpdater.setAccessToken(accessToken);
-                friendsListUpdater.start();
+                friendListUpdater.setAccessToken(accessToken);
+                friendListUpdater.start();
             }
         });
         loginWebView.loadUrl(API_VK_GET_AUTHORIZE_URL);
@@ -65,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        friendsListUpdater.start();
+        friendListUpdater.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        friendsListUpdater.stop();
+        friendListUpdater.stop();
     }
 
     public void onClickButton(View view) {

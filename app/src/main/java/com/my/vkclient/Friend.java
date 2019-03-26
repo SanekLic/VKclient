@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class UserInFriends {
+public class Friend {
     public enum FriendDifferences {
         DIFFERENT_ID,
         DIFFERENT_FIRST_NAME,
@@ -24,7 +24,7 @@ public class UserInFriends {
     private String photo_200_orig;
     private int online;
 
-    public UserInFriends(JSONObject jsonUserInFriends) {
+    public Friend(JSONObject jsonUserInFriends) {
         try {
             id = jsonUserInFriends.getInt("id");
             first_name = jsonUserInFriends.getString("first_name");
@@ -65,11 +65,11 @@ public class UserInFriends {
         return online;
     }
 
-    public boolean equals(UserInFriends object) {
+    public boolean equals(Friend object) {
         return this.getId() == object.getId();
     }
 
-    public ArrayList compare(UserInFriends object) {
+    public ArrayList compare(Friend object) {
         ArrayList<FriendDifferences> differences = new ArrayList<>();
 
         if (getId() != object.getId()) {

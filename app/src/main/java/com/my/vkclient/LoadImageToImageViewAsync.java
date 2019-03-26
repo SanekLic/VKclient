@@ -2,19 +2,22 @@ package com.my.vkclient;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.os.AsyncTask;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
@@ -56,25 +59,40 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
                     bitmap = BitmapFactory.decodeByteArray(byteArrayFromUrl.toByteArray(), 0, byteArrayFromUrl.size());
                 }
             }
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return bitmap;
     }
 
-    protected void onPostExecute(Bitmap result) {
+    protected void onPostExecute(Bitmap resultBitmap) {
+
         if (isCircular) {
-            RoundedBitmapDrawable circularDrawable = RoundedBitmapDrawableFactory.create(Resources.getSystem(), result);
-            circularDrawable.setCircular(true);
-            imageView.setImageDrawable(circularDrawable);
+            imageView.setImageBitmap(bitmapToCircle(resultBitmap));
         } else {
-            imageView.setImageBitmap(result);
+            imageView.setImageBitmap(resultBitmap);
         }
 
         Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
         animator.setTarget(imageView);
         animator.start();
+    }
+
+    private Bitmap bitmapToCircle(Bitmap input) {
+        Bitmap output = Bitmap.createBitmap(input.getWidth(), input.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        BitmapShader shader = new BitmapShader(input, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setShader(shader);
+        final float radius = Math.min(input.getWidth(), input.getHeight()) / 2F;
+        canvas.drawCircle(input.getWidth() / 2F, input.getHeight() / 2F, radius, paint);
+
+        return output;
     }
 }

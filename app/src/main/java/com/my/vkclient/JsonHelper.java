@@ -9,14 +9,14 @@ import java.util.List;
 
 public class JsonHelper {
 
-    public static List<UserInFriends> importFriendsFromJson(String jsonFriends) {
+    public static List<Friend> importFriendsFromJson(String jsonFriends) {
         try {
             JSONObject jsonObject = new JSONObject(jsonFriends);
             JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("items");
-            List<UserInFriends> friends = new ArrayList<>();
+            List<Friend> friends = new ArrayList<>();
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                friends.add(new UserInFriends(jsonArray.getJSONObject(i)));
+                friends.add(new Friend(jsonArray.getJSONObject(i)));
             }
 
             return friends;

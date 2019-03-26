@@ -12,17 +12,17 @@ import java.util.List;
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 import static com.my.vkclient.MainActivity.API_VK_GET_FRIENDS_LIST_URL;
 
-class FriendsListUpdater {
-    private volatile boolean runFriendsListUpdateThread;
+class FriendListUpdater {
+    private volatile boolean runFriendListUpdateThread;
     private String accessToken;
 
     private RecyclerView friendsRecyclerView;
     private FriendsRecyclerViewAdapter friendsRecyclerViewAdapter;
-    private List<UserInFriends> friendsList;
-    private Thread friendsListUpdateThread;
-    private Runnable friendsListUpdateRunnable = new Runnable() {
+    private List<Friend> friendList;
+    private Thread friendListUpdateThread;
+    private Runnable friendListUpdateRunnable = new Runnable() {
         public void run() {
-            while (runFriendsListUpdateThread) {
+            while (runFriendListUpdateThread) {
                 try {
                     URL url = new URL(new StringBuilder()
                             .append(API_VK_GET_FRIENDS_LIST_URL)
@@ -34,29 +34,29 @@ class FriendsListUpdater {
                     Log.e("Error", e.getMessage());
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    runFriendsListUpdateThread = false;
+                    runFriendListUpdateThread = false;
                 }
             }
         }
     };
 
-    FriendsListUpdater(RecyclerView friendsRecyclerView, FriendsRecyclerViewAdapter friendsRecyclerViewAdapter) {
+    FriendListUpdater(RecyclerView friendsRecyclerView, FriendsRecyclerViewAdapter friendsRecyclerViewAdapter) {
         this.friendsRecyclerView = friendsRecyclerView;
         this.friendsRecyclerViewAdapter = friendsRecyclerViewAdapter;
     }
 
     public void start() {
-        if (accessToken != null && friendsListUpdateThread == null) {
-            runFriendsListUpdateThread = true;
-            friendsListUpdateThread = new Thread(friendsListUpdateRunnable);
-            friendsListUpdateThread.start();
+        if (accessToken != null && friendListUpdateThread == null) {
+            runFriendListUpdateThread = true;
+            friendListUpdateThread = new Thread(friendListUpdateRunnable);
+            friendListUpdateThread.start();
         }
     }
 
     public void stop() {
-        if (friendsListUpdateThread != null) {
-            runFriendsListUpdateThread = false;
-            friendsListUpdateThread = null;
+        if (friendListUpdateThread != null) {
+            runFriendListUpdateThread = false;
+            friendListUpdateThread = null;
         }
     }
 
@@ -73,13 +73,13 @@ class FriendsListUpdater {
                 result.write(buffer, 0, length);
             }
 
-            friendsList = importFriendsFromJson(result.toString());
+            friendList = importFriendsFromJson(result.toString());
 
-            if (friendsList != null) {
+            if (friendList != null) {
                 friendsRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        friendsRecyclerViewAdapter.setItems(friendsList);
+                        friendsRecyclerViewAdapter.setItems(friendList);
                     }
                 });
             }

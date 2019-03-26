@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecyclerViewAdapter.FriendViewHolder> {
 
-    private List<UserInFriends> friendsList = new ArrayList<>();
+    private List<Friend> friendList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -27,15 +27,15 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
     @Override
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
-        holder.bind(friendsList.get(position), null);
+        holder.bind(friendList.get(position), null);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position, @NonNull List listPayload) {
         if (listPayload.size() != 0) {
-            holder.bind(friendsList.get(position), (ArrayList<UserInFriends.FriendDifferences>) listPayload.get(0));
+            holder.bind(friendList.get(position), (ArrayList<Friend.FriendDifferences>) listPayload.get(0));
         } else {
-            holder.bind(friendsList.get(position), null);
+            holder.bind(friendList.get(position), null);
         }
     }
 
@@ -48,40 +48,40 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
 
     @Override
     public int getItemCount() {
-        return friendsList.size();
+        return friendList.size();
     }
 
-    public void setItems(List<UserInFriends> friendsList) {
-        List<UserInFriends> previousFriendsList = this.friendsList;
-        this.friendsList = friendsList;
+    public void setItems(List<Friend> friendList) {
+        List<Friend> previousFriendList = this.friendList;
+        this.friendList = friendList;
 
-        for (int i = 0; i < this.friendsList.size(); i++) {
-            if (i >= previousFriendsList.size()) {
-                notifyItemRangeInserted(i, this.friendsList.size() - previousFriendsList.size());
+        for (int i = 0; i < this.friendList.size(); i++) {
+            if (i >= previousFriendList.size()) {
+                notifyItemRangeInserted(i, this.friendList.size() - previousFriendList.size());
 
                 break;
             }
 
-            ArrayList friend_differences = this.friendsList.get(i).compare(previousFriendsList.get(i));
+            ArrayList friend_differences = this.friendList.get(i).compare(previousFriendList.get(i));
 
             if (friend_differences.size() != 0) {
                 notifyItemChanged(i, friend_differences);
             }
         }
 
-        if (previousFriendsList.size() > this.friendsList.size()) {
-            notifyItemRangeRemoved(this.friendsList.size(), previousFriendsList.size() - this.friendsList.size());
+        if (previousFriendList.size() > this.friendList.size()) {
+            notifyItemRangeRemoved(this.friendList.size(), previousFriendList.size() - this.friendList.size());
         }
     }
 
     public void clearItems() {
-        this.friendsList.clear();
+        this.friendList.clear();
         notifyDataSetChanged();
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
-        private static final String friendStatusOfflineString = "(offline)";
-        private static final String friendStatusOnlineString = "(online)";
+        private static final String FRIEND_STATUS_OFFLINE_STRING = "(offline)";
+        private static final String FRIEND_STATUS_ONLINE_STRING = "(online)";
 
         private ImageView friendPhotoView;
         private TextView friendNameView;
@@ -98,29 +98,29 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
             this.onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
         }
 
-        public void bind(UserInFriends friend, ArrayList<UserInFriends.FriendDifferences> differences) {
+        public void bind(Friend friend, ArrayList<Friend.FriendDifferences> differences) {
             if (differences == null
-                    || differences.contains(UserInFriends.FriendDifferences.DIFFERENT_FIRST_NAME)
-                    || differences.contains(UserInFriends.FriendDifferences.DIFFERENT_LAST_NAME)) {
+                    || differences.contains(Friend.FriendDifferences.DIFFERENT_FIRST_NAME)
+                    || differences.contains(Friend.FriendDifferences.DIFFERENT_LAST_NAME)) {
                 this.friendNameView.setText(new StringBuilder()
                         .append(friend.getFirst_name())
                         .append(" ")
                         .append(friend.getLast_name()).toString());
             }
 
-            if (differences == null || differences.contains(UserInFriends.FriendDifferences.DIFFERENT_PHOTO_200_ORIG)) {
+            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_200_ORIG)) {
                 this.friendPhotoView.setAlpha(0f);
                 this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView,true);
                 this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_200_orig());
             }
 
-            if (differences == null || differences.contains(UserInFriends.FriendDifferences.DIFFERENT_ONLINE)) {
+            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_ONLINE)) {
                 if (friend.getOnline() == 0) {
                     this.onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
-                    this.onlineStatusTextView.setText(friendStatusOfflineString);
+                    this.onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
                 } else {
                     this.onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
-                    this.onlineStatusTextView.setText(friendStatusOnlineString);
+                    this.onlineStatusTextView.setText(FRIEND_STATUS_ONLINE_STRING);
                 }
             }
         }
