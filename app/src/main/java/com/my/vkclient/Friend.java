@@ -6,16 +6,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Friend {
-    public enum FriendDifferences {
-        DIFFERENT_ID,
-        DIFFERENT_FIRST_NAME,
-        DIFFERENT_LAST_NAME,
-        DIFFERENT_PHOTO_50,
-        DIFFERENT_PHOTO_100,
-        DIFFERENT_PHOTO_200_ORIG,
-        DIFFERENT_ONLINE
-    }
-
     private int id;
     private String first_name;
     private String last_name;
@@ -66,10 +56,10 @@ public class Friend {
     }
 
     public boolean equals(Friend object) {
-        return this.getId() == object.getId();
+        return this.compare(object).isEmpty();
     }
 
-    public ArrayList compare(Friend object) {
+    public ArrayList<FriendDifferences> compare(Friend object) {
         ArrayList<FriendDifferences> differences = new ArrayList<>();
 
         if (getId() != object.getId()) {
@@ -101,5 +91,15 @@ public class Friend {
         }
 
         return differences;
+    }
+
+    public enum FriendDifferences {
+        DIFFERENT_ID,
+        DIFFERENT_FIRST_NAME,
+        DIFFERENT_LAST_NAME,
+        DIFFERENT_PHOTO_50,
+        DIFFERENT_PHOTO_100,
+        DIFFERENT_PHOTO_200_ORIG,
+        DIFFERENT_ONLINE
     }
 }

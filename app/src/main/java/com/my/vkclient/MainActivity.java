@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
     public static String accessToken;
 
     private WebView loginWebView;
-    private ConstraintLayout friendsLayout;
     private RecyclerView friendsRecyclerView;
     private FriendsRecyclerViewAdapter friendsRecyclerViewAdapter;
     private FriendListUpdater friendListUpdater;
@@ -28,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         loginWebView = findViewById(R.id.loginWebView);
-        friendsLayout = findViewById(R.id.friendsLayout);
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         friendsRecyclerViewAdapter = new FriendsRecyclerViewAdapter();
@@ -47,10 +45,10 @@ public class MainActivity extends AppCompatActivity {
                         loginWebView.setVisibility(View.GONE);
                     }
                 });
-                friendsLayout.post(new Runnable() {
+                friendsRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        friendsLayout.setVisibility(View.VISIBLE);
+                        friendsRecyclerView.setVisibility(View.VISIBLE);
                     }
                 });
 
