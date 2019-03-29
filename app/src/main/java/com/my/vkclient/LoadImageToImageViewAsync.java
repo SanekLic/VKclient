@@ -71,7 +71,6 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void onPostExecute(Bitmap resultBitmap) {
-
         if (isCircular) {
             imageView.setImageBitmap(bitmapToCircle(resultBitmap));
         } else {

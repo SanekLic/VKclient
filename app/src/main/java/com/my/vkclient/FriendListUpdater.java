@@ -17,7 +17,7 @@ class FriendListUpdater {
     private String accessToken;
 
     private RecyclerView friendsRecyclerView;
-    private FriendsRecyclerViewAdapter friendsRecyclerViewAdapter;
+    private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
     private List<Friend> friendList;
     private Thread friendListUpdateThread;
     private Runnable friendListUpdateRunnable = new Runnable() {
@@ -40,9 +40,9 @@ class FriendListUpdater {
         }
     };
 
-    FriendListUpdater(RecyclerView friendsRecyclerView, FriendsRecyclerViewAdapter friendsRecyclerViewAdapter) {
+    FriendListUpdater(RecyclerView friendsRecyclerView, FriendRecyclerViewAdapter friendRecyclerViewAdapter) {
         this.friendsRecyclerView = friendsRecyclerView;
-        this.friendsRecyclerViewAdapter = friendsRecyclerViewAdapter;
+        this.friendRecyclerViewAdapter = friendRecyclerViewAdapter;
     }
 
     public void start() {
@@ -79,7 +79,7 @@ class FriendListUpdater {
                 friendsRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        friendsRecyclerViewAdapter.setItems(friendList);
+                        friendRecyclerViewAdapter.setItems(friendList);
                     }
                 });
             }

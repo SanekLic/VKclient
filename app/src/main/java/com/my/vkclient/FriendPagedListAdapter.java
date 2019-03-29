@@ -1,8 +1,8 @@
 package com.my.vkclient;
 
+import android.arch.paging.PagedListAdapter;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,52 +11,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecyclerViewAdapter.FriendViewHolder> {
+public class FriendPagedListAdapter extends PagedListAdapter<Friend, FriendPagedListAdapter.FriendViewHolder> {
 
-    private List<Friend> friendList = new ArrayList<>();
+    protected FriendPagedListAdapter() {
+        super(new FriendDiffUtilItemCallback());
+    }
 
     @NonNull
     @Override
-    public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendPagedListAdapter.FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.friend_view, parent, false);
 
-        return new FriendViewHolder(view);
+        return new FriendPagedListAdapter.FriendViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
-        holder.bind(friendList.get(position), null);
+    public void onBindViewHolder(@NonNull FriendViewHolder friendViewHolder, int position) {
+        friendViewHolder.bind(getItem(position), null);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position, @NonNull List listPayload) {
-        if (listPayload.size() != 0) {
-            holder.bind(friendList.get(position), (ArrayList<Friend.FriendDifferences>) listPayload.get(0));
-        } else {
-            holder.bind(friendList.get(position), null);
-        }
-    }
+    public void onViewRecycled(@NonNull FriendViewHolder friendViewHolder) {
+        super.onViewRecycled(friendViewHolder);
 
-    @Override
-    public void onViewRecycled(@NonNull FriendViewHolder holder) {
-        super.onViewRecycled(holder);
-
-        holder.recycled();
-    }
-
-    @Override
-    public int getItemCount() {
-        return friendList.size();
-    }
-
-    public void setItems(List<Friend> friendList) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FriendDiffUtilCallback(this.friendList, friendList));
-        diffResult.dispatchUpdatesTo(this);
-        this.friendList.clear();
-        this.friendList.addAll(friendList);
+        friendViewHolder.recycled();
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
@@ -88,11 +68,11 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
                         .append(friend.getLast_name()).toString());
             }
 
-            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_200_ORIG)) {
+            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_100)) {
                 this.friendPhotoView.setImageDrawable(null);
                 this.friendPhotoView.setAlpha(0f);
                 this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView, true);
-                this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_200_orig());
+                this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
             }
 
             if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_ONLINE)) {
@@ -111,4 +91,3 @@ public class FriendsRecyclerViewAdapter extends RecyclerView.Adapter<FriendsRecy
         }
     }
 }
-
