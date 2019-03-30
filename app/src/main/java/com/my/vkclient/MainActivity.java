@@ -1,17 +1,11 @@
 package com.my.vkclient;
 
-import android.arch.paging.PagedList;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.webkit.WebView;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,8 +17,8 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView loginWebView;
     private RecyclerView friendsRecyclerView;
-//    private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
-//    private FriendListUpdater friendListUpdater;
+    private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
+    private FriendListUpdater friendListUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +28,14 @@ public class MainActivity extends AppCompatActivity {
         loginWebView = findViewById(R.id.loginWebView);
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
         friendsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        friendRecyclerViewAdapter = new FriendRecyclerViewAdapter();
+        friendsRecyclerView.setAdapter(friendRecyclerViewAdapter);
 
-
-        // friendRecyclerViewAdapter = new FriendRecyclerViewAdapter();
-
-
-//        friendsRecyclerView.setAdapter(friendRecyclerViewAdapter);
         LoginWebViewClient loginWebViewClient = new LoginWebViewClient(new AccessGrantedCallback() {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
                 accessToken = receivedAccessToken;
+
                 loginWebView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -55,37 +47,15 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         friendsRecyclerView.setVisibility(View.VISIBLE);
 
-                        FriendPositionalDataSource friendPositionalDataSource = new FriendPositionalDataSource();
-
-                        PagedList.Config config = new PagedList.Config.Builder()
-                                .setEnablePlaceholders(false)
-                                .setPageSize(10)
-                                .build();
-
-                        PagedList<Friend> pagedList = new PagedList.Builder<>(friendPositionalDataSource, config)
-                                .setNotifyExecutor(new Executor() {
-                                    private final Handler mHandler = new Handler(Looper.getMainLooper());
-
-                                    @Override
-                                    public void execute(Runnable command) {
-                                        mHandler.post(command);
-                                    }
-                                })
-                                .setFetchExecutor(Executors.newSingleThreadExecutor())
-                                .build();
-
-                        FriendPagedListAdapter friendPagedListAdapter = new FriendPagedListAdapter();
-                        friendPagedListAdapter.submitList(pagedList);
-                        friendsRecyclerView.setAdapter(friendPagedListAdapter);
                     }
                 });
 
-//                friendListUpdater.setAccessToken(accessToken);
-//                friendListUpdater.start();
+                friendListUpdater.setAccessToken(accessToken);
+                friendListUpdater.start();
             }
         });
         loginWebView.setWebViewClient(loginWebViewClient);
-//        friendListUpdater = new FriendListUpdater(friendsRecyclerView, friendRecyclerViewAdapter);
+        friendListUpdater = new FriendListUpdater(friendsRecyclerView, friendRecyclerViewAdapter);
 
         loginWebView.loadUrl(API_VK_GET_AUTHORIZE_URL);
     }
@@ -94,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-//        friendListUpdater.start();
+        friendListUpdater.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-//        friendListUpdater.stop();
+        friendListUpdater.stop();
     }
 }

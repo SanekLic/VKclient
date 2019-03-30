@@ -1,6 +1,5 @@
 package com.my.vkclient;
 
-import android.arch.paging.PositionalDataSource;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 import static com.my.vkclient.MainActivity.accessToken;
-
+/*
 public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
 
     @Override
@@ -86,3 +85,4 @@ public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
                 .append(accessToken).toString();
     }
 }
+*/
