@@ -54,9 +54,14 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
     public void setItems(List<Friend> friendList) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FriendDiffUtilCallback(this.friendList, friendList));
-        diffResult.dispatchUpdatesTo(this);
         this.friendList.clear();
         this.friendList.addAll(friendList);
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public void addItems(List<Friend> friendList) {
+        this.friendList.addAll(friendList);
+        notifyItemRangeInserted(this.friendList.size() - friendList.size(), friendList.size());
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {

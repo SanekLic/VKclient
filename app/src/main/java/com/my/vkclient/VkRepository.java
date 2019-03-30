@@ -1,6 +1,5 @@
 package com.my.vkclient;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -12,43 +11,19 @@ import java.util.List;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 import static com.my.vkclient.MainActivity.accessToken;
-/*
-public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
 
-    @Override
-    public void loadInitial(@NonNull LoadInitialParams params, @NonNull final LoadInitialCallback<Friend> callback) {
-        getPositionalData(params.requestedStartPosition, params.requestedLoadSize, new ResultCallback<List<Friend>>() {
-            @Override
-            public void onResult(List<Friend> pResult) {
-                List<Friend> result = pResult;
-                callback.onResult(result, 0);
-            }
-        });
-    }
-
-    @Override
-    public void loadRange(@NonNull LoadRangeParams params, @NonNull final LoadRangeCallback<Friend> callback) {
-
-        getPositionalData(params.startPosition, params.loadSize, new ResultCallback<List<Friend>>() {
-            @Override
-            public void onResult(List<Friend> pResult) {
-                List<Friend> result = pResult;
-                callback.onResult(result);
-            }
-        });
-    }
-
-    private void getPositionalData(final int startPosition, final int size, final ResultCallback<List<Friend>> ResultCallback) {
+public class VkRepository {
+    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<Friend>> ResultCallback) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 InputStream inputStream = null;
                 try {
-                    URL url = new URL(getPositionalRequest(startPosition, size));
+                    URL url = new URL(getFriendRequest(startPosition, size));
                     inputStream = url.openStream();
-
-                    ResultCallback.onResult(readStream(inputStream));
+                    String jsonFriends = readStream(inputStream);
+                    ResultCallback.onResult(importFriendsFromJson(jsonFriends));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -58,7 +33,7 @@ public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
         }).start();
     }
 
-    private List<Friend> readStream(InputStream inputStream) {
+    private static String readStream(InputStream inputStream) {
         ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream();
         try {
             byte[] buffer = new byte[1024];
@@ -72,10 +47,10 @@ public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
             e.printStackTrace();
         }
 
-        return importFriendsFromJson(resultOutputStream.toString());
+        return resultOutputStream.toString();
     }
 
-    private String getPositionalRequest(int startPosition, int size) {
+    private static String getFriendRequest(int startPosition, int size) {
         return new StringBuilder()
                 .append("https://api.vk.com/method/friends.get?order=name&count=")
                 .append(size)
@@ -85,4 +60,3 @@ public class FriendPositionalDataSource extends PositionalDataSource<Friend> {
                 .append(accessToken).toString();
     }
 }
-*/
