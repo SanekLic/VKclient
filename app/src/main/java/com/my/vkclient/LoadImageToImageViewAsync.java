@@ -24,7 +24,7 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
     private boolean isCircular;
     private ImageView imageView;
 
-    LoadImageToImageViewAsync(ImageView imageView, boolean isCircular) {
+    public LoadImageToImageViewAsync(ImageView imageView, boolean isCircular) {
         this.imageView = imageView;
         this.isCircular = isCircular;
     }

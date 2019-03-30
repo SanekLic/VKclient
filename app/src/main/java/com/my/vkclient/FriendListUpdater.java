@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.List;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
-import static com.my.vkclient.MainActivity.API_VK_GET_FRIENDS_LIST_URL;
 
 class FriendListUpdater {
     private volatile boolean runFriendListUpdateThread;
@@ -25,7 +24,7 @@ class FriendListUpdater {
             while (runFriendListUpdateThread) {
                 try {
                     URL url = new URL(new StringBuilder()
-                            .append(API_VK_GET_FRIENDS_LIST_URL)
+//                            .append(API_VK_GET_FRIENDS_LIST_URL)
                             .append(accessToken).toString());
                     InputStream inputStream = url.openStream();
                     readStream(inputStream);

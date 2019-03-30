@@ -6,10 +6,10 @@ import android.support.v7.util.DiffUtil;
 import java.util.List;
 
 public class FriendDiffUtilCallback extends DiffUtil.Callback {
-    List<Friend> oldFriendList;
-    List<Friend> newFriendList;
+    private List<Friend> oldFriendList;
+    private List<Friend> newFriendList;
 
-    public FriendDiffUtilCallback(List<Friend> newFriendList, List<Friend> oldFriendList) {
+    FriendDiffUtilCallback(List<Friend> newFriendList, List<Friend> oldFriendList) {
         this.oldFriendList = oldFriendList;
         this.newFriendList = newFriendList;
     }

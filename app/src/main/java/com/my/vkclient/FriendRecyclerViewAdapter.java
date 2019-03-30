@@ -1,21 +1,31 @@
 package com.my.vkclient;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.FriendViewHolder> {
+public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
 
+    private static final int PAGE_SIZE = 10;
     private List<Friend> friendList = new ArrayList<>();
+    private RecyclerView friendRecyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private boolean isLoading;
+    private boolean isLoadComplete;
+
+    FriendRecyclerViewAdapter(RecyclerView friendRecyclerView) {
+        this.friendRecyclerView = friendRecyclerView;
+        linearLayoutManager = new LinearLayoutManager(friendRecyclerView.getContext());
+        friendRecyclerView.setLayoutManager(linearLayoutManager);
+    }
 
     @NonNull
     @Override
@@ -24,6 +34,13 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
                 .inflate(R.layout.friend_view, parent, false);
 
         return new FriendViewHolder(view);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull FriendViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+
+        validateLoadMoreItems();
     }
 
     @Override
@@ -52,6 +69,10 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
         return friendList.size();
     }
 
+    public void initialLoadItems() {
+        loadMoreItems(0, PAGE_SIZE * 2);
+    }
+
     public void setItems(List<Friend> friendList) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FriendDiffUtilCallback(this.friendList, friendList));
         this.friendList.clear();
@@ -64,56 +85,47 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
         notifyItemRangeInserted(this.friendList.size() - friendList.size(), friendList.size());
     }
 
-    class FriendViewHolder extends RecyclerView.ViewHolder {
-        private static final String FRIEND_STATUS_OFFLINE_STRING = "(offline)";
-        private static final String FRIEND_STATUS_ONLINE_STRING = "(online)";
+    public void refreshItems() {
+        Log.d("dfd", "refreshItems: ");
+    }
 
-        private ImageView friendPhotoView;
-        private TextView friendNameView;
-        private TextView onlineStatusTextView;
-        private ImageView onlineStatusImageView;
-        private LoadImageToImageViewAsync loadImageToImageViewAsync;
+    private void validateLoadMoreItems() {
+        if (!isLoading && !isLoadComplete) {
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
 
-        public FriendViewHolder(View itemView) {
-            super(itemView);
-
-            this.friendPhotoView = itemView.findViewById(R.id.friendPhotoView);
-            this.friendNameView = itemView.findViewById(R.id.friendNameView);
-            this.onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
-            this.onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
+            if ((visibleItemCount + firstVisibleItemPosition + PAGE_SIZE) >= totalItemCount
+                    && firstVisibleItemPosition >= 0) {
+                loadMoreItems(totalItemCount, PAGE_SIZE);
+            }
         }
+    }
 
-        public void bind(Friend friend, ArrayList<Friend.FriendDifferences> differences) {
-            if (differences == null
-                    || differences.contains(Friend.FriendDifferences.DIFFERENT_FIRST_NAME)
-                    || differences.contains(Friend.FriendDifferences.DIFFERENT_LAST_NAME)) {
-                this.friendNameView.setText(new StringBuilder()
-                        .append(friend.getFirst_name())
-                        .append(" ")
-                        .append(friend.getLast_name()).toString());
-            }
+    private void loadMoreItems(final int startPosition, final int size) {
+        isLoading = true;
 
-            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_100)) {
-                this.friendPhotoView.setImageDrawable(null);
-                this.friendPhotoView.setAlpha(0f);
-                this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView, true);
-                this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
-            }
+        VkRepository.getFriends(startPosition, size, new ResultCallback<List<Friend>>() {
+            @Override
+            public void onResult(final List<Friend> resultList) {
+                if (resultList != null) {
+                    if (resultList.size() < size) {
+                        isLoadComplete = true;
+                    }
 
-            if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_ONLINE)) {
-                if (friend.getOnline() == 0) {
-                    this.onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
-                    this.onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
+                    friendRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            addItems(resultList);
+                            isLoading = false;
+                        }
+                    });
                 } else {
-                    this.onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
-                    this.onlineStatusTextView.setText(FRIEND_STATUS_ONLINE_STRING);
+                    isLoadComplete = true;
+                    isLoading = false;
                 }
             }
-        }
-
-        public void recycled() {
-            this.loadImageToImageViewAsync.cancel(false);
-        }
+        });
     }
 }
 
