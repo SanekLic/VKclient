@@ -1,27 +1,26 @@
 package com.my.vkclient;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.Entities.FriendResponse;
+import com.my.vkclient.Entities.User;
+import com.my.vkclient.Entities.UserResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JsonHelper {
 
     public static List<Friend> importFriendsFromJson(String jsonFriends) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonFriends);
-            JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("items");
-            List<Friend> friends = new ArrayList<>();
+        Gson gson = new Gson();
+        FriendResponse friendResponse = gson.fromJson(jsonFriends, FriendResponse.class);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                friends.add(new Friend(jsonArray.getJSONObject(i)));
-            }
+        return friendResponse.getResponse().getItems();
+    }
 
-            return friends;
-        } catch (JSONException e) {
-            return null;
-        }
+    public static User importUserFromJson(String jsonUser) {
+        Gson gson = new Gson();
+        UserResponse userResponse = gson.fromJson(jsonUser, UserResponse.class);
+
+        return userResponse.getResponse().get(0);
     }
 }

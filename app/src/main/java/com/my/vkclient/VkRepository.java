@@ -2,6 +2,9 @@ package com.my.vkclient;
 
 import android.util.Log;
 
+import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.Entities.User;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,18 +13,22 @@ import java.net.URL;
 import java.util.List;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
+import static com.my.vkclient.JsonHelper.importUserFromJson;
 
 public class VkRepository {
     //public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
 //    public static final String API_VK_GET_FRIENDS_LIST_URL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
+    public static final String ACCESS_TOKEN = "&v=5.92&access_token=";
     public static final String API_VK_RESPONSE_ACCESS_DENIED_ERROR = "https://oauth.vk.com/blank.html#error=access_denied&error_reason=user_denied";
     public static final String API_VK_RESPONSE_ACCESS_TOKEN = "https://oauth.vk.com/blank.html#access_token=";
     public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,notifications&response_type=token&v=5.92&state=requestToken";
     public static final String API_VK_GET_FRIENDS_URL = "https://api.vk.com/method/friends.get?order=name";
-    public static final String COUNT = "&count=";
-    public static final String OFFSET = "&offset=";
-    public static final String FIELDS = "&fields=photo_50,photo_100,photo_200_orig,online&v=5.92";
-    public static final String ACCESS_TOKEN = "&access_token=";
+    public static final String FRIENDS_COUNT = "&count=";
+    public static final String FRIENDS_OFFSET = "&offset=";
+    public static final String FRIENDS_FIELDS = "&fields=photo_100,online";
+    public static final String API_VK_GET_USER_URL = "https://api.vk.com/method/users.get?name_case=nom";
+    public static final String USER_ID = "&user_ids=";
+    public static final String USER_FIELDS = "&fields=photo_max_orig,crop_photo";
 
     private static String accessToken;
 
@@ -33,17 +40,32 @@ public class VkRepository {
         accessToken = newAccessToken;
     }
 
-    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<Friend>> ResultCallback) {
+    public static void getUser(final int userId, final ResultCallback<User> resultCallback) {
+        getFromUrl(getUserRequest(userId), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(importUserFromJson(result));
+            }
+        });
+    }
 
+    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<Friend>> resultCallback) {
+        getFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(importFriendsFromJson(result));
+            }
+        });
+    }
+
+    private static void getFromUrl(final String stringUrl, final ResultCallback<String> resultCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                InputStream inputStream = null;
                 try {
-                    URL url = new URL(getFriendRequest(startPosition, size));
-                    inputStream = url.openStream();
-                    String jsonFriends = readStream(inputStream);
-                    ResultCallback.onResult(importFriendsFromJson(jsonFriends));
+                    URL url = new URL(stringUrl);
+                    String jsonFriends = readStream(url.openStream());
+                    resultCallback.onResult(jsonFriends);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -70,14 +92,24 @@ public class VkRepository {
         return resultOutputStream.toString();
     }
 
-    private static String getFriendRequest(int startPosition, int size) {
+    private static String getFriendsRequest(int startPosition, int size) {
         return new StringBuilder()
                 .append(API_VK_GET_FRIENDS_URL)
-                .append(COUNT)
+                .append(FRIENDS_COUNT)
                 .append(size)
-                .append(OFFSET)
+                .append(FRIENDS_OFFSET)
                 .append(startPosition)
-                .append(FIELDS)
+                .append(FRIENDS_FIELDS)
+                .append(ACCESS_TOKEN)
+                .append(accessToken).toString();
+    }
+
+    private static String getUserRequest(int userId) {
+        return new StringBuilder()
+                .append(API_VK_GET_USER_URL)
+                .append(USER_ID)
+                .append(userId)
+                .append(USER_FIELDS)
                 .append(ACCESS_TOKEN)
                 .append(accessToken).toString();
     }

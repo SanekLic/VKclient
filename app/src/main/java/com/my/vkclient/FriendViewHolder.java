@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.Entities.Friend;
+
 import java.util.ArrayList;
 
 class FriendViewHolder extends RecyclerView.ViewHolder {
@@ -19,41 +21,41 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
 
     public FriendViewHolder(View itemView) {
         super(itemView);
-        this.friendPhotoView = itemView.findViewById(R.id.friendPhotoView);
-        this.friendNameView = itemView.findViewById(R.id.friendNameView);
-        this.onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
-        this.onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
+        friendPhotoView = itemView.findViewById(R.id.friendPhotoImageView);
+        friendNameView = itemView.findViewById(R.id.friendNameTextView);
+        onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
+        onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
     }
 
     public void bind(Friend friend, ArrayList<Friend.FriendDifferences> differences) {
         if (differences == null
                 || differences.contains(Friend.FriendDifferences.DIFFERENT_FIRST_NAME)
                 || differences.contains(Friend.FriendDifferences.DIFFERENT_LAST_NAME)) {
-            this.friendNameView.setText(new StringBuilder()
+            friendNameView.setText(new StringBuilder()
                     .append(friend.getFirst_name())
                     .append(" ")
                     .append(friend.getLast_name()).toString());
         }
 
         if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_100)) {
-            this.friendPhotoView.setImageDrawable(null);
-            this.friendPhotoView.setAlpha(0f);
-            this.loadImageToImageViewAsync = new LoadImageToImageViewAsync(this.friendPhotoView, true);
-            this.loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
+            friendPhotoView.setImageDrawable(null);
+            friendPhotoView.setAlpha(0f);
+            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView, true);
+            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
         }
 
         if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_ONLINE)) {
             if (friend.getOnline() == 0) {
-                this.onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
-                this.onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
+                onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
+                onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
             } else {
-                this.onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
-                this.onlineStatusTextView.setText(FRIEND_STATUS_ONLINE_STRING);
+                onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
+                onlineStatusTextView.setText(FRIEND_STATUS_ONLINE_STRING);
             }
         }
     }
 
     public void recycled() {
-        this.loadImageToImageViewAsync.cancel(false);
+        loadImageToImageViewAsync.cancel(false);
     }
 }

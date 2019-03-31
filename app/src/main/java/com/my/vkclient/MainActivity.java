@@ -1,14 +1,18 @@
 package com.my.vkclient;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.my.vkclient.Entities.Friend;
+
 public class MainActivity extends AppCompatActivity {
 
+    public static final String USER_ID_KEY = "UserId";
     private WebView loginWebView;
     private RecyclerView friendRecyclerView;
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
@@ -26,15 +30,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(friendRecyclerView);
-        friendRecyclerView.setAdapter(friendRecyclerViewAdapter);
-        friendRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        friendRecyclerView.setLayoutManager(linearLayoutManager);
+        friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager);
+        friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<Friend>() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
+            public void onResult(Friend friend) {
+                Intent intent = new Intent(getBaseContext(), UserActivity.class);
+                intent.putExtra(USER_ID_KEY, friend.getId());
+                startActivity(intent);
             }
         });
+        friendRecyclerView.setAdapter(friendRecyclerViewAdapter);
     }
 
     private void setupLoginWebView() {
