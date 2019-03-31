@@ -14,17 +14,22 @@ import java.util.List;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 20;
+    private static final long intervalMillis = 5000;
     private List<Friend> friendList = new ArrayList<>();
     private RecyclerView friendRecyclerView;
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
+    private FriendDiffUtilCallback friendDiffUtilCallback;
+    private boolean runAutoUpdate = false;
+    private Thread friendListUpdateThread;
 
     FriendRecyclerViewAdapter(RecyclerView friendRecyclerView) {
         this.friendRecyclerView = friendRecyclerView;
         linearLayoutManager = new LinearLayoutManager(friendRecyclerView.getContext());
         friendRecyclerView.setLayoutManager(linearLayoutManager);
+        friendDiffUtilCallback = new FriendDiffUtilCallback();
     }
 
     @NonNull
@@ -73,20 +78,83 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         loadMoreItems(0, PAGE_SIZE * 2);
     }
 
-    public void setItems(List<Friend> friendList) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new FriendDiffUtilCallback(this.friendList, friendList));
-        this.friendList.clear();
-        this.friendList.addAll(friendList);
-        diffResult.dispatchUpdatesTo(this);
+    private void setItems(List<Friend> newFriendList) {
+        friendDiffUtilCallback
+                .setOldFriendList(friendList)
+                .setNewFriendList(newFriendList);
+        friendList.clear();
+        friendList.addAll(newFriendList);
+        DiffUtil.calculateDiff(friendDiffUtilCallback).dispatchUpdatesTo(this);
     }
 
-    public void addItems(List<Friend> friendList) {
-        this.friendList.addAll(friendList);
-        notifyItemRangeInserted(this.friendList.size() - friendList.size(), friendList.size());
+    private void addItems(List<Friend> addFriendList) {
+        friendList.addAll(addFriendList);
+        notifyItemRangeInserted(friendList.size() - addFriendList.size(), addFriendList.size());
     }
 
-    public void refreshItems() {
-        Log.d("dfd", "refreshItems: ");
+    private void replaceItems(List<Friend> replaceFriendList, int startPosition) {
+        friendDiffUtilCallback.setOldFriendList(friendList);
+
+        for (int i = 0; i < replaceFriendList.size(); i++) {
+            if (friendList.size() > startPosition)
+                friendList.remove(startPosition);
+        }
+
+        friendList.addAll(startPosition, replaceFriendList);
+        friendDiffUtilCallback.setNewFriendList(friendList);
+        DiffUtil.calculateDiff(friendDiffUtilCallback).dispatchUpdatesTo(this);
+    }
+
+    public void autoUpdateItems(boolean enable) {
+        runAutoUpdate = enable;
+        if (enable) {
+            if (friendListUpdateThread == null) {
+                friendListUpdateThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (runAutoUpdate) {
+                            try {
+                                Thread.sleep(intervalMillis);
+                                friendRecyclerView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loadReplaceItems();
+                                    }
+                                });
+                            } catch (InterruptedException e) {
+                                Log.d("Thread", "InterruptedException");
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                friendListUpdateThread.setDaemon(true);
+                friendListUpdateThread.start();
+            }
+        } else {
+            if (friendListUpdateThread != null) {
+                friendListUpdateThread = null;
+            }
+        }
+    }
+
+    private void loadReplaceItems() {
+        final int visibleItemCount = linearLayoutManager.getChildCount();
+        if (visibleItemCount > 0) {
+            final int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+            VkRepository.getFriends(firstVisibleItemPosition, visibleItemCount,
+                    new ResultCallback<List<Friend>>() {
+                        @Override
+                        public void onResult(final List<Friend> resultList) {
+                            friendRecyclerView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    replaceItems(resultList, firstVisibleItemPosition);
+                                }
+                            });
+                        }
+                    });
+        }
     }
 
     private void validateLoadMoreItems() {

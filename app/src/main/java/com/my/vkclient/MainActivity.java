@@ -54,31 +54,9 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         friendRecyclerView.setVisibility(View.VISIBLE);
                         friendRecyclerViewAdapter.initialLoadItems();
-
+                        friendRecyclerViewAdapter.autoUpdateItems(true);
                     }
                 });
-
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            try {
-                                friendRecyclerView.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        friendRecyclerViewAdapter.refreshItems();
-                                    }
-                                });
-
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                thread.setDaemon(true);
-                thread.start();
             }
         });
         loginWebView.setWebViewClient(loginWebViewClient);
@@ -89,11 +67,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if (friendRecyclerView.getVisibility() == View.VISIBLE && friendRecyclerViewAdapter != null) {
+            friendRecyclerViewAdapter.autoUpdateItems(true);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
+        if (friendRecyclerView.getVisibility() == View.VISIBLE && friendRecyclerViewAdapter != null) {
+            friendRecyclerViewAdapter.autoUpdateItems(false);
+        }
     }
 }
