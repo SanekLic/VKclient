@@ -2,7 +2,6 @@ package com.my.vkclient;
 
 import android.util.Log;
 
-import com.my.vkclient.entities.Friend;
 import com.my.vkclient.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -49,7 +48,7 @@ public class VkRepository {
         });
     }
 
-    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<Friend>> resultCallback) {
+    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<User>> resultCallback) {
         getFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {

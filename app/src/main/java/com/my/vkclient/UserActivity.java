@@ -24,22 +24,19 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         Intent intent = getIntent();
+        User user = (User) intent.getSerializableExtra(MainActivity.USER_INTENT_KEY);
+
         userNameTextView = findViewById(R.id.UserNameTextView);
         userPhotoImageView = findViewById(R.id.UserPhotoImageView);
 
-        VkRepository.getUser(intent.getIntExtra(MainActivity.USER_ID_KEY, 0), new ResultCallback<User>() {
+        userNameTextView.setText(new StringBuilder()
+                .append(user.getFirst_name())
+                .append(" ")
+                .append(user.getLast_name()).toString());
+
+        VkRepository.getUser(user.getId(), new ResultCallback<User>() {
             @Override
             public void onResult(final User user) {
-                userNameTextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        userNameTextView.setText(new StringBuilder()
-                                .append(user.getFirst_name())
-                                .append(" ")
-                                .append(user.getLast_name()).toString());
-                    }
-                });
-
                 userPhotoImageView.post(new Runnable() {
                     @Override
                     public void run() {

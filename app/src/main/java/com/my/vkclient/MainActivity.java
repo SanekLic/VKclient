@@ -8,11 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.my.vkclient.entities.Friend;
+import com.my.vkclient.entities.User;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String USER_ID_KEY = "UserId";
+    public static final String USER_INTENT_KEY = "User";
     private WebView loginWebView;
     private RecyclerView friendRecyclerView;
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         friendRecyclerView.setLayoutManager(linearLayoutManager);
         friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager);
-        friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<Friend>() {
+        friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
-            public void onResult(Friend friend) {
+            public void onResult(User user) {
                 Intent intent = new Intent(getBaseContext(), UserActivity.class);
-                intent.putExtra(USER_ID_KEY, friend.getId());
+                intent.putExtra(USER_INTENT_KEY, user);
                 startActivity(intent);
             }
         });

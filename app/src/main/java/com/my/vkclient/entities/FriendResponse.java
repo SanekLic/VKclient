@@ -12,13 +12,13 @@ public class FriendResponse {
     public class Response {
 
         private int count;
-        private List<Friend> items;
+        private List<User> items;
 
         public int getCount() {
             return count;
         }
 
-        public List<Friend> getItems() {
+        public List<User> getItems() {
             return items;
         }
     }

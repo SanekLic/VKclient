@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.my.vkclient.entities.Friend;
+import com.my.vkclient.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,19 +20,19 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
 
     private static final int PAGE_SIZE = 20;
     private static final long intervalMillis = 5000;
-    private List<Friend> friendList = new ArrayList<>();
+    private List<User> friendList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
-    private FriendDiffUtilCallback friendDiffUtilCallback;
+    private UserDiffUtilCallback userDiffUtilCallback;
     private boolean runAutoUpdate = false;
     private Thread friendListUpdateThread;
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
-    private ResultCallback<Friend> itemClickListener;
+    private ResultCallback<User> itemClickListener;
 
     FriendRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
-        friendDiffUtilCallback = new FriendDiffUtilCallback();
+        userDiffUtilCallback = new UserDiffUtilCallback();
     }
 
     @NonNull
@@ -70,7 +70,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     @Override
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position, @NonNull List listPayload) {
         if (listPayload.size() != 0) {
-            holder.bind(friendList.get(position), (ArrayList<Friend.FriendDifferences>) listPayload.get(0));
+            holder.bind(friendList.get(position), (ArrayList<User.UserDifferences>) listPayload.get(0));
         } else {
             holder.bind(friendList.get(position), null);
         }
@@ -125,26 +125,26 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         }
     }
 
-    public void setOnItemClickListener(ResultCallback<Friend> itemClickListener) {
+    public void setOnItemClickListener(ResultCallback<User> itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
-    private void setItems(List<Friend> newFriendList) {
-        friendDiffUtilCallback
-                .setOldFriendList(friendList)
-                .setNewFriendList(newFriendList);
+    private void setItems(List<User> newFriendList) {
+        userDiffUtilCallback
+                .setOldUserList(friendList)
+                .setNewUserList(newFriendList);
         friendList.clear();
         friendList.addAll(newFriendList);
-        DiffUtil.calculateDiff(friendDiffUtilCallback).dispatchUpdatesTo(this);
+        DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
     }
 
-    private void addItems(List<Friend> addFriendList) {
+    private void addItems(List<User> addFriendList) {
         friendList.addAll(addFriendList);
         notifyItemRangeInserted(friendList.size() - addFriendList.size(), addFriendList.size());
     }
 
-    private void replaceItems(List<Friend> replaceFriendList, int startPosition) {
-        friendDiffUtilCallback.setOldFriendList(friendList);
+    private void replaceItems(List<User> replaceFriendList, int startPosition) {
+        userDiffUtilCallback.setOldUserList(friendList);
 
         for (int i = 0; i < replaceFriendList.size(); i++) {
             if (friendList.size() <= startPosition) {
@@ -155,8 +155,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         }
 
         friendList.addAll(startPosition, replaceFriendList);
-        friendDiffUtilCallback.setNewFriendList(friendList);
-        DiffUtil.calculateDiff(friendDiffUtilCallback).dispatchUpdatesTo(this);
+        userDiffUtilCallback.setNewUserList(friendList);
+        DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
     }
 
     private void loadReplaceItems() {
@@ -164,9 +164,9 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         if (visibleItemCount > 0) {
             final int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
             VkRepository.getFriends(firstVisibleItemPosition, visibleItemCount,
-                    new ResultCallback<List<Friend>>() {
+                    new ResultCallback<List<User>>() {
                         @Override
-                        public void onResult(final List<Friend> resultList) {
+                        public void onResult(final List<User> resultList) {
                             mainLooperHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -194,9 +194,9 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     private void loadMoreItems(final int startPosition, final int size) {
         isLoading = true;
 
-        VkRepository.getFriends(startPosition, size, new ResultCallback<List<Friend>>() {
+        VkRepository.getFriends(startPosition, size, new ResultCallback<List<User>>() {
             @Override
-            public void onResult(final List<Friend> resultList) {
+            public void onResult(final List<User> resultList) {
                 if (resultList != null) {
                     if (resultList.size() < size) {
                         isLoadComplete = true;

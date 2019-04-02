@@ -1,7 +1,6 @@
 package com.my.vkclient;
 
 import com.google.gson.Gson;
-import com.my.vkclient.entities.Friend;
 import com.my.vkclient.entities.FriendResponse;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
@@ -10,7 +9,7 @@ import java.util.List;
 
 public class JsonHelper {
 
-    public static List<Friend> importFriendsFromJson(String jsonFriends) {
+    public static List<User> importFriendsFromJson(String jsonFriends) {
         Gson gson = new Gson();
         FriendResponse friendResponse = gson.fromJson(jsonFriends, FriendResponse.class);
 

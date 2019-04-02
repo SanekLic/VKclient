@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.entities.Friend;
+import com.my.vkclient.entities.User;
 
 import java.util.ArrayList;
 
@@ -27,25 +27,25 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
     }
 
-    public void bind(Friend friend, ArrayList<Friend.FriendDifferences> differences) {
+    public void bind(User user, ArrayList<User.UserDifferences> differences) {
         if (differences == null
-                || differences.contains(Friend.FriendDifferences.DIFFERENT_FIRST_NAME)
-                || differences.contains(Friend.FriendDifferences.DIFFERENT_LAST_NAME)) {
+                || differences.contains(User.UserDifferences.DIFFERENT_FIRST_NAME)
+                || differences.contains(User.UserDifferences.DIFFERENT_LAST_NAME)) {
             friendNameView.setText(new StringBuilder()
-                    .append(friend.getFirst_name())
+                    .append(user.getFirst_name())
                     .append(" ")
-                    .append(friend.getLast_name()).toString());
+                    .append(user.getLast_name()).toString());
         }
 
-        if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_100)) {
+        if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_PHOTO_100)) {
             friendPhotoView.setImageDrawable(null);
             friendPhotoView.setAlpha(0f);
             loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView).setCircular(true);
-            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
+            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPhoto_100());
         }
 
-        if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_ONLINE)) {
-            if (friend.getOnline() == 0) {
+        if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_ONLINE)) {
+            if (user.getOnline() == 0) {
                 onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
                 onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
             } else {
