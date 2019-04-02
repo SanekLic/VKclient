@@ -24,7 +24,7 @@ public class VkRepository {
     public static final String API_VK_GET_FRIENDS_URL = "https://api.vk.com/method/friends.get?order=name";
     public static final String FRIENDS_COUNT = "&count=";
     public static final String FRIENDS_OFFSET = "&offset=";
-    public static final String FRIENDS_FIELDS = "&fields=photo_100,online";
+    public static final String FRIENDS_FIELDS = "&fields=photo_100,online,photo_max_orig,crop_photo";
     public static final String API_VK_GET_USER_URL = "https://api.vk.com/method/users.get?name_case=nom";
     public static final String USER_ID = "&user_ids=";
     public static final String USER_FIELDS = "&fields=photo_max_orig,crop_photo";

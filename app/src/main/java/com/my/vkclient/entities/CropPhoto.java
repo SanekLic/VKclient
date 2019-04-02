@@ -1,6 +1,8 @@
 package com.my.vkclient.entities;
 
-public class CropPhoto {
+import java.io.Serializable;
+
+public class CropPhoto implements Serializable {
     private Photo photo;
     private Rect rect;
     private Rect crop;

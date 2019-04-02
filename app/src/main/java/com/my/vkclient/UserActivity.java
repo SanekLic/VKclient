@@ -33,32 +33,32 @@ public class UserActivity extends AppCompatActivity {
                 .append(user.getFirst_name())
                 .append(" ")
                 .append(user.getLast_name()).toString());
-
-        VkRepository.getUser(user.getId(), new ResultCallback<User>() {
-            @Override
-            public void onResult(final User user) {
-                userPhotoImageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        userPhotoImageView.setImageDrawable(null);
-                        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
-                        String urlCropPhoto = user.getPhoto_max_orig();
-                        if (user.getCrop_photo() != null) {
-                            int maxWidth = 0;
-                            for (Size size : user.getCrop_photo().getPhoto().getSizes()) {
-                                if (size.getWidth() > maxWidth) {
-                                    maxWidth = size.getWidth();
-                                    urlCropPhoto = size.getUrl();
-                                }
-                            }
-                            loadImageToImageViewAsync.setCrop(user.getCrop_photo().getRect());
-                        }
-
-                        loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
-                    }
-                });
+        userPhotoImageView.setImageDrawable(null);
+        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
+        String urlCropPhoto = user.getPhoto_max_orig();
+        if (user.getCrop_photo() != null) {
+            int maxWidth = 0;
+            for (Size size : user.getCrop_photo().getPhoto().getSizes()) {
+                if (size.getWidth() > maxWidth) {
+                    maxWidth = size.getWidth();
+                    urlCropPhoto = size.getUrl();
+                }
             }
-        });
+            loadImageToImageViewAsync.setCrop(user.getCrop_photo().getRect());
+        }
+
+        loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
+
+//        VkRepository.getUser(user.getId(), new ResultCallback<User>() {
+//            @Override
+//            public void onResult(final User user) {
+//                userPhotoImageView.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                    }
+//                });
+//            }
+//        });
     }
 
     @Override

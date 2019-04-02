@@ -143,7 +143,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         notifyItemRangeInserted(friendList.size() - addFriendList.size(), addFriendList.size());
     }
 
-    private void replaceItems(List<User> replaceFriendList, int startPosition) {
+    private void replaceItems(int startPosition, List<User> replaceFriendList) {
         userDiffUtilCallback.setOldUserList(friendList);
 
         for (int i = 0; i < replaceFriendList.size(); i++) {
@@ -170,7 +170,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
                             mainLooperHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    replaceItems(resultList, firstVisibleItemPosition);
+                                    replaceItems(firstVisibleItemPosition, resultList);
                                 }
                             });
                         }

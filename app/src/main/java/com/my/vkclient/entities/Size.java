@@ -1,6 +1,8 @@
 package com.my.vkclient.entities;
 
-public class Size {
+import java.io.Serializable;
+
+public class Size implements Serializable {
     private String type;
     private String url;
     private int width;

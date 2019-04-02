@@ -1,6 +1,8 @@
 package com.my.vkclient.entities;
 
-public class Rect {
+import java.io.Serializable;
+
+public class Rect implements Serializable {
     private float x;
     private float y;
     private float x2;
