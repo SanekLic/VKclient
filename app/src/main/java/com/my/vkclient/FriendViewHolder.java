@@ -40,7 +40,7 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         if (differences == null || differences.contains(Friend.FriendDifferences.DIFFERENT_PHOTO_100)) {
             friendPhotoView.setImageDrawable(null);
             friendPhotoView.setAlpha(0f);
-            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView, true);
+            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView).setCircular(true);
             loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, friend.getPhoto_100());
         }
 

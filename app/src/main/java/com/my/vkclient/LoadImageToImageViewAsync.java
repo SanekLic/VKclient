@@ -11,6 +11,8 @@ import android.graphics.Shader;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import com.my.vkclient.Entities.Rect;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,12 +23,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
-    private boolean isCircular;
+    public static final int PERCENTAGE = 100;
+    private boolean isCircular = false;
+    private Rect crop;
     private ImageView imageView;
 
-    public LoadImageToImageViewAsync(ImageView imageView, boolean isCircular) {
+    public LoadImageToImageViewAsync(ImageView imageView) {
         this.imageView = imageView;
+    }
+
+    public LoadImageToImageViewAsync setCircular(boolean isCircular) {
         this.isCircular = isCircular;
+
+        return this;
+    }
+
+    public LoadImageToImageViewAsync setCrop(Rect crop) {
+        this.crop = crop;
+
+        return this;
     }
 
     protected Bitmap doInBackground(String... urls) {
@@ -72,10 +87,14 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap resultBitmap) {
         if (isCircular) {
-            imageView.setImageBitmap(bitmapToCircle(resultBitmap));
-        } else {
-            imageView.setImageBitmap(resultBitmap);
+            resultBitmap = bitmapToCircle(resultBitmap);
         }
+
+        if (crop != null) {
+            resultBitmap = cropBitmap(resultBitmap, crop);
+        }
+
+        imageView.setImageBitmap(resultBitmap);
 
         Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
         animator.setTarget(imageView);
@@ -91,6 +110,18 @@ public class LoadImageToImageViewAsync extends AsyncTask<String, Void, Bitmap> {
         paint.setShader(shader);
         final float radius = Math.min(input.getWidth(), input.getHeight()) / 2F;
         canvas.drawCircle(input.getWidth() / 2F, input.getHeight() / 2F, radius, paint);
+
+        return output;
+    }
+
+    private Bitmap cropBitmap(Bitmap input, Rect crop) {
+        int width = input.getWidth();
+        int height = input.getHeight();
+        float x = width * crop.getX() / PERCENTAGE;
+        float y = height * crop.getY() / PERCENTAGE;
+        float x2 = width * crop.getX2() / PERCENTAGE;
+        float y2 = height * crop.getY2() / PERCENTAGE;
+        Bitmap output = Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
 
         return output;
     }

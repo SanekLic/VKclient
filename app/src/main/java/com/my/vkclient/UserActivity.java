@@ -44,7 +44,7 @@ public class UserActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         userPhotoImageView.setImageDrawable(null);
-                        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView, false);
+                        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
                         String urlCropPhoto = user.getPhoto_max_orig();
                         if (user.getCrop_photo() != null) {
                             int maxWidth = 0;
@@ -54,6 +54,7 @@ public class UserActivity extends AppCompatActivity {
                                     urlCropPhoto = size.getUrl();
                                 }
                             }
+                            loadImageToImageViewAsync.setCrop(user.getCrop_photo().getRect());
                         }
 
                         loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
