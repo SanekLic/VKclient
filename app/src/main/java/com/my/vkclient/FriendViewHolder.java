@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.entities.Friend;
 
 import java.util.ArrayList;
 

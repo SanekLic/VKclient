@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.entities.Friend;
 
 public class MainActivity extends AppCompatActivity {
 

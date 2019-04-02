@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.entities.Friend;
 
 import java.util.ArrayList;
 import java.util.List;

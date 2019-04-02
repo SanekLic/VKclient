@@ -1,4 +1,4 @@
-package com.my.vkclient.Entities;
+package com.my.vkclient.entities;
 import java.util.ArrayList;
 
 public class Friend {

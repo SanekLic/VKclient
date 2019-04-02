@@ -1,4 +1,4 @@
-package com.my.vkclient.Entities;
+package com.my.vkclient.entities;
 
 public class CropPhoto {
     private Photo photo;

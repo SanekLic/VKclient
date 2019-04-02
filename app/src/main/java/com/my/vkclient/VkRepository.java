@@ -2,8 +2,8 @@ package com.my.vkclient;
 
 import android.util.Log;
 
-import com.my.vkclient.Entities.Friend;
-import com.my.vkclient.Entities.User;
+import com.my.vkclient.entities.Friend;
+import com.my.vkclient.entities.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

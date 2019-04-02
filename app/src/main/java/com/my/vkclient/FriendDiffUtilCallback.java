@@ -3,7 +3,7 @@ package com.my.vkclient;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 
-import com.my.vkclient.Entities.Friend;
+import com.my.vkclient.entities.Friend;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,10 @@
 package com.my.vkclient;
 
 import com.google.gson.Gson;
-import com.my.vkclient.Entities.Friend;
-import com.my.vkclient.Entities.FriendResponse;
-import com.my.vkclient.Entities.User;
-import com.my.vkclient.Entities.UserResponse;
+import com.my.vkclient.entities.Friend;
+import com.my.vkclient.entities.FriendResponse;
+import com.my.vkclient.entities.User;
+import com.my.vkclient.entities.UserResponse;
 
 import java.util.List;
 

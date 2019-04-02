@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.Entities.Size;
-import com.my.vkclient.Entities.User;
+import com.my.vkclient.entities.Size;
+import com.my.vkclient.entities.User;
 
 public class UserActivity extends AppCompatActivity {
 

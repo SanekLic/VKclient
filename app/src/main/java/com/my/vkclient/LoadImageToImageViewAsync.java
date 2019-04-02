@@ -11,7 +11,7 @@ import android.graphics.Shader;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-import com.my.vkclient.Entities.Rect;
+import com.my.vkclient.entities.Rect;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
