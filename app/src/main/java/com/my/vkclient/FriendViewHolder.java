@@ -1,8 +1,6 @@
 package com.my.vkclient;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,8 +17,7 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
     private TextView friendNameView;
     private TextView onlineStatusTextView;
     private ImageView onlineStatusImageView;
-//    private LoadImageToImageViewAsync loadImageToImageViewAsync;
-    private ImageLoader imageLoader;
+    private LoadImageToImageViewAsync loadImageToImageViewAsync;
 
     public FriendViewHolder(View itemView) {
         super(itemView);
@@ -44,23 +41,8 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_PHOTO_100)) {
             friendPhotoView.setImageDrawable(null);
             friendPhotoView.setAlpha(0f);
-            imageLoader = new ImageLoader(friendPhotoView.getContext()).setCircular(true);
-            imageLoader.getImageFromUrl(user.getPhoto100(), new ResultCallback<Bitmap>() {
-                @Override
-                public void onResult(final Bitmap resultBitmap) {
-                    friendPhotoView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            friendPhotoView.setImageBitmap(resultBitmap);
-                            Animator animator = AnimatorInflater.loadAnimator(friendPhotoView.getContext(), R.animator.image_change_visibility_animator);
-                            animator.setTarget(friendPhotoView);
-                            animator.start();
-                        }
-                    });
-                }
-            });
-//            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView).setCircular(true);
-//            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPhoto100());
+            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView).setCircular(true);
+            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPhoto100());
         }
 
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_ONLINE)) {
@@ -75,7 +57,6 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void recycled() {
-        imageLoader.cancel();
-//        loadImageToImageViewAsync.cancel(false);
+        loadImageToImageViewAsync.cancel(false);
     }
 }

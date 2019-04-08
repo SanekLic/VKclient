@@ -1,7 +1,7 @@
 package com.my.vkclient;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +15,7 @@ public class UserActivity extends AppCompatActivity {
 
     private TextView userNameTextView;
     private ImageView userPhotoImageView;
-//    private LoadImageToImageViewAsync loadImageToImageViewAsync;
-    private ImageLoader imageLoader;
+    private LoadImageToImageViewAsync loadImageToImageViewAsync;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,9 +33,7 @@ public class UserActivity extends AppCompatActivity {
                 .append(user.getFirstName())
                 .append(" ")
                 .append(user.getLastName()).toString());
-        userPhotoImageView.setImageDrawable(null);
-//        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
-        imageLoader = new ImageLoader(this);
+        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
         String urlCropPhoto = user.getPhotoMaxOrig();
         if (user.getCropPhoto() != null) {
             int maxWidth = 0;
@@ -46,32 +43,17 @@ public class UserActivity extends AppCompatActivity {
                     urlCropPhoto = size.getUrl();
                 }
             }
-            imageLoader.setCrop(user.getCropPhoto().getRect());
-//            loadImageToImageViewAsync.setCrop(user.getCropPhoto().getRect());
+            loadImageToImageViewAsync.setCrop(user.getCropPhoto().getRect());
         }
-        imageLoader.getImageFromUrl(urlCropPhoto, new ResultCallback<Bitmap>() {
-            @Override
-            public void onResult(final Bitmap resultBitmap) {
-                userPhotoImageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        userPhotoImageView.setImageBitmap(resultBitmap);
-                    }
-                });
-            }
-        });
-//        loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
+        loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if (imageLoader != null) {
-            imageLoader.cancel();
+        if (loadImageToImageViewAsync != null) {
+            loadImageToImageViewAsync.cancel(false);
         }
-//        if (loadImageToImageViewAsync != null) {
-//            loadImageToImageViewAsync.cancel(false);
-//        }
     }
 }
