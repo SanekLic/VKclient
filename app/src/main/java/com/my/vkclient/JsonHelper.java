@@ -11,24 +11,22 @@ import java.util.List;
 public class JsonHelper {
 
     public static List<User> importFriendsFromJson(String jsonFriends) {
-        Gson gson = new Gson();
-        FriendResponse friendResponse = gson.fromJson(jsonFriends, FriendResponse.class);
+        FriendResponse friendResponse = new Gson().fromJson(jsonFriends, FriendResponse.class);
 
         if (friendResponse == null) {
-            return new ArrayList<>();
+            return null;
         }
 
-        return friendResponse.getResponse().getItems();
+        return friendResponse.getResponse().getUserList();
     }
 
     public static User importUserFromJson(String jsonUser) {
-        Gson gson = new Gson();
-        UserResponse userResponse = gson.fromJson(jsonUser, UserResponse.class);
+        UserResponse userResponse = new Gson().fromJson(jsonUser, UserResponse.class);
 
         if (userResponse == null) {
             return null;
         }
 
-        return userResponse.getResponse().get(0);
+        return userResponse.getUserList().get(0);
     }
 }

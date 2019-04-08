@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
             public void onResult(User user) {
-                Intent intent = new Intent(getBaseContext(), UserActivity.class);
+                Intent intent = new Intent(MainActivity.this, UserActivity.class);
                 intent.putExtra(USER_INTENT_KEY, user);
                 startActivity(intent);
             }

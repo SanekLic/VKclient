@@ -57,14 +57,14 @@ public class VkRepository {
         });
     }
 
-    private static void getFromUrl(final String stringUrl, final ResultCallback<String> resultCallback){
+    private static void getFromUrl(final String requestUrl, final ResultCallback<String> resultCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    URL url = new URL(stringUrl);
-                    String jsonFriends = readStream(url.openStream());
-                    resultCallback.onResult(jsonFriends);
+                    URL url = new URL(requestUrl);
+                    String result = readStream(url.openStream());
+                    resultCallback.onResult(result);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

@@ -1,16 +1,31 @@
 package com.my.vkclient.entities;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class User implements Serializable {
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("online")
     private int online;
-    private String first_name;
-    private String last_name;
-    private String photo_max_orig;
-    private String photo_100;
-    private CropPhoto crop_photo;
+
+    @SerializedName("first_name")
+    private String firstName;
+
+    @SerializedName("last_name")
+    private String lastName;
+
+    @SerializedName("photo_max_orig")
+    private String photoMaxOrig;
+
+    @SerializedName("photo_100")
+    private String photo100;
+
+    @SerializedName("crop_photo")
+    private CropPhoto cropPhoto;
 
     public int getId() {
         return id;
@@ -20,24 +35,24 @@ public class User implements Serializable {
         return online;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public String getPhoto_max_orig() {
-        return photo_max_orig;
+    public String getPhotoMaxOrig() {
+        return photoMaxOrig;
     }
 
-    public String getPhoto_100() {
-        return photo_100;
+    public String getPhoto100() {
+        return photo100;
     }
 
-    public CropPhoto getCrop_photo() {
-        return crop_photo;
+    public CropPhoto getCropPhoto() {
+        return cropPhoto;
     }
 
     public boolean equals(User object) {
@@ -56,15 +71,15 @@ public class User implements Serializable {
             differences.add(UserDifferences.DIFFERENT_ONLINE);
         }
 
-        if (!getFirst_name().equals(object.getFirst_name())) {
+        if (!getFirstName().equals(object.getFirstName())) {
             differences.add(UserDifferences.DIFFERENT_FIRST_NAME);
         }
 
-        if (!getLast_name().equals(object.getLast_name())) {
+        if (!getLastName().equals(object.getLastName())) {
             differences.add(UserDifferences.DIFFERENT_LAST_NAME);
         }
 
-        if (!getPhoto_100().equals(object.getPhoto_100())) {
+        if (!getPhoto100().equals(object.getPhoto100())) {
             differences.add(UserDifferences.DIFFERENT_PHOTO_100);
         }
 

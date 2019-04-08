@@ -1,11 +1,14 @@
 package com.my.vkclient.entities;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class UserResponse {
-    private List<User> response;
+    @SerializedName("response")
+    private List<User> userList;
 
-    public List<User> getResponse() {
-        return response;
+    public List<User> getUserList() {
+        return userList;
     }
 }
