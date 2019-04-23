@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
 import static com.my.vkclient.JsonHelper.importUserFromJson;
@@ -30,6 +32,8 @@ public class VkRepository {
     public static final String USER_FIELDS = "&fields=photo_max_orig,crop_photo";
 
     private static String accessToken;
+
+    private static final Executor executor = Executors.newSingleThreadExecutor();
 
     public static String getAccessToken() {
         return accessToken;
@@ -58,7 +62,7 @@ public class VkRepository {
     }
 
     private static void getFromUrl(final String requestUrl, final ResultCallback<String> resultCallback){
-        new Thread(new Runnable() {
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -71,7 +75,7 @@ public class VkRepository {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     private static String readStream(InputStream inputStream) {

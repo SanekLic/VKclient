@@ -1,6 +1,5 @@
 package com.my.vkclient;
 
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,7 +16,6 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
     private TextView friendNameView;
     private TextView onlineStatusTextView;
     private ImageView onlineStatusImageView;
-    private LoadImageToImageViewAsync loadImageToImageViewAsync;
 
     public FriendViewHolder(View itemView) {
         super(itemView);
@@ -41,8 +39,8 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_PHOTO_100)) {
             friendPhotoView.setImageDrawable(null);
             friendPhotoView.setAlpha(0f);
-            loadImageToImageViewAsync = new LoadImageToImageViewAsync(friendPhotoView).setCircular(true);
-            loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPhoto100());
+            friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
+            ImageLoader.getImageFromUrl(friendPhotoView, user.getPhoto100());
         }
 
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_ONLINE)) {
@@ -56,7 +54,5 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void recycled() {
-        loadImageToImageViewAsync.cancel(false);
-    }
+
 }

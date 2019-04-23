@@ -77,13 +77,6 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     }
 
     @Override
-    public void onViewRecycled(@NonNull FriendViewHolder holder) {
-        super.onViewRecycled(holder);
-
-        holder.recycled();
-    }
-
-    @Override
     public int getItemCount() {
         return friendList.size();
     }

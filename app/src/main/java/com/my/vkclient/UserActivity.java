@@ -1,7 +1,6 @@
 package com.my.vkclient;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +14,6 @@ public class UserActivity extends AppCompatActivity {
 
     private TextView userNameTextView;
     private ImageView userPhotoImageView;
-    private LoadImageToImageViewAsync loadImageToImageViewAsync;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,7 +31,6 @@ public class UserActivity extends AppCompatActivity {
                 .append(user.getFirstName())
                 .append(" ")
                 .append(user.getLastName()).toString());
-        loadImageToImageViewAsync = new LoadImageToImageViewAsync(userPhotoImageView);
         String urlCropPhoto = user.getPhotoMaxOrig();
         if (user.getCropPhoto() != null) {
             int maxWidth = 0;
@@ -43,17 +40,9 @@ public class UserActivity extends AppCompatActivity {
                     urlCropPhoto = size.getUrl();
                 }
             }
-            loadImageToImageViewAsync.setCrop(user.getCropPhoto().getRect());
-        }
-        loadImageToImageViewAsync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlCropPhoto);
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (loadImageToImageViewAsync != null) {
-            loadImageToImageViewAsync.cancel(false);
+            userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, user.getCropPhoto().getRect());
         }
+        ImageLoader.getImageFromUrl(userPhotoImageView, urlCropPhoto);
     }
 }
