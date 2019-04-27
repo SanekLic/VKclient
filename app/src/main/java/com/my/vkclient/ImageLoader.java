@@ -38,13 +38,7 @@ class ImageLoader {
         cachedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
-
-                imageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
-                    }
-                });
+                imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
 
                 Bitmap resultBitmap = getFromMemoryCache(requestUrl);
 
@@ -87,10 +81,20 @@ class ImageLoader {
         return null;
     }
 
+    private static void putInDiskCache(final File imageCacheFile, final byte[] buffer) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(imageCacheFile);
+            fileOutputStream.write(buffer);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static Bitmap getFromNetwork(final String requestUrl, final File imageCacheFile) {
         try {
             InputStream urlInputStream = new URL(requestUrl).openStream();
-            FileOutputStream fileOutputStream = new FileOutputStream(imageCacheFile);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int length;
@@ -100,12 +104,9 @@ class ImageLoader {
             }
 
             buffer = byteArrayOutputStream.toByteArray();
-            fileOutputStream.write(buffer);
-            fileOutputStream.flush();
-            fileOutputStream.close();
+            putInDiskCache(imageCacheFile, buffer);
 
             return BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
