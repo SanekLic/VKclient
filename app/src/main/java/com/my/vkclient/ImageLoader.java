@@ -8,6 +8,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.net.Uri;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -35,16 +36,17 @@ class ImageLoader {
     };
 
     static void getImageFromUrl(final ImageView imageView, final String requestUrl) {
+        imageView.setImageDrawable(null);
+        imageView.setAlpha(0f);
+        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
+
         cachedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
-                imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
-
                 Bitmap resultBitmap = getFromMemoryCache(requestUrl);
 
                 if (resultBitmap == null) {
-                    String imageCacheFileName = requestUrl.substring(requestUrl.lastIndexOf("/") + 1, requestUrl.lastIndexOf("."));
-                    File imageCacheFile = new File(imageView.getContext().getCacheDir().toString(), imageCacheFileName);
+                    File imageCacheFile = new File(imageView.getContext().getCacheDir().toString(), Uri.parse(requestUrl).getLastPathSegment());
                     resultBitmap = getFromDiskCache(imageCacheFile);
 
                     if (resultBitmap == null) {

@@ -37,8 +37,6 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_PHOTO_100)) {
-            friendPhotoView.setImageDrawable(null);
-            friendPhotoView.setAlpha(0f);
             friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
             ImageLoader.getImageFromUrl(friendPhotoView, user.getPhoto100());
         }
