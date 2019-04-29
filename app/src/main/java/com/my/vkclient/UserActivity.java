@@ -43,6 +43,7 @@ public class UserActivity extends AppCompatActivity {
 
             userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, user.getCropPhoto().getRect());
         }
+
         ImageLoader.getImageFromUrl(userPhotoImageView, urlCropPhoto);
     }
 }

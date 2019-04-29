@@ -49,19 +49,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
                 VkRepository.setAccessToken(receivedAccessToken);
-
-                loginWebView.post(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         loginWebView.setVisibility(View.GONE);
-                    }
-                });
-                friendRecyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
+
                         friendRecyclerView.setVisibility(View.VISIBLE);
                         friendRecyclerViewAdapter.initialLoadItems();
                         friendRecyclerViewAdapter.autoUpdateItems(true);
+
                     }
                 });
             }

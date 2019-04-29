@@ -28,7 +28,6 @@ class ImageLoader {
     private static final Executor cachedThreadPool = Executors.newCachedThreadPool();
 
     private static final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 2)) {
-
         @Override
         protected int sizeOf(final String key, final Bitmap value) {
             return value.getByteCount() / 1024;
