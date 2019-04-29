@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 
 class ImageLoader {
     private static final int PERCENTAGE = 100;
-    private static final Executor cachedThreadPool = Executors.newCachedThreadPool();
+    private static final Executor cachedThreadPool = Executors.newFixedThreadPool(20);
 
     private static final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 2)) {
         @Override
