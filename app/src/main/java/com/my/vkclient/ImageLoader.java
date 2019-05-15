@@ -23,9 +23,9 @@ import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-class ImageLoader {
+public class ImageLoader {
     private static final int PERCENTAGE = 100;
-    private static final Executor cachedThreadPool = Executors.newFixedThreadPool(20);
+    private static final Executor cachedThreadPool = Executors.newCachedThreadPool();
 
     private static final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 2)) {
         @Override
@@ -34,7 +34,7 @@ class ImageLoader {
         }
     };
 
-    static void getImageFromUrl(final ImageView imageView, final String requestUrl) {
+    public static void getImageFromUrl(final ImageView imageView, final String requestUrl) {
         imageView.setImageDrawable(null);
         imageView.setAlpha(0f);
         imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
@@ -120,7 +120,7 @@ class ImageLoader {
             @Override
             public void run() {
                 if (imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl)) {
-                    boolean isCircular = imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR) == null ? false : (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
+                    Boolean isCircular = (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
                     Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
                     imageView.setImageBitmap(getPostProcessedBitmap(resultBitmap, isCircular, crop));
 
@@ -132,14 +132,14 @@ class ImageLoader {
         });
     }
 
-    private static Bitmap getPostProcessedBitmap(final Bitmap inputBitmap, final boolean isCircular, final Rect crop) {
+    private static Bitmap getPostProcessedBitmap(final Bitmap inputBitmap, final Boolean isCircular, final Rect crop) {
         if (inputBitmap == null) {
             return null;
         }
 
         Bitmap outputBitmap = inputBitmap;
 
-        if (isCircular) {
+        if (isCircular != null && isCircular) {
             outputBitmap = bitmapToCircle(outputBitmap);
         }
 

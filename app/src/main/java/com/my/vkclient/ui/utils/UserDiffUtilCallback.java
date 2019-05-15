@@ -1,4 +1,4 @@
-package com.my.vkclient;
+package com.my.vkclient.ui.utils;
 
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
@@ -43,14 +43,14 @@ public class UserDiffUtilCallback extends DiffUtil.Callback {
         return oldUserList.get(oldItemPosition).compare(newUserList.get(newItemPosition));
     }
 
-    public UserDiffUtilCallback setOldUserList(List<User> oldUserList) {
+    public UserDiffUtilCallback setOldList(List<User> oldUserList) {
         this.oldUserList.clear();
         this.oldUserList.addAll(oldUserList);
 
         return this;
     }
 
-    public UserDiffUtilCallback setNewUserList(List<User> newUserList) {
+    public UserDiffUtilCallback setNewList(List<User> newUserList) {
         this.newUserList.clear();
         this.newUserList.addAll(newUserList);
 

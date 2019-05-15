@@ -1,4 +1,4 @@
-package com.my.vkclient;
+package com.my.vkclient.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.ImageLoader;
+import com.my.vkclient.R;
 import com.my.vkclient.entities.Size;
 import com.my.vkclient.entities.User;
 

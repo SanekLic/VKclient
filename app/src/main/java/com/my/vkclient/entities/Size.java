@@ -1,10 +1,23 @@
 package com.my.vkclient.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+public class Size implements Parcelable {
+    public static final Creator<Size> CREATOR = new Creator<Size>() {
+        @Override
+        public Size createFromParcel(Parcel in) {
+            return new Size(in);
+        }
 
-public class Size implements Serializable {
+        @Override
+        public Size[] newArray(int size) {
+            return new Size[size];
+        }
+    };
+
     @SerializedName("type")
     private String type;
 
@@ -16,6 +29,26 @@ public class Size implements Serializable {
 
     @SerializedName("height")
     private int height;
+
+    protected Size(Parcel in) {
+        type = in.readString();
+        url = in.readString();
+        width = in.readInt();
+        height = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(type);
+        dest.writeString(url);
+        dest.writeInt(width);
+        dest.writeInt(height);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     public String getType() {
         return type;

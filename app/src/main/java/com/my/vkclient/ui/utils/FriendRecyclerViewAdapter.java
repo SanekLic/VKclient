@@ -1,4 +1,4 @@
-package com.my.vkclient;
+package com.my.vkclient.ui.utils;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.my.vkclient.R;
+import com.my.vkclient.ResultCallback;
+import com.my.vkclient.VkRepository;
 import com.my.vkclient.entities.User;
 
 import java.util.ArrayList;
@@ -19,7 +22,7 @@ import java.util.List;
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
 
     private static final int PAGE_SIZE = 20;
-    private static final long intervalMillis = 5000;
+    private static final long INTERVAL_MILLIS = 5000;
     private List<User> friendList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
@@ -30,7 +33,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
     private ResultCallback<User> itemClickListener;
 
-    FriendRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
+    public FriendRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
         userDiffUtilCallback = new UserDiffUtilCallback();
     }
@@ -94,7 +97,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
                     public void run() {
                         while (runAutoUpdate) {
                             try {
-                                Thread.sleep(intervalMillis);
+                                Thread.sleep(INTERVAL_MILLIS);
                                 mainLooperHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -124,8 +127,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
 
     private void setItems(List<User> newFriendList) {
         userDiffUtilCallback
-                .setOldUserList(friendList)
-                .setNewUserList(newFriendList);
+                .setOldList(friendList)
+                .setNewList(newFriendList);
         friendList.clear();
         friendList.addAll(newFriendList);
         DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
@@ -137,7 +140,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     }
 
     private void replaceItems(int startPosition, List<User> replaceFriendList) {
-        userDiffUtilCallback.setOldUserList(friendList);
+        userDiffUtilCallback.setOldList(friendList);
 
         for (int i = 0; i < replaceFriendList.size(); i++) {
             if (friendList.size() <= startPosition) {
@@ -148,7 +151,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         }
 
         friendList.addAll(startPosition, replaceFriendList);
-        userDiffUtilCallback.setNewUserList(friendList);
+        userDiffUtilCallback.setNewList(friendList);
         DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
     }
 

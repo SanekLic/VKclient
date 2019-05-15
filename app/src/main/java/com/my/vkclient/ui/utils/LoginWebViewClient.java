@@ -1,13 +1,15 @@
-package com.my.vkclient;
+package com.my.vkclient.ui.utils;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class LoginWebViewClient extends WebViewClient {
-    private AccessGrantedCallback accessGrantedCallback;
+import com.my.vkclient.VkRepository;
 
-    public LoginWebViewClient(AccessGrantedCallback accessGrantedCallback) {
-        this.accessGrantedCallback = accessGrantedCallback;
+public class LoginWebViewClient extends WebViewClient {
+    private LoginWebViewCallback loginWebViewCallback;
+
+    public LoginWebViewClient(LoginWebViewCallback loginWebViewCallback) {
+        this.loginWebViewCallback = loginWebViewCallback;
     }
 
     @Override
@@ -19,7 +21,7 @@ public class LoginWebViewClient extends WebViewClient {
 
         if (url.startsWith(VkRepository.API_VK_RESPONSE_ACCESS_TOKEN)) {
             String access_token = url.substring(url.indexOf("=") + 1, url.indexOf("&"));
-            accessGrantedCallback.onAccessGranted(access_token);
+            loginWebViewCallback.onAccessGranted(access_token);
 
             return false;
         }
@@ -27,5 +29,12 @@ public class LoginWebViewClient extends WebViewClient {
         view.loadUrl(url);
 
         return true;
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+
+        loginWebViewCallback.onLoadingFinished();
     }
 }

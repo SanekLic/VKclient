@@ -2,6 +2,8 @@ package com.my.vkclient;
 
 import android.util.Log;
 
+import com.my.vkclient.entities.Group;
+import com.my.vkclient.entities.NewsResponse;
 import com.my.vkclient.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -14,6 +16,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static com.my.vkclient.JsonHelper.importFriendsFromJson;
+import static com.my.vkclient.JsonHelper.importGroupFromJson;
+import static com.my.vkclient.JsonHelper.importNewsFromJson;
 import static com.my.vkclient.JsonHelper.importUserFromJson;
 
 public class VkRepository {
@@ -29,7 +33,12 @@ public class VkRepository {
     public static final String FRIENDS_FIELDS = "&fields=photo_100,online,photo_max_orig,crop_photo";
     public static final String API_VK_GET_USER_URL = "https://api.vk.com/method/users.get?name_case=nom";
     public static final String USER_ID = "&user_ids=";
-    public static final String USER_FIELDS = "&fields=photo_max_orig,crop_photo";
+    public static final String USER_FIELDS = "&fields=photo_100,photo_max_orig,crop_photo";
+    public static final String API_VK_GET_NEWS_URL = "https://api.vk.com/method/newsfeed.get?filters=post,photo,photo_tag";
+    public static final String NEWS_STARTFROM = "&start_from=";
+    public static final String NEWS_COUNT = "&count=";
+    public static final String API_VK_GET_GROUP_URL = "https://api.vk.com/method/groups.getById?group_id=";
+//    public static final String GROUP_FIELDS = "&fields=";
 
     private static String accessToken;
 
@@ -43,7 +52,7 @@ public class VkRepository {
         accessToken = newAccessToken;
     }
 
-    public static void getUser(final int userId, final ResultCallback<User> resultCallback) {
+    public static void getUserById(final int userId, final ResultCallback<User> resultCallback) {
         getFromUrl(getUserRequest(userId), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
@@ -57,6 +66,24 @@ public class VkRepository {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(importFriendsFromJson(result));
+            }
+        });
+    }
+
+    public static void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
+        getFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(importNewsFromJson(result));
+            }
+        });
+    }
+
+    public static void getGroupById(final int groupId, final ResultCallback<Group> resultCallback) {
+        getFromUrl(getGroupRequest(groupId), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(importGroupFromJson(result));
             }
         });
     }
@@ -113,6 +140,25 @@ public class VkRepository {
                 .append(USER_ID)
                 .append(userId)
                 .append(USER_FIELDS)
+                .append(ACCESS_TOKEN)
+                .append(accessToken).toString();
+    }
+
+    private static String getNewsRequest(String startFrom, int size) {
+        return new StringBuilder()
+                .append(API_VK_GET_NEWS_URL)
+                .append(NEWS_STARTFROM)
+                .append(startFrom)
+                .append(NEWS_COUNT)
+                .append(size)
+                .append(ACCESS_TOKEN)
+                .append(accessToken).toString();
+    }
+
+    private static String getGroupRequest(int userId) {
+        return new StringBuilder()
+                .append(API_VK_GET_GROUP_URL)
+                .append(userId)
                 .append(ACCESS_TOKEN)
                 .append(accessToken).toString();
     }

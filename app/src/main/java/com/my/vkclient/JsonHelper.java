@@ -2,6 +2,9 @@ package com.my.vkclient;
 
 import com.google.gson.Gson;
 import com.my.vkclient.entities.FriendResponse;
+import com.my.vkclient.entities.Group;
+import com.my.vkclient.entities.GroupResponse;
+import com.my.vkclient.entities.NewsResponse;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
 
@@ -29,4 +32,25 @@ public class JsonHelper {
 
         return userResponse.getUserList().get(0);
     }
+
+    public static NewsResponse.Response importNewsFromJson(String jsonNews) {
+        NewsResponse newsResponse = new Gson().fromJson(jsonNews, NewsResponse.class);
+
+        if (newsResponse == null) {
+            return null;
+        }
+
+        return newsResponse.getResponse();
+    }
+
+    public static Group importGroupFromJson(String jsonGroup) {
+        GroupResponse groupResponse = new Gson().fromJson(jsonGroup, GroupResponse.class);
+
+        if (groupResponse == null) {
+            return null;
+        }
+
+        return groupResponse.getGroupList().get(0);
+    }
+
 }

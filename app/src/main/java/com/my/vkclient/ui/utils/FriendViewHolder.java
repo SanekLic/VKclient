@@ -1,10 +1,12 @@
-package com.my.vkclient;
+package com.my.vkclient.ui.utils;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.ImageLoader;
+import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 
 import java.util.ArrayList;
