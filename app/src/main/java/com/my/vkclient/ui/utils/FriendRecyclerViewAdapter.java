@@ -206,7 +206,6 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
                         }
                     });
                 } else {
-                    isLoadComplete = true;
                     isLoading = false;
                 }
             }

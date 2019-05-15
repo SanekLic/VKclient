@@ -17,16 +17,12 @@ public class Size implements Parcelable {
             return new Size[size];
         }
     };
-
     @SerializedName("type")
     private String type;
-
     @SerializedName("url")
     private String url;
-
     @SerializedName("width")
     private int width;
-
     @SerializedName("height")
     private int height;
 

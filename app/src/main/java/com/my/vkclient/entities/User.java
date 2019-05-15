@@ -19,25 +19,18 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
     @SerializedName("id")
     private int id;
-
     @SerializedName("online")
     private int online;
-
     @SerializedName("first_name")
     private String firstName;
-
     @SerializedName("last_name")
     private String lastName;
-
     @SerializedName("photo_max_orig")
     private String photoMaxOrig;
-
     @SerializedName("photo_100")
     private String photo100;
-
     @SerializedName("crop_photo")
     private CropPhoto cropPhoto;
 

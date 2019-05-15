@@ -3,7 +3,6 @@ package com.my.vkclient.ui.utils;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import com.my.vkclient.ResultCallback;
 import com.my.vkclient.VkRepository;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
-import com.my.vkclient.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +21,12 @@ import java.util.List;
 public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder> {
 
     private static final int PAGE_SIZE = 20;
-    private static final long INTERVAL_MILLIS = 5000;
     private List<News> newsList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
     private NewsDiffUtilCallback newsDiffUtilCallback;
-    private boolean runAutoUpdate = false;
-    private Thread friendListUpdateThread;
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
-    private ResultCallback<User> itemClickListener;
     private String nextFrom = "";
 
     public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
@@ -46,7 +40,7 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_view, parent, false);
 
-        return new NewsViewHolder(view);
+        return new NewsViewHolder(parent.getContext(), view);
     }
 
     @Override
@@ -68,15 +62,6 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
 
     public void initialLoadItems() {
         loadMoreItems(nextFrom, PAGE_SIZE * 2);
-    }
-
-    private void setItems(List<News> newNewsList) {
-        newsDiffUtilCallback
-                .setOldList(newsList)
-                .setNewList(newNewsList);
-        newsList.clear();
-        newsList.addAll(newNewsList);
-        DiffUtil.calculateDiff(newsDiffUtilCallback).dispatchUpdatesTo(this);
     }
 
     private void addItems(List<News> addNewsList) {
@@ -118,7 +103,6 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
                         }
                     });
                 } else {
-                    isLoadComplete = true;
                     isLoading = false;
                 }
             }

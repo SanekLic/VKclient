@@ -19,10 +19,8 @@ public class Photo implements Parcelable {
             return new Photo[size];
         }
     };
-
     @SerializedName("id")
     private int id;
-
     @SerializedName("sizes")
     private List<Size> sizes;
 

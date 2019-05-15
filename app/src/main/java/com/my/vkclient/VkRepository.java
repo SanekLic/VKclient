@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static com.my.vkclient.JsonHelper.importFriendsFromJson;
-import static com.my.vkclient.JsonHelper.importGroupFromJson;
-import static com.my.vkclient.JsonHelper.importNewsFromJson;
-import static com.my.vkclient.JsonHelper.importUserFromJson;
+import static com.my.vkclient.utils.GsonAdapter.getFriendsFromJson;
+import static com.my.vkclient.utils.GsonAdapter.getGroupFromJson;
+import static com.my.vkclient.utils.GsonAdapter.getNewsFromJson;
+import static com.my.vkclient.utils.GsonAdapter.getUserFromJson;
 
 public class VkRepository {
     //public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
@@ -39,10 +39,8 @@ public class VkRepository {
     public static final String NEWS_COUNT = "&count=";
     public static final String API_VK_GET_GROUP_URL = "https://api.vk.com/method/groups.getById?group_id=";
 //    public static final String GROUP_FIELDS = "&fields=";
-
-    private static String accessToken;
-
     private static final Executor executor = Executors.newSingleThreadExecutor();
+    private static String accessToken;
 
     public static String getAccessToken() {
         return accessToken;
@@ -56,7 +54,7 @@ public class VkRepository {
         getFromUrl(getUserRequest(userId), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                resultCallback.onResult(importUserFromJson(result));
+                resultCallback.onResult(getUserFromJson(result));
             }
         });
     }
@@ -65,7 +63,7 @@ public class VkRepository {
         getFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                resultCallback.onResult(importFriendsFromJson(result));
+                resultCallback.onResult(getFriendsFromJson(result));
             }
         });
     }
@@ -74,7 +72,7 @@ public class VkRepository {
         getFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                resultCallback.onResult(importNewsFromJson(result));
+                resultCallback.onResult(getNewsFromJson(result));
             }
         });
     }
@@ -83,12 +81,12 @@ public class VkRepository {
         getFromUrl(getGroupRequest(groupId), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                resultCallback.onResult(importGroupFromJson(result));
+                resultCallback.onResult(getGroupFromJson(result));
             }
         });
     }
 
-    private static void getFromUrl(final String requestUrl, final ResultCallback<String> resultCallback){
+    private static void getFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {

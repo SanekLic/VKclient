@@ -17,16 +17,12 @@ public class Rect implements Parcelable {
             return new Rect[size];
         }
     };
-
     @SerializedName("x")
     private float x;
-
     @SerializedName("y")
     private float y;
-
     @SerializedName("x2")
     private float x2;
-
     @SerializedName("y2")
     private float y2;
 

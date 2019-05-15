@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class News implements Parcelable {
     public static final Creator<News> CREATOR = new Creator<News>() {
         @Override
@@ -17,40 +19,53 @@ public class News implements Parcelable {
             return new News[size];
         }
     };
-
     @SerializedName("type")
     private String type;
-
     @SerializedName("source_id")
     private int sourceId;
-
     @SerializedName("date")
-    private long date;
-
+    private VkDate date;
     @SerializedName("text")
     private String text;
-
+    @SerializedName("comments")
+    private Comments comments;
     @SerializedName("likes")
     private Likes likes;
-
     @SerializedName("reposts")
     private Reposts reposts;
-
     @SerializedName("views")
     private Views views;
+    @SerializedName("attachments")
+    private List<Attachment> attachments;
 
     protected News(Parcel in) {
         type = in.readString();
         sourceId = in.readInt();
-        date = in.readLong();
+        date = in.readParcelable(VkDate.class.getClassLoader());
         text = in.readString();
+        comments = in.readParcelable(Comments.class.getClassLoader());
         likes = in.readParcelable(Likes.class.getClassLoader());
         reposts = in.readParcelable(Reposts.class.getClassLoader());
         views = in.readParcelable(Views.class.getClassLoader());
+        attachments = in.createTypedArrayList(Attachment.CREATOR);
     }
 
-    public static Creator<News> getCREATOR() {
-        return CREATOR;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(type);
+        dest.writeInt(sourceId);
+        dest.writeParcelable(date, flags);
+        dest.writeString(text);
+        dest.writeParcelable(comments, flags);
+        dest.writeParcelable(likes, flags);
+        dest.writeParcelable(reposts, flags);
+        dest.writeParcelable(views, flags);
+        dest.writeTypedList(attachments);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public String getType() {
@@ -61,12 +76,16 @@ public class News implements Parcelable {
         return sourceId;
     }
 
-    public long getDate() {
+    public VkDate getDate() {
         return date;
     }
 
     public String getText() {
         return text;
+    }
+
+    public Comments getComments() {
+        return comments;
     }
 
     public Likes getLikes() {
@@ -81,19 +100,7 @@ public class News implements Parcelable {
         return views;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(type);
-        dest.writeInt(sourceId);
-        dest.writeLong(date);
-        dest.writeString(text);
-        dest.writeParcelable(likes, flags);
-        dest.writeParcelable(reposts, flags);
-        dest.writeParcelable(views, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 }

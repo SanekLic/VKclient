@@ -18,7 +18,6 @@ public class Views implements Parcelable {
             return new Views[size];
         }
     };
-
     @SerializedName("count")
     private int count;
 

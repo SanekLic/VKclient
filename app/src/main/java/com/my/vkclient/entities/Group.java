@@ -18,13 +18,10 @@ public class Group implements Parcelable {
             return new Group[size];
         }
     };
-
     @SerializedName("id")
     private int id;
-
     @SerializedName("name")
     private String name;
-
     @SerializedName("photo_100")
     private String photo100;
 

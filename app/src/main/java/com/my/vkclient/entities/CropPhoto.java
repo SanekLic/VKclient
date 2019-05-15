@@ -17,13 +17,10 @@ public class CropPhoto implements Parcelable {
             return new CropPhoto[size];
         }
     };
-
     @SerializedName("photo")
     private Photo photo;
-
     @SerializedName("rect")
     private Rect rect;
-
     @SerializedName("crop")
     private Rect crop;
 

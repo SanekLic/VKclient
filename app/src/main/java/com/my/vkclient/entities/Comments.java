@@ -5,32 +5,32 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Reposts implements Parcelable {
-    public static final Creator<Reposts> CREATOR = new Creator<Reposts>() {
+public class Comments implements Parcelable {
+    public static final Creator<Comments> CREATOR = new Creator<Comments>() {
         @Override
-        public Reposts createFromParcel(Parcel in) {
-            return new Reposts(in);
+        public Comments createFromParcel(Parcel in) {
+            return new Comments(in);
         }
 
         @Override
-        public Reposts[] newArray(int size) {
-            return new Reposts[size];
+        public Comments[] newArray(int size) {
+            return new Comments[size];
         }
     };
     @SerializedName("count")
     private int count;
-    @SerializedName("user_reposted")
-    private int userReposted;
+    @SerializedName("can_post")
+    private int canPost;
 
-    protected Reposts(Parcel in) {
+    protected Comments(Parcel in) {
         count = in.readInt();
-        userReposted = in.readInt();
+        canPost = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(count);
-        dest.writeInt(userReposted);
+        dest.writeInt(canPost);
     }
 
     @Override
@@ -42,8 +42,7 @@ public class Reposts implements Parcelable {
         return count;
     }
 
-    public int getUserReposted() {
-        return userReposted;
+    public int getCanPost() {
+        return canPost;
     }
-
 }

@@ -1,7 +1,9 @@
 package com.my.vkclient.ui.utils;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,22 +20,29 @@ import com.my.vkclient.entities.User;
 class NewsViewHolder extends RecyclerView.ViewHolder {
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
 
+    private Context context;
     private ImageView sourceIconImageView;
     private TextView sourceNameTextView;
     private TextView newsDateTextView;
     private TextView newsTextView;
+    private RecyclerView attachmentRecyclerView;
+    private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
 
-    public NewsViewHolder(View itemView) {
+    public NewsViewHolder(Context context, View itemView) {
         super(itemView);
 
+        this.context = context;
         sourceIconImageView = itemView.findViewById(R.id.sourceIconImageView);
         sourceNameTextView = itemView.findViewById(R.id.sourceNameTextView);
         newsDateTextView = itemView.findViewById(R.id.newsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
+        attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
+
+        setupAttachmentRecyclerView();
     }
 
     public void bind(News news) {
-        newsDateTextView.setText(String.valueOf(news.getDate()));
+        newsDateTextView.setText(news.getDate().toString());
         newsTextView.setText(news.getText());
 
         if (news.getSourceId() < 0) {
@@ -43,8 +52,11 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                     mainLooperHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            sourceNameTextView.setText(result.getName());
-                            ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100());
+                            if (result != null) {
+                                sourceNameTextView.setText(result.getName());
+                                sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
+                                ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100());
+                            }
                         }
                     });
                 }
@@ -56,12 +68,26 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                     mainLooperHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(" ").append(result.getLastName()).toString());
-                            ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100());
+                            if (result != null) {
+                                sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(" ").append(result.getLastName()).toString());
+                                sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
+                                ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100());
+                            }
                         }
                     });
                 }
             });
         }
+
+        if (news.getAttachments() != null) {
+            attachmentRecyclerViewAdapter.setItems(news.getAttachments());
+        }
+    }
+
+    private void setupAttachmentRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        attachmentRecyclerView.setLayoutManager(linearLayoutManager);
+        attachmentRecyclerViewAdapter = new AttachmentRecyclerViewAdapter();
+        attachmentRecyclerView.setAdapter(attachmentRecyclerViewAdapter);
     }
 }
