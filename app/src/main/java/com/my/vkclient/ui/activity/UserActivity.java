@@ -1,4 +1,4 @@
-package com.my.vkclient.ui;
+package com.my.vkclient.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,7 +24,7 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra(MainActivity.USER_INTENT_KEY);
+        User user = intent.getParcelableExtra(FriendsActivity.USER_INTENT_KEY);
 
         userNameTextView = findViewById(R.id.userNameTextView);
         userPhotoImageView = findViewById(R.id.userPhotoImageView);

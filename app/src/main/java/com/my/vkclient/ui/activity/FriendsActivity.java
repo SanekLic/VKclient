@@ -1,18 +1,17 @@
-package com.my.vkclient.ui;
+package com.my.vkclient.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
 import com.my.vkclient.R;
 import com.my.vkclient.ResultCallback;
 import com.my.vkclient.entities.User;
 
-public class MainActivity extends AppCompatActivity {
+public class FriendsActivity extends BaseActivity {
 
     public static final String USER_INTENT_KEY = "User";
     private RecyclerView friendRecyclerView;
@@ -22,10 +21,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
         friendRecyclerView = findViewById(R.id.friendRecyclerView);
 
         setupRecyclerView();
+    }
+
+    @Override
+    protected int getView() {
+        return R.layout.activity_friends;
     }
 
     private void setupRecyclerView() {
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
             public void onResult(User user) {
-                Intent intent = new Intent(MainActivity.this, UserActivity.class);
+                Intent intent = new Intent(FriendsActivity.this, UserActivity.class);
                 intent.putExtra(USER_INTENT_KEY, user);
                 startActivity(intent);
             }

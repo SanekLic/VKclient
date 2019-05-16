@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_news"
+        android:icon="@android:drawable/stat_notify_chat"
+        android:title="news" />
+    <item
+        android:id="@+id/action_friends"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="friends" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="settings" />
+</menu>

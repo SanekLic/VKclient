@@ -1,4 +1,4 @@
-package com.my.vkclient.ui;
+package com.my.vkclient.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
