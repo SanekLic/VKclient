@@ -12,6 +12,8 @@ import com.my.vkclient.R;
 import com.my.vkclient.entities.Size;
 import com.my.vkclient.entities.User;
 
+import static com.my.vkclient.ui.fragment.FriendsFragment.USER_INTENT_KEY;
+
 public class UserActivity extends AppCompatActivity {
 
     private TextView userNameTextView;
@@ -24,7 +26,7 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         Intent intent = getIntent();
-        User user = intent.getParcelableExtra(FriendsActivity.USER_INTENT_KEY);
+        User user = intent.getParcelableExtra(USER_INTENT_KEY);
 
         userNameTextView = findViewById(R.id.userNameTextView);
         userPhotoImageView = findViewById(R.id.userPhotoImageView);

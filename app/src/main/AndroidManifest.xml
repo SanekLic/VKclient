@@ -26,6 +26,7 @@
         </activity>
         <activity android:name=".ui.activity.NewsActivity" />
         <activity android:name=".ui.activity.SettingsActivity" />
+        <activity android:name=".ui.activity.MainActivity" />
     </application>
 
 </manifest>

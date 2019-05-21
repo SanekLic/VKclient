@@ -79,9 +79,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
-        if (news.getAttachments() != null) {
-            attachmentRecyclerViewAdapter.setItems(news.getAttachments());
-        }
+        attachmentRecyclerViewAdapter.setItems(news.getAttachments());
     }
 
     private void setupAttachmentRecyclerView() {

@@ -2,8 +2,13 @@ package com.my.vkclient.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class Attachment implements Parcelable {
     public static final Creator<Attachment> CREATOR = new Creator<Attachment>() {
@@ -46,6 +51,8 @@ public class Attachment implements Parcelable {
         return photo;
     }
 
+    @StringDef({Type.Photo, Type.Audio, Type.Video})
+    @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         String Photo = "photo";
         String Audio = "audio";

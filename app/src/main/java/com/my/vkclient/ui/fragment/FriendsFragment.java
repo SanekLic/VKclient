@@ -1,44 +1,45 @@
-package com.my.vkclient.ui.activity;
+package com.my.vkclient.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
 import com.my.vkclient.R;
 import com.my.vkclient.ResultCallback;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.ui.activity.UserActivity;
+import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
 
-public class FriendsActivity extends BaseActivity {
-
+public class FriendsFragment extends Fragment {
     public static final String USER_INTENT_KEY = "User";
-    private RecyclerView friendRecyclerView;
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        friendRecyclerView = findViewById(R.id.friendRecyclerView);
-
-        setupRecyclerView();
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_friends, container, false);
     }
 
     @Override
-    protected int getView() {
-        return R.layout.activity_friends;
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        setupRecyclerView(view);
     }
 
-    private void setupRecyclerView() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+    private void setupRecyclerView(View view) {
+        RecyclerView friendRecyclerView = view.findViewById(R.id.friendRecyclerView);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         friendRecyclerView.setLayoutManager(linearLayoutManager);
         friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager);
         friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
             public void onResult(User user) {
-                Intent intent = new Intent(FriendsActivity.this, UserActivity.class);
+                Intent intent = new Intent(FriendsFragment.this.getContext(), UserActivity.class);
                 intent.putExtra(USER_INTENT_KEY, user);
                 startActivity(intent);
             }
@@ -50,7 +51,7 @@ public class FriendsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         if (friendRecyclerViewAdapter != null) {
@@ -59,7 +60,7 @@ public class FriendsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         if (friendRecyclerViewAdapter != null) {

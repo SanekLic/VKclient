@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import com.my.vkclient.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.entities.Size;
 
 class AttachmentViewHolder extends RecyclerView.ViewHolder {
 
@@ -19,8 +20,18 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Attachment attachment) {
-        if (attachment.getType().equals(Attachment.Type.Photo)) {
-            ImageLoader.getImageFromUrl(attachImageView, attachment.getPhoto().getSizes().get(0).getUrl());
+        if (Attachment.Type.Photo.equals(attachment.getType())) {
+            int maxWidth = Integer.MAX_VALUE;
+            String urlCropPhoto = "";
+
+            for (Size size : attachment.getPhoto().getSizes()) {
+                if (Math.abs(size.getHeight() - 192) < maxWidth) {
+                    maxWidth = Math.abs(size.getHeight() - 192);
+                    urlCropPhoto = size.getUrl();
+                }
+            }
+
+            ImageLoader.getImageFromUrl(attachImageView, urlCropPhoto);
         }
     }
 }
