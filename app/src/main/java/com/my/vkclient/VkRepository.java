@@ -39,7 +39,7 @@ public class VkRepository {
     public static final String NEWS_COUNT = "&count=";
     public static final String API_VK_GET_GROUP_URL = "https://api.vk.com/method/groups.getById?group_id=";
 //    public static final String GROUP_FIELDS = "&fields=";
-    private static final Executor executor = Executors.newSingleThreadExecutor();
+    private static final Executor executor = Executors.newCachedThreadPool();
     private static String accessToken;
 
     public static String getAccessToken() {

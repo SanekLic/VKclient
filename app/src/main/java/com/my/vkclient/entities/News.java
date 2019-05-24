@@ -23,10 +23,14 @@ public class News implements Parcelable {
     private String type;
     @SerializedName("source_id")
     private int sourceId;
+    @SerializedName("from_id")
+    private int fromId;
     @SerializedName("date")
     private VkDate date;
     @SerializedName("text")
     private String text;
+    @SerializedName("copy_history")
+    private List<News> copyHistory;
     @SerializedName("comments")
     private Comments comments;
     @SerializedName("likes")
@@ -41,8 +45,10 @@ public class News implements Parcelable {
     protected News(Parcel in) {
         type = in.readString();
         sourceId = in.readInt();
+        fromId = in.readInt();
         date = in.readParcelable(VkDate.class.getClassLoader());
         text = in.readString();
+        copyHistory = in.createTypedArrayList(News.CREATOR);
         comments = in.readParcelable(Comments.class.getClassLoader());
         likes = in.readParcelable(Likes.class.getClassLoader());
         reposts = in.readParcelable(Reposts.class.getClassLoader());
@@ -54,8 +60,10 @@ public class News implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(type);
         dest.writeInt(sourceId);
+        dest.writeInt(fromId);
         dest.writeParcelable(date, flags);
         dest.writeString(text);
+        dest.writeTypedList(copyHistory);
         dest.writeParcelable(comments, flags);
         dest.writeParcelable(likes, flags);
         dest.writeParcelable(reposts, flags);
@@ -76,12 +84,20 @@ public class News implements Parcelable {
         return sourceId;
     }
 
+    public int getFromId() {
+        return fromId;
+    }
+
     public VkDate getDate() {
         return date;
     }
 
     public String getText() {
         return text;
+    }
+
+    public List<News> getCopyHistory() {
+        return copyHistory;
     }
 
     public Comments getComments() {
