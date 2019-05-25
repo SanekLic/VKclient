@@ -21,6 +21,8 @@ public class Size implements Parcelable {
     private String type;
     @SerializedName("url")
     private String url;
+    @SerializedName("src")
+    private String src;
     @SerializedName("width")
     private int width;
     @SerializedName("height")
@@ -29,6 +31,7 @@ public class Size implements Parcelable {
     protected Size(Parcel in) {
         type = in.readString();
         url = in.readString();
+        src = in.readString();
         width = in.readInt();
         height = in.readInt();
     }
@@ -37,6 +40,7 @@ public class Size implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(type);
         dest.writeString(url);
+        dest.writeString(src);
         dest.writeInt(width);
         dest.writeInt(height);
     }
@@ -52,6 +56,10 @@ public class Size implements Parcelable {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getSrc() {
+        return src;
     }
 
     public int getWidth() {

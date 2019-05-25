@@ -2,7 +2,6 @@ package com.my.vkclient.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,16 +25,20 @@ public class Attachment implements Parcelable {
     private String type;
     @SerializedName("photo")
     private Photo photo;
+    @SerializedName("doc")
+    private Doc doc;
 
     protected Attachment(Parcel in) {
         type = in.readString();
         photo = in.readParcelable(Photo.class.getClassLoader());
+        doc = in.readParcelable(Doc.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(type);
         dest.writeParcelable(photo, flags);
+        dest.writeParcelable(doc, flags);
     }
 
     @Override
@@ -51,10 +54,15 @@ public class Attachment implements Parcelable {
         return photo;
     }
 
-    @StringDef({Type.Photo, Type.Audio, Type.Video})
+    public Doc getDoc() {
+        return doc;
+    }
+
+    @StringDef({Type.Photo, Type.Doc, Type.Audio, Type.Video})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         String Photo = "photo";
+        String Doc = "doc";
         String Audio = "audio";
         String Video = "video";
     }

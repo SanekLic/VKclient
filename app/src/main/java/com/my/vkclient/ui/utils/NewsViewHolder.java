@@ -128,23 +128,25 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                 });
             }
 
-            newsTextView.setText(newsCopy.getText());
+            setNewsText(newsCopy.getText());
             setAttachments(newsCopy.getAttachments());
-
-            if (fromIconImageView.getVisibility() == View.GONE) {
-                fromIconImageView.setVisibility(View.VISIBLE);
-                fromNameTextView.setVisibility(View.VISIBLE);
-                fromNewsDateTextView.setVisibility(View.VISIBLE);
-            }
-
+            setVisibilityCopyNews(View.VISIBLE);
         } else {
-            newsTextView.setText(news.getText());
+            setNewsText(news.getText());
             setAttachments(news.getAttachments());
+            setVisibilityCopyNews(View.GONE);
+        }
+    }
 
-            if (fromIconImageView.getVisibility() == View.VISIBLE) {
-                fromIconImageView.setVisibility(View.GONE);
-                fromNameTextView.setVisibility(View.GONE);
-                fromNewsDateTextView.setVisibility(View.GONE);
+    private void setNewsText(String text) {
+        newsTextView.setText(text);
+        if (text.isEmpty()) {
+            if (newsTextView.getVisibility() != View.GONE) {
+                newsTextView.setVisibility(View.GONE);
+            }
+        } else {
+            if (newsTextView.getVisibility() != View.VISIBLE) {
+                newsTextView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -159,19 +161,17 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
 
             for (int i = 0; i < attachments.size(); i++) {
                 Attachment attachment = attachments.get(i);
+
                 if (Attachment.Type.Photo.equals(attachment.getType())) {
-                    int maxWidth = 0;
-                    String urlPhoto = attachment.getPhoto().getSizes().get(0).getUrl();
-
-                    for (Size size : attachment.getPhoto().getSizes()) {
-                        if (size.getWidth() > maxWidth) {
-                            maxWidth = size.getWidth();
-                            urlPhoto = size.getUrl();
-                        }
-                    }
-
+                    setMaxSizePhotoToImageView(attachment.getPhoto().getSizes());
                     attachments.remove(i);
-                    ImageLoader.getImageFromUrl(newsPhotoImageView, urlPhoto);
+
+                    break;
+                }
+
+                if (Attachment.Type.Doc.equals(attachment.getType())) {
+                    setMaxSizePhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
+                    attachments.remove(i);
 
                     break;
                 }
@@ -179,6 +179,28 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         }
 
         attachmentRecyclerViewAdapter.setItems(attachments);
+    }
+
+    private void setMaxSizePhotoToImageView(List<Size> photoSizes) {
+        int maxWidth = 0;
+        String urlPhoto = photoSizes.get(0).getUrl() != null ? photoSizes.get(0).getUrl() : photoSizes.get(0).getSrc();
+
+        for (Size size : photoSizes) {
+            if (size.getWidth() > maxWidth) {
+                maxWidth = size.getWidth();
+                urlPhoto = size.getUrl() != null ? size.getUrl() : size.getSrc();
+            }
+        }
+
+        ImageLoader.getImageFromUrl(newsPhotoImageView, urlPhoto);
+    }
+
+    private void setVisibilityCopyNews(int visible) {
+        if (fromIconImageView.getVisibility() != visible) {
+            fromIconImageView.setVisibility(visible);
+            fromNameTextView.setVisibility(visible);
+            fromNewsDateTextView.setVisibility(visible);
+        }
     }
 
     private void setupAttachmentRecyclerView() {
