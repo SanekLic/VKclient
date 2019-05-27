@@ -140,7 +140,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
 
     private void setNewsText(String text) {
         newsTextView.setText(text);
-        if (text.isEmpty()) {
+        if (text == null || text.isEmpty()) {
             if (newsTextView.getVisibility() != View.GONE) {
                 newsTextView.setVisibility(View.GONE);
             }
@@ -171,6 +171,27 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
 
                 if (Attachment.Type.Doc.equals(attachment.getType())) {
                     setMaxSizePhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
+                    attachments.remove(i);
+
+                    break;
+                }
+
+                if (Attachment.Type.Video.equals(attachment.getType())) {
+                    ImageLoader.getImageFromUrl(newsPhotoImageView, attachment.getVideo().getMaxPhotoUrl());
+                    attachments.remove(i);
+
+                    break;
+                }
+
+                if (Attachment.Type.Link.equals(attachment.getType())) {
+                    setMaxSizePhotoToImageView(attachment.getLink().getPhoto().getSizes());
+                    attachments.remove(i);
+
+                    break;
+                }
+
+                if (Attachment.Type.Podcast.equals(attachment.getType())) {
+                    setMaxSizePhotoToImageView(attachment.getPodcast().getPodcastInfo().getCover().getSizes());
                     attachments.remove(i);
 
                     break;
