@@ -20,21 +20,25 @@ public class Video implements Parcelable {
     @SerializedName("id")
     private int id;
     @SerializedName("photo_320")
-    private String previewPhotoUrl;
-    @SerializedName("photo_1280")
-    private String maxPhotoUrl;
+    private String photo320Url;
+    @SerializedName("photo_640")
+    private String photo640Url;
+    @SerializedName("photo_800")
+    private String photo800Url;
 
     protected Video(Parcel in) {
         id = in.readInt();
-        previewPhotoUrl = in.readString();
-        maxPhotoUrl = in.readString();
+        photo320Url = in.readString();
+        photo640Url = in.readString();
+        photo800Url = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeString(previewPhotoUrl);
-        dest.writeString(maxPhotoUrl);
+        dest.writeString(photo320Url);
+        dest.writeString(photo640Url);
+        dest.writeString(photo800Url);
     }
 
     @Override
@@ -46,12 +50,15 @@ public class Video implements Parcelable {
         return id;
     }
 
-    public String getPreviewPhotoUrl() {
-        return previewPhotoUrl;
+    public String getPhoto320Url() {
+        return photo320Url;
     }
 
-    public String getMaxPhotoUrl() {
-        return maxPhotoUrl;
+    public String getPhoto640Url() {
+        return photo640Url;
     }
 
+    public String getPhoto800Url() {
+        return photo800Url;
+    }
 }

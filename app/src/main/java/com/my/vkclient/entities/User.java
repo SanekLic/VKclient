@@ -28,9 +28,9 @@ public class User implements Parcelable {
     @SerializedName("last_name")
     private String lastName;
     @SerializedName("photo_max_orig")
-    private String photoMaxOrig;
+    private String photoMaxUrl;
     @SerializedName("photo_100")
-    private String photo100;
+    private String photo100Url;
     @SerializedName("crop_photo")
     private CropPhoto cropPhoto;
 
@@ -39,8 +39,8 @@ public class User implements Parcelable {
         online = in.readInt();
         firstName = in.readString();
         lastName = in.readString();
-        photoMaxOrig = in.readString();
-        photo100 = in.readString();
+        photoMaxUrl = in.readString();
+        photo100Url = in.readString();
     }
 
     @Override
@@ -49,8 +49,8 @@ public class User implements Parcelable {
         dest.writeInt(online);
         dest.writeString(firstName);
         dest.writeString(lastName);
-        dest.writeString(photoMaxOrig);
-        dest.writeString(photo100);
+        dest.writeString(photoMaxUrl);
+        dest.writeString(photo100Url);
     }
 
     @Override
@@ -74,12 +74,12 @@ public class User implements Parcelable {
         return lastName;
     }
 
-    public String getPhotoMaxOrig() {
-        return photoMaxOrig;
+    public String getPhotoMaxUrl() {
+        return photoMaxUrl;
     }
 
-    public String getPhoto100() {
-        return photo100;
+    public String getPhoto100Url() {
+        return photo100Url;
     }
 
     public CropPhoto getCropPhoto() {
@@ -110,7 +110,7 @@ public class User implements Parcelable {
             differences.add(UserDifferences.DIFFERENT_LAST_NAME);
         }
 
-        if (!getPhoto100().equals(object.getPhoto100())) {
+        if (!getPhoto100Url().equals(object.getPhoto100Url())) {
             differences.add(UserDifferences.DIFFERENT_PHOTO_100);
         }
 

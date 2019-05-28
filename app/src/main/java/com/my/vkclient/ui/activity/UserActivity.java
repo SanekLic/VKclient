@@ -35,7 +35,8 @@ public class UserActivity extends AppCompatActivity {
                 .append(user.getFirstName())
                 .append(" ")
                 .append(user.getLastName()).toString());
-        String urlCropPhoto = user.getPhotoMaxOrig();
+        String urlCropPhoto = user.getPhotoMaxUrl();
+
         if (user.getCropPhoto() != null) {
             int maxWidth = 0;
             for (Size size : user.getCropPhoto().getPhoto().getSizes()) {
@@ -48,6 +49,6 @@ public class UserActivity extends AppCompatActivity {
             userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, user.getCropPhoto().getRect());
         }
 
-        ImageLoader.getImageFromUrl(userPhotoImageView, urlCropPhoto);
+        ImageLoader.getImageFromUrl(userPhotoImageView, urlCropPhoto, 0, 0);
     }
 }

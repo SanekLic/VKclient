@@ -34,8 +34,13 @@ public class ImageLoader {
         }
     };
 
-    public static void getImageFromUrl(final ImageView imageView, final String requestUrl) {
-        imageView.setImageDrawable(null);
+    public static void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
+        if (initialWidth == 0 || initialHeight == 0) {
+            imageView.setImageDrawable(null);
+        } else {
+            imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888));
+        }
+
         imageView.setAlpha(0f);
         imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
 
