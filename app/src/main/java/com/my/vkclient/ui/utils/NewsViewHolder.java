@@ -24,18 +24,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 class NewsViewHolder extends RecyclerView.ViewHolder {
-    List<Attachment> attachments = new ArrayList<>();
+    private final TextView likesTextView;
+    private final TextView commentsTextView;
+    private final TextView repostsTextView;
+    private final TextView viewsTextView;
+    private final ImageView sourceIconImageView;
+    private final TextView sourceNameTextView;
+    private final TextView sourceNewsDateTextView;
+    private final ImageView fromIconImageView;
+    private final TextView fromNameTextView;
+    private final TextView fromNewsDateTextView;
+    private final TextView newsTextView;
+    private final ImageView newsPhotoImageView;
+    private final RecyclerView attachmentRecyclerView;
+    private List<Attachment> attachments = new ArrayList<>();
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
     private Context context;
-    private ImageView sourceIconImageView;
-    private TextView sourceNameTextView;
-    private TextView sourceNewsDateTextView;
-    private ImageView fromIconImageView;
-    private TextView fromNameTextView;
-    private TextView fromNewsDateTextView;
-    private TextView newsTextView;
-    private ImageView newsPhotoImageView;
-    private RecyclerView attachmentRecyclerView;
     private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
 
     public NewsViewHolder(Context context, View itemView) {
@@ -50,6 +54,11 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
         newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
+        attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
+        likesTextView = itemView.findViewById(R.id.likesTextView);
+        commentsTextView = itemView.findViewById(R.id.commentsTextView);
+        repostsTextView = itemView.findViewById(R.id.repostsTextView);
+        viewsTextView = itemView.findViewById(R.id.viewsTextView);
 
         setupAttachmentRecyclerView();
     }
@@ -137,6 +146,11 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             setAttachments(news.getAttachments());
             setVisibilityCopyNews(View.GONE);
         }
+
+        likesTextView.setText(String.valueOf(news.getLikes().getCount()));
+        commentsTextView.setText(String.valueOf(news.getComments().getCount()));
+        repostsTextView.setText(String.valueOf(news.getReposts().getCount()));
+        viewsTextView.setText(String.valueOf(news.getViews().getCount()));
     }
 
     private void setNewsText(String text) {
@@ -242,7 +256,6 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setupAttachmentRecyclerView() {
-        attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         attachmentRecyclerView.setLayoutManager(linearLayoutManager);
         attachmentRecyclerViewAdapter = new AttachmentRecyclerViewAdapter();

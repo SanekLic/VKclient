@@ -15,7 +15,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Name"
-        android:textColor="@color/colorVkNewsTitle"
+        android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Name"
-        android:textColor="@color/colorVkNewsTitle"
+        android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -89,6 +89,7 @@
         android:layout_marginEnd="8dp"
         android:autoLink="web"
         android:text="TextView"
+        android:textColorLink="@color/colorNewsLink"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fromIconImageView" />
@@ -117,4 +118,56 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newsPhotoImageView" />
+
+    <TextView
+        android:id="@+id/likesTextView"
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/ic_likes"
+        android:textColor="@color/colorNewsIcon"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        tools:text="4" />
+
+    <TextView
+        android:id="@+id/commentsTextView"
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/ic_comments"
+        android:textColor="@color/colorNewsIcon"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/likesTextView"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/repostsTextView"
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/ic_reposts"
+        android:textColor="@color/colorNewsIcon"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/commentsTextView"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/viewsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:drawableStart="@drawable/ic_views"
+        android:textColor="@color/colorNewsIcon"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        tools:text="5" />
 </android.support.constraint.ConstraintLayout>
