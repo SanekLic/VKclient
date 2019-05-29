@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_news"
-        android:icon="@android:drawable/stat_notify_chat"
+        android:icon="@drawable/ic_news_action"
         android:title="news" />
     <item
         android:id="@+id/action_friends"
-        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:icon="@drawable/ic_friends_action"
         android:title="friends" />
     <item
         android:id="@+id/action_settings"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:icon="@drawable/ic_settings_action"
         android:title="settings" />
 </menu>
