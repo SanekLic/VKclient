@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 
 class NewsViewHolder extends RecyclerView.ViewHolder {
+    public static final String NUMBER_FORMAT = "%.1f%c";
+    public static final String NUMBER_POSTFIX = "KMGTPE";
     private final TextView likesTextView;
     private final TextView commentsTextView;
     private final TextView repostsTextView;
@@ -164,7 +166,8 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         }
 
         int exp = (int) (Math.log(number) / Math.log(1000));
-        return String.format(Locale.US, "%.1f%c", number / Math.pow(1000, exp), "KMGTPE".charAt(exp - 1));
+
+        return String.format(Locale.US, NUMBER_FORMAT, number / Math.pow(1000, exp), NUMBER_POSTFIX.charAt(exp - 1));
     }
 
     private void setNewsText(String text) {
