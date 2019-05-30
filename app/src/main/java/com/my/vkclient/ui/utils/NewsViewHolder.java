@@ -22,6 +22,7 @@ import com.my.vkclient.entities.Video;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 class NewsViewHolder extends RecyclerView.ViewHolder {
     private final TextView likesTextView;
@@ -147,10 +148,23 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             setVisibilityCopyNews(View.GONE);
         }
 
-        likesTextView.setText(String.valueOf(news.getLikes().getCount()));
-        commentsTextView.setText(String.valueOf(news.getComments().getCount()));
-        repostsTextView.setText(String.valueOf(news.getReposts().getCount()));
-        viewsTextView.setText(String.valueOf(news.getViews().getCount()));
+        likesTextView.setText(formatNumber(news.getLikes().getCount()));
+        commentsTextView.setText(formatNumber(news.getComments().getCount()));
+        repostsTextView.setText(formatNumber(news.getReposts().getCount()));
+        viewsTextView.setText(formatNumber(news.getViews().getCount()));
+    }
+
+    private String formatNumber(int number) {
+        if (number == 0) {
+            return "";
+        }
+
+        if (number < 1000) {
+            return "" + number;
+        }
+
+        int exp = (int) (Math.log(number) / Math.log(1000));
+        return String.format(Locale.US, "%.1f%c", number / Math.pow(1000, exp), "KMGTPE".charAt(exp - 1));
     }
 
     private void setNewsText(String text) {

@@ -12,11 +12,8 @@ import com.my.vkclient.entities.User;
 import java.util.ArrayList;
 
 class FriendViewHolder extends RecyclerView.ViewHolder {
-    private static final String FRIEND_STATUS_OFFLINE_STRING = "(offline)";
-    private static final String FRIEND_STATUS_ONLINE_STRING = "(online)";
     private ImageView friendPhotoView;
     private TextView friendNameView;
-    private TextView onlineStatusTextView;
     private ImageView onlineStatusImageView;
 
     public FriendViewHolder(View itemView) {
@@ -24,7 +21,6 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
 
         friendPhotoView = itemView.findViewById(R.id.friendPhotoImageView);
         friendNameView = itemView.findViewById(R.id.friendNameTextView);
-        onlineStatusTextView = itemView.findViewById(R.id.onlineStatusTextView);
         onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
     }
 
@@ -45,11 +41,13 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
 
         if (differences == null || differences.contains(User.UserDifferences.DIFFERENT_ONLINE)) {
             if (user.getOnline() == 0) {
-                onlineStatusImageView.setImageResource(android.R.drawable.presence_offline);
-                onlineStatusTextView.setText(FRIEND_STATUS_OFFLINE_STRING);
+                if (onlineStatusImageView.getVisibility() != View.GONE) {
+                    onlineStatusImageView.setVisibility(View.GONE);
+                }
             } else {
-                onlineStatusImageView.setImageResource(android.R.drawable.presence_online);
-                onlineStatusTextView.setText(FRIEND_STATUS_ONLINE_STRING);
+                if (onlineStatusImageView.getVisibility() != View.VISIBLE) {
+                    onlineStatusImageView.setVisibility(View.VISIBLE);
+                }
             }
         }
     }

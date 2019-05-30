@@ -126,11 +126,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:drawableStart="@drawable/ic_likes"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
-        tools:text="4" />
+        tools:text=" 30" />
 
     <TextView
         android:id="@+id/commentsTextView"
@@ -139,6 +141,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:drawableStart="@drawable/ic_comments"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/likesTextView"
@@ -152,6 +156,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:drawableStart="@drawable/ic_reposts"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/commentsTextView"
@@ -165,8 +171,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:drawableStart="@drawable/ic_views"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
         tools:text="5" />

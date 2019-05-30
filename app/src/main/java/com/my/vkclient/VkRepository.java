@@ -34,7 +34,7 @@ public class VkRepository {
     public static final String API_VK_GET_USER_URL = "https://api.vk.com/method/users.get?name_case=nom";
     public static final String USER_ID = "&user_ids=";
     public static final String USER_FIELDS = "&fields=photo_100,photo_max_orig,crop_photo";
-    public static final String API_VK_GET_NEWS_URL = "https://api.vk.com/method/newsfeed.get?filters=post,photo,photo_tag";
+    public static final String API_VK_GET_NEWS_URL = "https://api.vk.com/method/newsfeed.get?filters=post";
     public static final String NEWS_START_FROM = "&start_from=";
     public static final String NEWS_COUNT = "&count=";
     public static final String API_VK_GET_GROUP_URL = "https://api.vk.com/method/groups.getById?group_id=";
