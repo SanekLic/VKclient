@@ -160,7 +160,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (number < 1000) {
-            return "" + number;
+            return String.valueOf(number);
         }
 
         int exp = (int) (Math.log(number) / Math.log(1000));
