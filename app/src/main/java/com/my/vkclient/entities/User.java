@@ -118,43 +118,4 @@ public class User implements Parcelable {
     public void setCropPhoto(CropPhoto cropPhoto) {
         this.cropPhoto = cropPhoto;
     }
-
-    public boolean equals(User object) {
-        if (this == object) return true;
-        return compare(object).isEmpty();
-    }
-
-    public ArrayList<UserDifferences> compare(User object) {
-        ArrayList<UserDifferences> differences = new ArrayList<>();
-
-        if (getId() != object.getId()) {
-            differences.add(UserDifferences.DIFFERENT_ID);
-        }
-
-        if (getOnline() != object.getOnline()) {
-            differences.add(UserDifferences.DIFFERENT_ONLINE);
-        }
-
-        if (!getFirstName().equals(object.getFirstName())) {
-            differences.add(UserDifferences.DIFFERENT_FIRST_NAME);
-        }
-
-        if (!getLastName().equals(object.getLastName())) {
-            differences.add(UserDifferences.DIFFERENT_LAST_NAME);
-        }
-
-        if (!getPhoto100Url().equals(object.getPhoto100Url())) {
-            differences.add(UserDifferences.DIFFERENT_PHOTO_100);
-        }
-
-        return differences;
-    }
-
-    public enum UserDifferences {
-        DIFFERENT_ID,
-        DIFFERENT_ONLINE,
-        DIFFERENT_FIRST_NAME,
-        DIFFERENT_LAST_NAME,
-        DIFFERENT_PHOTO_100
-    }
 }

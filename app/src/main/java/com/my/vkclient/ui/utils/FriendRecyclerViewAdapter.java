@@ -64,16 +64,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
 
     @Override
     public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
-        holder.bind(friendList.get(position), null);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position, @NonNull List listPayload) {
-        if (listPayload.size() != 0) {
-            holder.bind(friendList.get(position), (ArrayList<User.UserDifferences>) listPayload.get(0));
-        } else {
-            holder.bind(friendList.get(position), null);
-        }
+        holder.bind(friendList.get(position));
     }
 
     @Override

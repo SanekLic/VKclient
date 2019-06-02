@@ -1,6 +1,5 @@
 package com.my.vkclient.ui.utils;
 
-import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 
 import com.my.vkclient.entities.User;
@@ -35,12 +34,6 @@ public class UserDiffUtilCallback extends DiffUtil.Callback {
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         return oldUserList.get(oldItemPosition).equals(newUserList.get(newItemPosition));
-    }
-
-    @Nullable
-    @Override
-    public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-        return oldUserList.get(oldItemPosition).compare(newUserList.get(newItemPosition));
     }
 
     public UserDiffUtilCallback setOldList(List<User> oldUserList) {
