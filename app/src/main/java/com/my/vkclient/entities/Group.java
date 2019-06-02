@@ -25,7 +25,10 @@ public class Group implements Parcelable {
     @SerializedName("photo_100")
     private String photo100;
 
-    protected Group(Parcel in) {
+    public Group() {
+    }
+
+    private Group(Parcel in) {
         id = in.readInt();
         name = in.readString();
         photo100 = in.readString();
@@ -47,11 +50,23 @@ public class Group implements Parcelable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPhoto100() {
         return photo100;
+    }
+
+    public void setPhoto100(String photo100) {
+        this.photo100 = photo100;
     }
 }

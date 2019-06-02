@@ -1,4 +1,4 @@
-package com.my.vkclient;
+package com.my.vkclient.utils;
 
 public interface ResultCallback<T> {
 

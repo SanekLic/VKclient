@@ -9,10 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.ImageLoader;
+import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
-import com.my.vkclient.ResultCallback;
-import com.my.vkclient.VkRepository;
+import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;

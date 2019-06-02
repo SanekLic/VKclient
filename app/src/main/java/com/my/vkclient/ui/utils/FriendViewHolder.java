@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.ImageLoader;
+import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 

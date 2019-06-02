@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.my.vkclient.ImageLoader;
+import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.Size;

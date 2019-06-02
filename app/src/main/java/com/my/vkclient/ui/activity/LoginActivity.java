@@ -7,9 +7,10 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.ui.utils.LoginWebViewCallback;
 import com.my.vkclient.R;
-import com.my.vkclient.VkRepository;
+import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.ui.utils.LoginWebViewClient;
 
 public class LoginActivity extends AppCompatActivity {
@@ -56,6 +57,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginWebView.setWebViewClient(loginWebViewClient);
-        loginWebView.loadUrl(VkRepository.API_VK_GET_AUTHORIZE_URL);
+        loginWebView.loadUrl(Constants.API_VK.API_VK_GET_AUTHORIZE_URL);
     }
 }

@@ -33,6 +33,16 @@ public class GsonAdapter {
         return userResponse.getUserList().get(0);
     }
 
+    public static Group getGroupFromJson(String jsonGroup) {
+        GroupResponse groupResponse = new Gson().fromJson(jsonGroup, GroupResponse.class);
+
+        if (groupResponse == null || groupResponse.getGroupList() == null) {
+            return null;
+        }
+
+        return groupResponse.getGroupList().get(0);
+    }
+
     public static NewsResponse.Response getNewsFromJson(String jsonNews) {
         Gson gson = new Gson().newBuilder().registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter()).create();
 
@@ -44,15 +54,4 @@ public class GsonAdapter {
 
         return newsResponse.getResponse();
     }
-
-    public static Group getGroupFromJson(String jsonGroup) {
-        GroupResponse groupResponse = new Gson().fromJson(jsonGroup, GroupResponse.class);
-
-        if (groupResponse == null || groupResponse.getGroupList() == null) {
-            return null;
-        }
-
-        return groupResponse.getGroupList().get(0);
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.my.vkclient;
+package com.my.vkclient.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.my.vkclient.R;
 import com.my.vkclient.entities.Rect;
 
 import java.io.ByteArrayOutputStream;
@@ -27,7 +28,7 @@ public class ImageLoader {
     private static final int PERCENTAGE = 100;
     private static final Executor cachedThreadPool = Executors.newCachedThreadPool();
 
-    private static final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 2)) {
+    private static final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 4)) {
         @Override
         protected int sizeOf(final String key, final Bitmap value) {
             return value.getByteCount() / 1024;

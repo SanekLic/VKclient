@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.ResultCallback;
-import com.my.vkclient.VkRepository;
+import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
 

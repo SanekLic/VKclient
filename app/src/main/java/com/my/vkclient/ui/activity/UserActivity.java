@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Size;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.utils.ImageLoader;
 
 import static com.my.vkclient.ui.fragment.FriendsFragment.USER_INTENT_KEY;
 

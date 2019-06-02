@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.ResultCallback;
+import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.ui.activity.UserActivity;
 import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;

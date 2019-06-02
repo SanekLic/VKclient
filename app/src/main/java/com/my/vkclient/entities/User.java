@@ -34,6 +34,9 @@ public class User implements Parcelable {
     @SerializedName("crop_photo")
     private CropPhoto cropPhoto;
 
+    public User() {
+    }
+
     protected User(Parcel in) {
         id = in.readInt();
         online = in.readInt();
@@ -41,6 +44,7 @@ public class User implements Parcelable {
         lastName = in.readString();
         photoMaxUrl = in.readString();
         photo100Url = in.readString();
+        cropPhoto = in.readParcelable(CropPhoto.class.getClassLoader());
     }
 
     @Override
@@ -51,6 +55,7 @@ public class User implements Parcelable {
         dest.writeString(lastName);
         dest.writeString(photoMaxUrl);
         dest.writeString(photo100Url);
+        dest.writeParcelable(cropPhoto, flags);
     }
 
     @Override
@@ -62,28 +67,56 @@ public class User implements Parcelable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getOnline() {
         return online;
+    }
+
+    public void setOnline(int online) {
+        this.online = online;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPhotoMaxUrl() {
         return photoMaxUrl;
     }
 
+    public void setPhotoMaxUrl(String photoMaxUrl) {
+        this.photoMaxUrl = photoMaxUrl;
+    }
+
     public String getPhoto100Url() {
         return photo100Url;
     }
 
+    public void setPhoto100Url(String photo100Url) {
+        this.photo100Url = photo100Url;
+    }
+
     public CropPhoto getCropPhoto() {
         return cropPhoto;
+    }
+
+    public void setCropPhoto(CropPhoto cropPhoto) {
+        this.cropPhoto = cropPhoto;
     }
 
     public boolean equals(User object) {
