@@ -22,14 +22,11 @@ import java.util.List;
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
 
     private static final int PAGE_SIZE = 20;
-    private static final long INTERVAL_MILLIS = 5000;
     private List<User> friendList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
     private UserDiffUtilCallback userDiffUtilCallback;
-    private boolean runAutoUpdate = false;
-    private Thread friendListUpdateThread;
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
     private ResultCallback<User> itemClickListener;
 
@@ -88,39 +85,6 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         loadMoreItems(0, PAGE_SIZE * 2);
     }
 
-    public void autoUpdateItems(boolean enable) {
-        runAutoUpdate = enable;
-        if (enable) {
-            if (friendListUpdateThread == null) {
-                friendListUpdateThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (runAutoUpdate) {
-                            try {
-                                Thread.sleep(INTERVAL_MILLIS);
-                                mainLooperHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loadReplaceItems();
-                                    }
-                                });
-                            } catch (InterruptedException e) {
-                                Log.d("Thread", "InterruptedException");
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                friendListUpdateThread.setDaemon(true);
-                friendListUpdateThread.start();
-            }
-        } else {
-            if (friendListUpdateThread != null) {
-                friendListUpdateThread = null;
-            }
-        }
-    }
-
     public void setOnItemClickListener(ResultCallback<User> itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
@@ -137,41 +101,6 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     private void addItems(List<User> addFriendList) {
         friendList.addAll(addFriendList);
         notifyItemRangeInserted(friendList.size() - addFriendList.size(), addFriendList.size());
-    }
-
-    private void replaceItems(int startPosition, List<User> replaceFriendList) {
-        userDiffUtilCallback.setOldList(friendList);
-
-        for (int i = 0; i < replaceFriendList.size(); i++) {
-            if (friendList.size() <= startPosition) {
-                break;
-            }
-
-            friendList.remove(startPosition);
-        }
-
-        friendList.addAll(startPosition, replaceFriendList);
-        userDiffUtilCallback.setNewList(friendList);
-        DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
-    }
-
-    private void loadReplaceItems() {
-        final int visibleItemCount = linearLayoutManager.getChildCount();
-        if (visibleItemCount > 0) {
-            final int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-            VkRepository.getFriends(firstVisibleItemPosition, visibleItemCount,
-                    new ResultCallback<List<User>>() {
-                        @Override
-                        public void onResult(final List<User> resultList) {
-                            mainLooperHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    replaceItems(firstVisibleItemPosition, resultList);
-                                }
-                            });
-                        }
-                    });
-        }
     }
 
     private void validateLoadMoreItems() {

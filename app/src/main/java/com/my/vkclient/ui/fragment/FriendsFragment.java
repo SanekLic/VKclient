@@ -47,24 +47,15 @@ public class FriendsFragment extends Fragment {
         friendRecyclerView.setAdapter(friendRecyclerViewAdapter);
 
         friendRecyclerViewAdapter.initialLoadItems();
-        friendRecyclerViewAdapter.autoUpdateItems(true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        if (friendRecyclerViewAdapter != null) {
-            friendRecyclerViewAdapter.autoUpdateItems(true);
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        if (friendRecyclerViewAdapter != null) {
-            friendRecyclerViewAdapter.autoUpdateItems(false);
-        }
     }
 }
