@@ -42,6 +42,9 @@ public class News implements Parcelable {
     @SerializedName("attachments")
     private List<Attachment> attachments;
 
+    public News() {
+    }
+
     protected News(Parcel in) {
         type = in.readString();
         sourceId = in.readInt();
@@ -80,43 +83,87 @@ public class News implements Parcelable {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public int getSourceId() {
         return sourceId;
+    }
+
+    public void setSourceId(int sourceId) {
+        this.sourceId = sourceId;
     }
 
     public int getFromId() {
         return fromId;
     }
 
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
+    }
+
     public VkDate getDate() {
         return date;
+    }
+
+    public void setDate(VkDate date) {
+        this.date = date;
     }
 
     public String getText() {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public List<News> getCopyHistory() {
         return copyHistory;
+    }
+
+    public void setCopyHistory(List<News> copyHistory) {
+        this.copyHistory = copyHistory;
     }
 
     public Comments getComments() {
         return comments;
     }
 
+    public void setComments(Comments comments) {
+        this.comments = comments;
+    }
+
     public Likes getLikes() {
         return likes;
+    }
+
+    public void setLikes(Likes likes) {
+        this.likes = likes;
     }
 
     public Reposts getReposts() {
         return reposts;
     }
 
+    public void setReposts(Reposts reposts) {
+        this.reposts = reposts;
+    }
+
     public Views getViews() {
         return views;
     }
 
+    public void setViews(Views views) {
+        this.views = views;
+    }
+
     public List<Attachment> getAttachments() {
         return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }

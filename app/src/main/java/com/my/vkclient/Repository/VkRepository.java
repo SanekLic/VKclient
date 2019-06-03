@@ -15,11 +15,16 @@ import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
 import com.my.vkclient.database.model.UserTable;
 import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.entities.Comments;
 import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Group;
+import com.my.vkclient.entities.Likes;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.entities.Reposts;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.entities.Views;
+import com.my.vkclient.entities.VkDate;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -28,6 +33,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -248,7 +254,7 @@ public class VkRepository {
 //        int startPosition = 0;
 //
 //        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
-//            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH) - 1));
+//            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
 //        }
 //
 //        final Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size));
@@ -257,27 +263,76 @@ public class VkRepository {
 //            List<News> newsList = new ArrayList<>();
 //
 //            while (newsCursor.moveToNext()) {
-//                User user = new User();
-//                user.setId(newsCursor.getInt(newsCursor.getColumnIndex(UserTable.ID)));
-//                user.setFirstName(newsCursor.getString(newsCursor.getColumnIndex(UserTable.FIRST_NAME)));
-//                user.setLastName(newsCursor.getString(newsCursor.getColumnIndex(UserTable.LAST_NAME)));
-//                user.setOnline(newsCursor.getInt(newsCursor.getColumnIndex(UserTable.ONLINE)));
-//                user.setPhoto100Url(newsCursor.getString(newsCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-//                user.setPhotoMaxUrl(newsCursor.getString(newsCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+//                News news = new News();
+//                news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
+//                news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
+//                news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
+//                news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
+//                news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
+//
 //                Parcel parcel = Parcel.obtain();
-//                byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(UserTable.CROP_PHOTO));
-//                parcel.unmarshall(bytes, 0, bytes.length);
-//                parcel.setDataPosition(0);
-//                user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
+//                byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COPY_HISTORY));
+//                if (bytes != null) {
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    try {
+//                        news.setCopyHistory(Arrays.asList((News[]) parcel.readParcelableArray(News.class.getClassLoader())));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 //                parcel.recycle();
 //
-//                newsList.add(user);
+//                parcel = Parcel.obtain();
+//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COMMENTS));
+//                parcel.unmarshall(bytes, 0, bytes.length);
+//                parcel.setDataPosition(0);
+//                news.setComments((Comments) parcel.readParcelable(Comments.class.getClassLoader()));
+//                parcel.recycle();
+//
+//                parcel = Parcel.obtain();
+//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.LIKES));
+//                parcel.unmarshall(bytes, 0, bytes.length);
+//                parcel.setDataPosition(0);
+//                news.setLikes((Likes) parcel.readParcelable(Likes.class.getClassLoader()));
+//                parcel.recycle();
+//
+//                parcel = Parcel.obtain();
+//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.REPOSTS));
+//                parcel.unmarshall(bytes, 0, bytes.length);
+//                parcel.setDataPosition(0);
+//                news.setReposts((Reposts) parcel.readParcelable(Reposts.class.getClassLoader()));
+//                parcel.recycle();
+//
+//                parcel = Parcel.obtain();
+//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.VIEWS));
+//                parcel.unmarshall(bytes, 0, bytes.length);
+//                parcel.setDataPosition(0);
+//                news.setViews((Views) parcel.readParcelable(Views.class.getClassLoader()));
+//                parcel.recycle();
+//
+//                parcel = Parcel.obtain();
+//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.ATTACHMENTS));
+//                if (bytes != null) {
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    try {
+//                        news.setAttachments(Arrays.asList((Attachment[]) parcel.readParcelableArray(Attachment.class.getClassLoader())));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                parcel.recycle();
+//
+//                newsList.add(news);
 //            }
 //
-//            NewsResponse.Response response = new NewsResponse.Response();
+//            NewsResponse newsResponse = new NewsResponse();
 //
+//            newsResponse.getResponse().setNewsList(newsList);
+//            newsResponse.getResponse().setNextFrom(startPosition + newsList.size() + STRING_SLASH);
 //
-//            resultCallback.onResult(newsList);
+//            resultCallback.onResult(newsResponse.getResponse());
 //
 //            return;
 //        }
@@ -319,7 +374,6 @@ public class VkRepository {
 
         if (news.getCopyHistory() != null) {
             parcel = Parcel.obtain();
-            News[] copyHistory = new News[news.getCopyHistory().size()];
             parcel.writeParcelableArray(news.getCopyHistory().toArray(new News[0]), 0);
             contentValues.put(NewsTable.COPY_HISTORY, parcel.marshall());
             parcel.recycle();
@@ -329,14 +383,17 @@ public class VkRepository {
         parcel.writeParcelable(news.getComments(), 0);
         contentValues.put(NewsTable.COMMENTS, parcel.marshall());
         parcel.recycle();
+
         parcel = Parcel.obtain();
         parcel.writeParcelable(news.getLikes(), 0);
         contentValues.put(NewsTable.LIKES, parcel.marshall());
         parcel.recycle();
+
         parcel = Parcel.obtain();
         parcel.writeParcelable(news.getReposts(), 0);
         contentValues.put(NewsTable.REPOSTS, parcel.marshall());
         parcel.recycle();
+
         parcel = Parcel.obtain();
         parcel.writeParcelable(news.getViews(), 0);
         contentValues.put(NewsTable.VIEWS, parcel.marshall());
@@ -344,8 +401,7 @@ public class VkRepository {
 
         if (news.getAttachments() != null) {
             parcel = Parcel.obtain();
-            Attachment[] attachments = new Attachment[news.getAttachments().size()];
-            parcel.writeParcelableArray(news.getAttachments().toArray(attachments), 0);
+            parcel.writeParcelableArray(news.getAttachments().toArray(new Attachment[0]), 0);
             contentValues.put(NewsTable.ATTACHMENTS, parcel.marshall());
             parcel.recycle();
         }

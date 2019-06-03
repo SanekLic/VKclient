@@ -8,8 +8,16 @@ public class NewsResponse {
     @SerializedName("response")
     private Response response;
 
+    public NewsResponse() {
+        setResponse(new Response());
+    }
+
     public Response getResponse() {
         return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     public class Response {
@@ -22,7 +30,7 @@ public class NewsResponse {
         @SerializedName("next_from")
         private String nextFrom;
 
-        public Response() {
+        Response() {
         }
 
         public List<News> getNewsList() {
