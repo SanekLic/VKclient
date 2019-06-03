@@ -36,14 +36,20 @@ public class ImageLoader {
     };
 
     public static void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
+        imageView.setAlpha(0f);
+        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
+
         if (initialWidth == 0 || initialHeight == 0) {
             imageView.setImageDrawable(null);
         } else {
-            imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888));
-        }
+            Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
 
-        imageView.setAlpha(0f);
-        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
+            if (crop != null) {
+                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888), crop));
+            } else {
+                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888));
+            }
+        }
 
         cachedThreadPool.execute(new Runnable() {
             @Override

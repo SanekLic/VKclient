@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.entities.User;
@@ -17,7 +18,6 @@ import com.my.vkclient.ui.activity.UserActivity;
 import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
 
 public class FriendsFragment extends Fragment {
-    public static final String USER_INTENT_KEY = "User";
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
 
     @Override
@@ -40,22 +40,13 @@ public class FriendsFragment extends Fragment {
             @Override
             public void onResult(User user) {
                 Intent intent = new Intent(FriendsFragment.this.getContext(), UserActivity.class);
-                intent.putExtra(USER_INTENT_KEY, user);
+                intent.putExtra(Constants.USER_ID_INTENT_KEY, user.getId());
                 startActivity(intent);
             }
         });
+
         friendRecyclerView.setAdapter(friendRecyclerViewAdapter);
 
         friendRecyclerViewAdapter.initialLoadItems();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 }

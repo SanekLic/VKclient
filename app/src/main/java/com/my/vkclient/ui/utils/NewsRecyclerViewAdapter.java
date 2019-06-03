@@ -10,13 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.my.vkclient.Constants.STRING_EMPTY;
 
 public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder> {
 
@@ -25,13 +27,11 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
-    private NewsDiffUtilCallback newsDiffUtilCallback;
     private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
-    private String nextFrom = "";
+    private String nextFrom = STRING_EMPTY;
 
     public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
-        newsDiffUtilCallback = new NewsDiffUtilCallback();
     }
 
     @NonNull

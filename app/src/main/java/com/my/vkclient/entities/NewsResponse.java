@@ -22,8 +22,15 @@ public class NewsResponse {
         @SerializedName("next_from")
         private String nextFrom;
 
+        public Response() {
+        }
+
         public List<News> getNewsList() {
             return newsList;
+        }
+
+        public void setNewsList(List<News> newsList) {
+            this.newsList = newsList;
         }
 
         public List<User> getUserList() {
@@ -36,6 +43,10 @@ public class NewsResponse {
 
         public String getNextFrom() {
             return nextFrom;
+        }
+
+        public void setNextFrom(String nextFrom) {
+            this.nextFrom = nextFrom;
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.utils.ResultCallback;
@@ -25,8 +26,6 @@ import java.util.List;
 import java.util.Locale;
 
 class NewsViewHolder extends RecyclerView.ViewHolder {
-    public static final String NUMBER_FORMAT = "%.1f%c";
-    public static final String NUMBER_POSTFIX = "KMGTPE";
     private final TextView likesTextView;
     private final TextView commentsTextView;
     private final TextView repostsTextView;
@@ -93,7 +92,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                         @Override
                         public void run() {
                             if (result != null) {
-                                sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(" ").append(result.getLastName()).toString());
+                                sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
                                 sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
                                 ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100Url(), 0, 0);
                             }
@@ -131,7 +130,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                             @Override
                             public void run() {
                                 if (result != null) {
-                                    fromNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(" ").append(result.getLastName()).toString());
+                                    fromNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
                                     fromIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
                                     ImageLoader.getImageFromUrl(fromIconImageView, result.getPhoto100Url(), 0, 0);
                                 }
@@ -158,16 +157,16 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
 
     private String formatNumber(int number) {
         if (number == 0) {
-            return "";
+            return Constants.STRING_EMPTY;
         }
 
-        if (number < 1000) {
+        if (number < Constants.INT_THOUSAND) {
             return String.valueOf(number);
         }
 
-        int exp = (int) (Math.log(number) / Math.log(1000));
+        int exp = (int) (Math.log(number) / Math.log(Constants.INT_THOUSAND));
 
-        return String.format(Locale.US, NUMBER_FORMAT, number / Math.pow(1000, exp), NUMBER_POSTFIX.charAt(exp - 1));
+        return String.format(Locale.US, Constants.STRING_NUMBER_FORMAT, number / Math.pow(Constants.INT_THOUSAND, exp), Constants.STRING_NUMBER_POSTFIX.charAt(exp - 1));
     }
 
     private void setNewsText(String text) {

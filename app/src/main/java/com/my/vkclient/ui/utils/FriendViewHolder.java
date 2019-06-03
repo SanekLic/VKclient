@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
@@ -25,7 +26,7 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
     public void bind(User user) {
         friendNameView.setText(new StringBuilder()
                 .append(user.getFirstName())
-                .append(" ")
+                .append(Constants.STRING_SPACE)
                 .append(user.getLastName()).toString());
 
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);

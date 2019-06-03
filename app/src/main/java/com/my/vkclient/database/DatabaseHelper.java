@@ -8,12 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.database.fields.dbParcelable;
+import com.my.vkclient.database.fields.dbAutoincrement;
 import com.my.vkclient.database.fields.dbFloat;
 import com.my.vkclient.database.fields.dbInt;
+import com.my.vkclient.database.fields.dbParcelable;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
+import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
+import com.my.vkclient.database.model.NewsTable;
 import com.my.vkclient.database.model.UserTable;
 
 import java.lang.annotation.Annotation;
@@ -21,16 +24,20 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperation {
+import static com.my.vkclient.Constants.Database.FIELD_DONT_HAVE_TYPE_ANNOTATION;
+import static com.my.vkclient.Constants.Database.UPGRADE_NOT_SUPPORTED;
+import static com.my.vkclient.Constants.STRING_COMMA;
+import static com.my.vkclient.Constants.STRING_EMPTY;
+import static com.my.vkclient.Constants.STRING_SPACE;
 
-    private static final String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
+public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperation {
 
     public DatabaseHelper(@Nullable final Context context, @Nullable final SQLiteDatabase.CursorFactory cursorFactory, final int version) {
         super(context, Constants.Database.DATABASE_NAME, cursorFactory, version);
     }
 
     private static List<Class<?>> getTables() {
-        return Arrays.asList(UserTable.class, GroupTable.class);
+        return Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class, NewsTable.class);
     }
 
     private String getCreateTableString(final Class<?> tableClass) {
@@ -43,9 +50,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
 
             for (int i = 0; i < fields.length; i++) {
                 final Field field = fields[i];
-                String type = "";
+                String type = STRING_EMPTY;
 
                 final dbPrimaryKey primaryKeyAnnotation = field.getAnnotation(dbPrimaryKey.class);
+                final dbAutoincrement autoincrementAnnotation = field.getAnnotation(dbAutoincrement.class);
 
                 final Annotation[] annotations = field.getAnnotations();
 
@@ -58,34 +66,44 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
                         type = ((dbFloat) typeAnnotation).name();
                     } else if (typeAnnotation instanceof dbParcelable) {
                         type = ((dbParcelable) typeAnnotation).name();
-                    } else if (!(typeAnnotation instanceof dbPrimaryKey)) {
-                        throw new IllegalStateException("Field don't have type annotation");
+                    } else if (!(typeAnnotation instanceof dbPrimaryKey) && !(typeAnnotation instanceof dbAutoincrement)) {
+                        throw new IllegalStateException(FIELD_DONT_HAVE_TYPE_ANNOTATION);
                     }
                 }
 
                 if (!type.isEmpty()) {
 
                     if (!builder.toString().isEmpty()) {
-                        builder.append(",");
+                        builder.append(STRING_COMMA);
                     }
 
                     final String fieldName = field.getName();
 
-                    String primaryKey = "";
+                    String primaryKey = STRING_EMPTY;
 
                     if (primaryKeyAnnotation != null) {
                         primaryKey = Constants.Database.PRIMARY_KEY;
                     }
 
-                    final String template = fieldName + " " + type + " " + primaryKey;
+                    String autoincrement = STRING_EMPTY;
+
+                    if (autoincrementAnnotation != null) {
+                        autoincrement = Constants.Database.AUTOINCREMENT;
+                    }
+
+                    final String template = new StringBuilder()
+                            .append(fieldName).append(STRING_SPACE)
+                            .append(type).append(STRING_SPACE)
+                            .append(primaryKey).append(STRING_SPACE)
+                            .append(autoincrement).toString();
 
                     builder.append(template);
                 }
             }
 
-            return String.format(SQL_TABLE_CREATE_TEMPLATE, tableName, builder.toString());
+            return String.format(Constants.Database.SQL_TABLE_CREATE_TEMPLATE, tableName, builder.toString());
         } else {
-            return "";
+            return STRING_EMPTY;
         }
     }
 
@@ -105,7 +123,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
 
             final String createTableString = getCreateTableString(table);
 
-            if (!createTableString.equals("")) {
+            if (!createTableString.isEmpty()) {
                 sqLiteDatabase.execSQL(createTableString);
             }
         }
@@ -113,11 +131,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
 
     @Override
     public void onUpgrade(final SQLiteDatabase sqLiteDatabase, final int oldVersion, final int newVersion) {
-        throw new UnsupportedOperationException("Upgrade not supported");
+        throw new UnsupportedOperationException(UPGRADE_NOT_SUPPORTED);
     }
 
     @Override
-    public Cursor query(final String sql, final String... params) {
+    public Cursor query(final String sql, final String... selectionArgs) {
         final SQLiteDatabase readableDatabase = getReadableDatabase();
 
         readableDatabase.beginTransaction();
@@ -125,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
         final Cursor cursor;
 
         try {
-            cursor = readableDatabase.rawQuery(sql, params);
+            cursor = readableDatabase.rawQuery(sql, selectionArgs);
             readableDatabase.setTransactionSuccessful();
         } finally {
             readableDatabase.endTransaction();

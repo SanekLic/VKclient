@@ -8,11 +8,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.my.vkclient.R;
+import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Size;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
+import com.my.vkclient.utils.ResultCallback;
 
-import static com.my.vkclient.ui.fragment.FriendsFragment.USER_INTENT_KEY;
+import java.util.List;
+
+import static com.my.vkclient.Constants.STRING_SPACE;
+import static com.my.vkclient.Constants.USER_ID_INTENT_KEY;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -26,29 +32,43 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         Intent intent = getIntent();
-        User user = intent.getParcelableExtra(USER_INTENT_KEY);
+        int userId = intent.getIntExtra(USER_ID_INTENT_KEY, 0);
 
         userNameTextView = findViewById(R.id.userNameTextView);
         userPhotoImageView = findViewById(R.id.userPhotoImageView);
 
-        userNameTextView.setText(new StringBuilder()
-                .append(user.getFirstName())
-                .append(" ")
-                .append(user.getLastName()).toString());
-        String urlCropPhoto = user.getPhotoMaxUrl();
+        VkRepository.getUserById(userId, new ResultCallback<User>() {
+            @Override
+            public void onResult(final User user) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userNameTextView.setText(new StringBuilder()
+                                .append(user.getFirstName())
+                                .append(STRING_SPACE)
+                                .append(user.getLastName()).toString());
 
-        if (user.getCropPhoto() != null) {
-            int maxWidth = 0;
-            for (Size size : user.getCropPhoto().getPhoto().getSizes()) {
-                if (size.getWidth() > maxWidth) {
-                    maxWidth = size.getWidth();
-                    urlCropPhoto = size.getUrl();
-                }
+                        if (user.getCropPhoto() != null) {
+                            setMaxSizePhotoToImageView(user.getCropPhoto());
+                        } else {
+                            ImageLoader.getImageFromUrl(userPhotoImageView, user.getPhotoMaxUrl(), 0, 0);
+                        }
+                    }
+                });
             }
+        });
+    }
 
-            userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, user.getCropPhoto().getRect());
+    private void setMaxSizePhotoToImageView(CropPhoto cropPhoto) {
+        Size showSize = cropPhoto.getPhoto().getSizes().get(0);
+
+        for (Size size : cropPhoto.getPhoto().getSizes()) {
+            if (size.getWidth() > showSize.getWidth()) {
+                showSize = size;
+            }
         }
 
-        ImageLoader.getImageFromUrl(userPhotoImageView, urlCropPhoto, 0, 0);
+        userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, cropPhoto.getRect());
+        ImageLoader.getImageFromUrl(userPhotoImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
     }
 }
