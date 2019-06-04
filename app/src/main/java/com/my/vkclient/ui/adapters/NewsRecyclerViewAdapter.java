@@ -85,7 +85,7 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
     private void loadMoreItems(final String startPosition, final int size) {
         isLoading = true;
 
-        VkRepository.getNews(startPosition, size, new ResultCallback<NewsResponse.Response>() {
+        VkRepository.getInstance().getNews(startPosition, size, new ResultCallback<NewsResponse.Response>() {
             @Override
             public void onResult(final NewsResponse.Response resultList) {
                 if (resultList != null) {

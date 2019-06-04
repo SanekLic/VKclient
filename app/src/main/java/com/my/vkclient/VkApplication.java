@@ -9,6 +9,6 @@ public class VkApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        VkRepository.initializeDatabaseHelper(getApplicationContext(), null, Constants.Database.DATABASE_VERSION);
+        VkRepository.getInstance().initialContext(getApplicationContext());
     }
 }

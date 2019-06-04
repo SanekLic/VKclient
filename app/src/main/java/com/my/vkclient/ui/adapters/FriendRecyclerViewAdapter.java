@@ -109,7 +109,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     private void loadMoreItems(final int startPosition, final int size) {
         isLoading = true;
 
-        VkRepository.getFriends(startPosition, size, new ResultCallback<List<User>>() {
+        VkRepository.getInstance().getFriends(startPosition, size, new ResultCallback<List<User>>() {
             @Override
             public void onResult(final List<User> resultList) {
                 if (resultList != null) {

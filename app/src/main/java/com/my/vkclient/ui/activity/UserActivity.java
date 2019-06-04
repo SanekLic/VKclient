@@ -35,7 +35,7 @@ public class UserActivity extends AppCompatActivity {
         userNameTextView = findViewById(R.id.userNameTextView);
         userPhotoImageView = findViewById(R.id.userPhotoImageView);
 
-        VkRepository.getUserById(userId, new ResultCallback<User>() {
+        VkRepository.getInstance().getUserById(userId, new ResultCallback<User>() {
             @Override
             public void onResult(final User user) {
                 runOnUiThread(new Runnable() {
@@ -49,7 +49,7 @@ public class UserActivity extends AppCompatActivity {
                         if (user.getCropPhoto() != null) {
                             setMaxSizePhotoToImageView(user.getCropPhoto());
                         } else {
-                            ImageLoader.getImageFromUrl(userPhotoImageView, user.getPhotoMaxUrl(), 0, 0);
+                            ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, user.getPhotoMaxUrl(), 0, 0);
                         }
                     }
                 });
@@ -67,6 +67,6 @@ public class UserActivity extends AppCompatActivity {
         }
 
         userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, cropPhoto.getRect());
-        ImageLoader.getImageFromUrl(userPhotoImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
+        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
     }
 }

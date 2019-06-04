@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
@@ -34,8 +35,8 @@ import static com.my.vkclient.Constants.STRING_SPACE;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperation {
 
-    public DatabaseHelper(@Nullable final Context context, @Nullable final SQLiteDatabase.CursorFactory cursorFactory, final int version) {
-        super(context, Constants.Database.DATABASE_NAME, cursorFactory, version);
+    public DatabaseHelper(@NonNull final Context context) {
+        super(context, Constants.Database.DATABASE_NAME, null, Constants.Database.DATABASE_VERSION);
     }
 
     private static List<Class<?>> getTables() {

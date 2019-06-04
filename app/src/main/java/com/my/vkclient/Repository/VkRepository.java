@@ -3,7 +3,6 @@ package com.my.vkclient.Repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -57,23 +56,36 @@ import static com.my.vkclient.utils.GsonAdapter.getNewsFromJson;
 import static com.my.vkclient.utils.GsonAdapter.getUserFromJson;
 
 public class VkRepository {
-    private static final Executor executor = Executors.newCachedThreadPool();
-    private static DatabaseHelper databaseHelper;
-    private static String accessToken;
+    private static VkRepository instance;
+    private Executor executor;
+    private DatabaseHelper databaseHelper;
+    private String accessToken;
 
-    public static void initializeDatabaseHelper(@Nullable final Context context, @Nullable final SQLiteDatabase.CursorFactory cursorFactory, final int version) {
-        databaseHelper = new DatabaseHelper(context, cursorFactory, version);
+    private VkRepository() {
+        executor = Executors.newCachedThreadPool();
     }
 
-    public static String getAccessToken() {
+    public static VkRepository getInstance() {
+        if (instance == null) {
+            instance = new VkRepository();
+        }
+
+        return instance;
+    }
+
+    public void initialContext(@NonNull final Context context) {
+        databaseHelper = new DatabaseHelper(context);
+    }
+
+    public String getAccessToken() {
         return accessToken;
     }
 
-    public static void setAccessToken(String newAccessToken) {
+    public void setAccessToken(String newAccessToken) {
         accessToken = newAccessToken;
     }
 
-    public static void getUserById(final int userId, final ResultCallback<User> resultCallback) {
+    public void getUserById(final int userId, final ResultCallback<User> resultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -96,7 +108,7 @@ public class VkRepository {
         });
     }
 
-    private static boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
+    private boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
         try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID), String.valueOf(userId))) {
             if (userCursor.moveToFirst()) {
                 User user = new User();
@@ -122,7 +134,7 @@ public class VkRepository {
         }
     }
 
-    private static void putUserInDatabase(final User user, @Nullable final ContentValues customContentValues) {
+    private void putUserInDatabase(final User user, @Nullable final ContentValues customContentValues) {
         final ContentValues contentValues = customContentValues != null ? customContentValues : new ContentValues();
         contentValues.clear();
         contentValues.put(UserTable.ID, user.getId());
@@ -138,7 +150,7 @@ public class VkRepository {
         databaseHelper.insert(USER_TABLE_NAME, contentValues);
     }
 
-    public static void getGroupById(final int groupId, final ResultCallback<Group> resultCallback) {
+    public void getGroupById(final int groupId, final ResultCallback<Group> resultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -162,7 +174,7 @@ public class VkRepository {
         });
     }
 
-    private static boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
+    private boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
         try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID), String.valueOf(groupId))) {
             if (groupCursor.moveToFirst()) {
                 Group group = new Group();
@@ -179,7 +191,7 @@ public class VkRepository {
         }
     }
 
-    private static void putGroupInDatabase(final Group group, @Nullable final ContentValues customContentValues) {
+    private void putGroupInDatabase(final Group group, @Nullable final ContentValues customContentValues) {
         final ContentValues contentValues = customContentValues != null ? customContentValues : new ContentValues();
         contentValues.clear();
         contentValues.put(GroupTable.ID, group.getId());
@@ -188,7 +200,7 @@ public class VkRepository {
         databaseHelper.insert(GROUP_TABLE_NAME, contentValues);
     }
 
-    public static void getFriends(final int startPosition, final int size, final ResultCallback<List<User>> resultCallback) {
+    public void getFriends(final int startPosition, final int size, final ResultCallback<List<User>> resultCallback) {
         if (getFriendsFromDatabase(startPosition, size, resultCallback)) {
             return;
         }
@@ -211,7 +223,7 @@ public class VkRepository {
         });
     }
 
-    private static boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
+    private boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
         try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
 
             if (friendsCursor.getCount() > 0) {
@@ -244,99 +256,99 @@ public class VkRepository {
         }
     }
 
-    private static void putFriendInDatabase(final User friend, @NonNull final ContentValues contentValues) {
+    private void putFriendInDatabase(final User friend, @NonNull final ContentValues contentValues) {
         contentValues.clear();
         contentValues.put(FriendTable.USER_ID, friend.getId());
         contentValues.put(FriendTable.FRIEND_LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         databaseHelper.insert(FRIEND_TABLE_NAME, contentValues);
     }
 
-    public static void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
-        int startPosition = 0;
-
-        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
-            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
-        }
-
-        try (Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size))) {
-            if (newsCursor.getCount() > 0) {
-                List<News> newsList = new ArrayList<>();
-
-                while (newsCursor.moveToNext()) {
-                    News news = new News();
-                    news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
-                    news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
-                    news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
-                    news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
-                    news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
-
-                    Parcel parcel = Parcel.obtain();
-                    byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COPY_HISTORY));
-                    if (bytes != null) {
-                        parcel.unmarshall(bytes, 0, bytes.length);
-                        parcel.setDataPosition(0);
-                        try {
-                            news.setCopyHistory(Arrays.asList((News[]) parcel.readParcelableArray(News.class.getClassLoader())));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    parcel.recycle();
-
-                    parcel = Parcel.obtain();
-                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COMMENTS));
-                    parcel.unmarshall(bytes, 0, bytes.length);
-                    parcel.setDataPosition(0);
-                    news.setComments((Comments) parcel.readParcelable(Comments.class.getClassLoader()));
-                    parcel.recycle();
-
-                    parcel = Parcel.obtain();
-                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.LIKES));
-                    parcel.unmarshall(bytes, 0, bytes.length);
-                    parcel.setDataPosition(0);
-                    news.setLikes((Likes) parcel.readParcelable(Likes.class.getClassLoader()));
-                    parcel.recycle();
-
-                    parcel = Parcel.obtain();
-                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.REPOSTS));
-                    parcel.unmarshall(bytes, 0, bytes.length);
-                    parcel.setDataPosition(0);
-                    news.setReposts((Reposts) parcel.readParcelable(Reposts.class.getClassLoader()));
-                    parcel.recycle();
-
-                    parcel = Parcel.obtain();
-                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.VIEWS));
-                    parcel.unmarshall(bytes, 0, bytes.length);
-                    parcel.setDataPosition(0);
-                    news.setViews((Views) parcel.readParcelable(Views.class.getClassLoader()));
-                    parcel.recycle();
-
-                    parcel = Parcel.obtain();
-                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.ATTACHMENTS));
-                    if (bytes != null) {
-                        parcel.unmarshall(bytes, 0, bytes.length);
-                        parcel.setDataPosition(0);
-                        try {
-                            news.setAttachments(Arrays.asList((Attachment[]) parcel.readParcelableArray(Attachment.class.getClassLoader())));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    parcel.recycle();
-
-                    newsList.add(news);
-                }
-
-                NewsResponse newsResponse = new NewsResponse();
-
-                newsResponse.getResponse().setNewsList(newsList);
-                newsResponse.getResponse().setNextFrom(startPosition + newsList.size() + STRING_SLASH);
-
-                resultCallback.onResult(newsResponse.getResponse());
-
-                return;
-            }
-        }
+    public void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
+//        int startPosition = 0;
+//
+//        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
+//            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
+//        }
+//
+//        try (Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size))) {
+//            if (newsCursor.getCount() > 0) {
+//                List<News> newsList = new ArrayList<>();
+//
+//                while (newsCursor.moveToNext()) {
+//                    News news = new News();
+//                    news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
+//                    news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
+//                    news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
+//                    news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
+//                    news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
+//
+//                    Parcel parcel = Parcel.obtain();
+//                    byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COPY_HISTORY));
+//                    if (bytes != null) {
+//                        parcel.unmarshall(bytes, 0, bytes.length);
+//                        parcel.setDataPosition(0);
+//                        try {
+//                            news.setCopyHistory(Arrays.asList((News[]) parcel.readParcelableArray(News.class.getClassLoader())));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    parcel.recycle();
+//
+//                    parcel = Parcel.obtain();
+//                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COMMENTS));
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    news.setComments((Comments) parcel.readParcelable(Comments.class.getClassLoader()));
+//                    parcel.recycle();
+//
+//                    parcel = Parcel.obtain();
+//                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.LIKES));
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    news.setLikes((Likes) parcel.readParcelable(Likes.class.getClassLoader()));
+//                    parcel.recycle();
+//
+//                    parcel = Parcel.obtain();
+//                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.REPOSTS));
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    news.setReposts((Reposts) parcel.readParcelable(Reposts.class.getClassLoader()));
+//                    parcel.recycle();
+//
+//                    parcel = Parcel.obtain();
+//                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.VIEWS));
+//                    parcel.unmarshall(bytes, 0, bytes.length);
+//                    parcel.setDataPosition(0);
+//                    news.setViews((Views) parcel.readParcelable(Views.class.getClassLoader()));
+//                    parcel.recycle();
+//
+//                    parcel = Parcel.obtain();
+//                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.ATTACHMENTS));
+//                    if (bytes != null) {
+//                        parcel.unmarshall(bytes, 0, bytes.length);
+//                        parcel.setDataPosition(0);
+//                        try {
+//                            news.setAttachments(Arrays.asList((Attachment[]) parcel.readParcelableArray(Attachment.class.getClassLoader())));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    parcel.recycle();
+//
+//                    newsList.add(news);
+//                }
+//
+//                NewsResponse newsResponse = new NewsResponse();
+//
+//                newsResponse.getResponse().setNewsList(newsList);
+//                newsResponse.getResponse().setNextFrom(startPosition + newsList.size() + STRING_SLASH);
+//
+//                resultCallback.onResult(newsResponse.getResponse());
+//
+//                return;
+//            }
+//        }
 
         getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override
@@ -364,7 +376,7 @@ public class VkRepository {
         });
     }
 
-    private static void putNewsInDatabase(final News news, @NonNull final ContentValues contentValues) {
+    private void putNewsInDatabase(final News news, @NonNull final ContentValues contentValues) {
         contentValues.clear();
         contentValues.put(NewsTable.TYPE, news.getType());
         contentValues.put(NewsTable.SOURCE_ID, news.getSourceId());
@@ -410,7 +422,7 @@ public class VkRepository {
         databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
     }
 
-    private static void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
+    private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -427,7 +439,7 @@ public class VkRepository {
         });
     }
 
-    private static String readStream(final InputStream inputStream) throws IOException {
+    private String readStream(final InputStream inputStream) throws IOException {
         ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
@@ -439,7 +451,7 @@ public class VkRepository {
         return resultOutputStream.toString();
     }
 
-    private static String getLimitDatabaseQuery(String tableName, int startPosition, int size) {
+    private String getLimitDatabaseQuery(String tableName, int startPosition, int size) {
         return new StringBuilder()
                 .append(SELECT_FROM)
                 .append(tableName)
@@ -449,12 +461,12 @@ public class VkRepository {
                 .append(size).toString();
     }
 
-    private static String getFriendsJoinUserDatabaseQuery(int startPosition, int size) {
+    private String getFriendsJoinUserDatabaseQuery(int startPosition, int size) {
         return String.format(SELECT_FROM + FRIEND_TABLE_NAME + DATABASE_JOIN_LIMIT, USER_TABLE_NAME,
                 FriendTable.USER_ID, UserTable.ID, UserTable.FIRST_NAME, UserTable.LAST_NAME, startPosition, size);
     }
 
-    private static String getSelectDatabaseQuery(String tableName, String param) {
+    private String getSelectDatabaseQuery(String tableName, String param) {
         return new StringBuilder()
                 .append(SELECT_FROM)
                 .append(tableName)
@@ -464,7 +476,7 @@ public class VkRepository {
                 .append(STRING_QUESTION).toString();
     }
 
-    private static String getFriendsRequest(int startPosition, int size) {
+    private String getFriendsRequest(int startPosition, int size) {
         return new StringBuilder()
                 .append(Constants.API_VK.API_VK_GET_FRIENDS_URL)
                 .append(Constants.API_VK.FRIENDS_COUNT)
@@ -476,7 +488,7 @@ public class VkRepository {
                 .append(accessToken).toString();
     }
 
-    private static String getUserRequest(int userId) {
+    private String getUserRequest(int userId) {
         return new StringBuilder()
                 .append(Constants.API_VK.API_VK_GET_USER_URL)
                 .append(Constants.API_VK.USER_ID)
@@ -486,7 +498,7 @@ public class VkRepository {
                 .append(accessToken).toString();
     }
 
-    private static String getNewsRequest(String startFrom, int size) {
+    private String getNewsRequest(String startFrom, int size) {
         return new StringBuilder()
                 .append(Constants.API_VK.API_VK_GET_NEWS_URL)
                 .append(Constants.API_VK.NEWS_START_FROM)
@@ -498,7 +510,7 @@ public class VkRepository {
                 .append(accessToken).toString();
     }
 
-    private static String getGroupRequest(int userId) {
+    private String getGroupRequest(int userId) {
         return new StringBuilder()
                 .append(Constants.API_VK.API_VK_GET_GROUP_URL)
                 .append(userId)

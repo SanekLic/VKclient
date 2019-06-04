@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         LoginWebViewClient loginWebViewClient = new LoginWebViewClient(new LoginWebViewCallback() {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
-                VkRepository.setAccessToken(receivedAccessToken);
+                VkRepository.getInstance().setAccessToken(receivedAccessToken);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

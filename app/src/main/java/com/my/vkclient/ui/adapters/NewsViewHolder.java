@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
-import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.Group;
@@ -20,6 +18,8 @@ import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.Size;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.Video;
+import com.my.vkclient.utils.ImageLoader;
+import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         sourceNewsDateTextView.setText(news.getDate().toString());
 
         if (news.getSourceId() < 0) {
-            VkRepository.getGroupById(news.getSourceId() * (-1), new ResultCallback<Group>() {
+            VkRepository.getInstance().getGroupById(news.getSourceId() * (-1), new ResultCallback<Group>() {
                 @Override
                 public void onResult(final Group result) {
                     mainLooperHandler.post(new Runnable() {
@@ -78,14 +78,14 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                             if (result != null) {
                                 sourceNameTextView.setText(result.getName());
                                 sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100(), 0, 0);
+                                ImageLoader.getInstance().getImageFromUrl(sourceIconImageView, result.getPhoto100(), 0, 0);
                             }
                         }
                     });
                 }
             });
         } else {
-            VkRepository.getUserById(news.getSourceId(), new ResultCallback<User>() {
+            VkRepository.getInstance().getUserById(news.getSourceId(), new ResultCallback<User>() {
                 @Override
                 public void onResult(final User result) {
                     mainLooperHandler.post(new Runnable() {
@@ -94,7 +94,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                             if (result != null) {
                                 sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
                                 sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                ImageLoader.getImageFromUrl(sourceIconImageView, result.getPhoto100Url(), 0, 0);
+                                ImageLoader.getInstance().getImageFromUrl(sourceIconImageView, result.getPhoto100Url(), 0, 0);
                             }
                         }
                     });
@@ -107,7 +107,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             fromNewsDateTextView.setText(newsCopy.getDate().toString());
 
             if (newsCopy.getFromId() < 0) {
-                VkRepository.getGroupById(newsCopy.getFromId() * (-1), new ResultCallback<Group>() {
+                VkRepository.getInstance().getGroupById(newsCopy.getFromId() * (-1), new ResultCallback<Group>() {
                     @Override
                     public void onResult(final Group result) {
                         mainLooperHandler.post(new Runnable() {
@@ -116,14 +116,14 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                                 if (result != null) {
                                     fromNameTextView.setText(result.getName());
                                     fromIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                    ImageLoader.getImageFromUrl(fromIconImageView, result.getPhoto100(), 0, 0);
+                                    ImageLoader.getInstance().getImageFromUrl(fromIconImageView, result.getPhoto100(), 0, 0);
                                 }
                             }
                         });
                     }
                 });
             } else {
-                VkRepository.getUserById(newsCopy.getFromId(), new ResultCallback<User>() {
+                VkRepository.getInstance().getUserById(newsCopy.getFromId(), new ResultCallback<User>() {
                     @Override
                     public void onResult(final User result) {
                         mainLooperHandler.post(new Runnable() {
@@ -132,7 +132,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                                 if (result != null) {
                                     fromNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
                                     fromIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                    ImageLoader.getImageFromUrl(fromIconImageView, result.getPhoto100Url(), 0, 0);
+                                    ImageLoader.getInstance().getImageFromUrl(fromIconImageView, result.getPhoto100Url(), 0, 0);
                                 }
                             }
                         });
@@ -152,7 +152,10 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         likesTextView.setText(formatNumber(news.getLikes().getCount()));
         commentsTextView.setText(formatNumber(news.getComments().getCount()));
         repostsTextView.setText(formatNumber(news.getReposts().getCount()));
-        viewsTextView.setText(formatNumber(news.getViews().getCount()));
+        if (news.getViews() != null) {
+            viewsTextView.setText(formatNumber(news.getViews().getCount()));
+        } else
+            viewsTextView.setText(null);
     }
 
     private String formatNumber(int number) {
@@ -247,7 +250,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             height = 480;
         }
 
-        ImageLoader.getImageFromUrl(newsPhotoImageView, urlPhoto, width, height);
+        ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, urlPhoto, width, height);
     }
 
     private void setMaxSizePhotoToImageView(List<Size> photoSizes) {
@@ -260,7 +263,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         }
 
         String urlPhoto = showSize.getUrl() != null ? showSize.getUrl() : showSize.getSrc();
-        ImageLoader.getImageFromUrl(newsPhotoImageView, urlPhoto, showSize.getWidth(), showSize.getHeight());
+        ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, urlPhoto, showSize.getWidth(), showSize.getHeight());
     }
 
     private void setVisibilityCopyNews(int visible) {

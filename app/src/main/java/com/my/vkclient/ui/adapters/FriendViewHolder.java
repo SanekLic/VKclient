@@ -30,7 +30,7 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
                 .append(user.getLastName()).toString());
 
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-        ImageLoader.getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0);
+        ImageLoader.getInstance().getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0);
 
         if (user.getOnline()) {
             if (onlineStatusImageView.getVisibility() != View.VISIBLE) {

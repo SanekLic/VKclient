@@ -27,7 +27,7 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
             setPhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
         } else if (Attachment.Type.Video.equals((attachment.getType()))) {
-            ImageLoader.getImageFromUrl(attachImageView, attachment.getVideo().getPhoto320Url(), 320, 240);
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getVideo().getPhoto320Url(), 320, 240);
         } else if (Attachment.Type.Link.equals(attachment.getType()) && attachment.getLink().getPhoto() != null) {
             setPhotoToImageView(attachment.getLink().getPhoto().getSizes());
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
@@ -46,6 +46,6 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
             }
         }
 
-        ImageLoader.getImageFromUrl(attachImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
+        ImageLoader.getInstance().getImageFromUrl(attachImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
     }
 }
