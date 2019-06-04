@@ -18,6 +18,7 @@ import com.my.vkclient.ui.activity.UserActivity;
 import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
 
 public class FriendsFragment extends Fragment {
+    //TODo don't ignore android studio warning
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
 
     @Override

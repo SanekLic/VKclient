@@ -137,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
     @Override
     public Cursor query(final String sql, final String... selectionArgs) {
         final SQLiteDatabase readableDatabase = getReadableDatabase();
-
+        //TODO use transaction for batch operation only
         readableDatabase.beginTransaction();
 
         final Cursor cursor;

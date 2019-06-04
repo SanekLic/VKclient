@@ -32,6 +32,7 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
         ImageLoader.getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0);
 
+        //TODO boolean value instead of int
         if (user.getOnline() == 0) {
             if (onlineStatusImageView.getVisibility() != View.GONE) {
                 onlineStatusImageView.setVisibility(View.GONE);

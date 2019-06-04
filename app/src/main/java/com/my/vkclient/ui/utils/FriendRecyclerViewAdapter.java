@@ -21,6 +21,7 @@ import java.util.List;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
 
+    //TODO extract this logic to common class
     private static final int PAGE_SIZE = 20;
     private List<User> friendList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
@@ -47,6 +48,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     @Override
     public void onViewAttachedToWindow(@NonNull final FriendViewHolder holder) {
         super.onViewAttachedToWindow(holder);
+        //https://stackoverflow.com/questions/33845846/why-is-adding-an-onclicklistener-inside-onbindviewholder-of-a-recyclerview-adapt
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

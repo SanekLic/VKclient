@@ -1,9 +1,12 @@
 package com.my.vkclient.ui.utils;
 
+import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.my.vkclient.Constants;
+
+import java.net.URL;
 
 public class LoginWebViewClient extends WebViewClient {
     private LoginWebViewCallback loginWebViewCallback;
@@ -14,12 +17,15 @@ public class LoginWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
+        //TODO check this case
         if (url.startsWith(Constants.API_VK.API_VK_RESPONSE_ACCESS_DENIED_ERROR) && url.endsWith(Constants.API_VK.STATE_REQUEST_TOKEN)) {
             url = Constants.API_VK.API_VK_GET_AUTHORIZE_URL;
         }
 
         if (url.startsWith(Constants.API_VK.API_VK_RESPONSE_ACCESS_TOKEN)) {
+//            Uri uri = Uri.parse(url);
+//            uri.getQueryParameter("access_token");
+            //TODO try to use Uri
             String access_token = url.substring(url.indexOf(Constants.STRING_EQUALS) + 1, url.indexOf(Constants.STRING_AND));
             loginWebViewCallback.onAccessGranted(access_token);
 

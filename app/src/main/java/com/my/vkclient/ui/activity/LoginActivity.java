@@ -2,7 +2,9 @@ package com.my.vkclient.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
@@ -33,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
                 VkRepository.setAccessToken(receivedAccessToken);
+                //TODO check chread
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -12,6 +12,7 @@ import com.my.vkclient.entities.Attachment;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO create adapter package
 public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<AttachmentViewHolder> {
 
     private List<Attachment> attachmentList = new ArrayList<>();

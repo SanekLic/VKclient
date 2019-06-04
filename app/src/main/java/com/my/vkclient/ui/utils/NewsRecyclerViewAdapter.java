@@ -82,6 +82,8 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
         }
     }
 
+
+    //TODO move this logic out from adapter
     private void loadMoreItems(final String startPosition, final int size) {
         isLoading = true;
 

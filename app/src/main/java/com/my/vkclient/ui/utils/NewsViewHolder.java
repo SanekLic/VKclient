@@ -69,6 +69,8 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         sourceNewsDateTextView.setText(news.getDate().toString());
 
         if (news.getSourceId() < 0) {
+            //TODO don't request additional data if you already have everything for dsiplaying user
+            //TODO remove *(-1)
             VkRepository.getGroupById(news.getSourceId() * (-1), new ResultCallback<Group>() {
                 @Override
                 public void onResult(final Group result) {
@@ -232,6 +234,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         attachmentRecyclerViewAdapter.setItems(attachments);
     }
 
+    //TODO move this logic to separate class
     private void setMaxSizePhotoToImageView(Video video) {
         String urlPhoto = video.getPhoto320Url();
         int width = 320;

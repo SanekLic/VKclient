@@ -56,8 +56,10 @@ import static com.my.vkclient.utils.GsonAdapter.getGroupFromJson;
 import static com.my.vkclient.utils.GsonAdapter.getNewsFromJson;
 import static com.my.vkclient.utils.GsonAdapter.getUserFromJson;
 
+//TODO rename to database
 public class VkRepository {
     private static final Executor executor = Executors.newCachedThreadPool();
+    //TODO use singletone pattern
     private static DatabaseHelper databaseHelper;
     private static String accessToken;
 
@@ -97,6 +99,8 @@ public class VkRepository {
     }
 
     private static boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
+        //TODO close cursor
+        //TODO try to implement cache expiration time
         final Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID), String.valueOf(userId));
 
         if (userCursor.moveToFirst()) {
@@ -107,6 +111,8 @@ public class VkRepository {
             user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)));
             user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
             user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+
+            //TODO remove this logic. Save cropped image
             Parcel parcel = Parcel.obtain();
             byte[] bytes = userCursor.getBlob(userCursor.getColumnIndex(UserTable.CROP_PHOTO));
             parcel.unmarshall(bytes, 0, bytes.length);
@@ -124,6 +130,7 @@ public class VkRepository {
 
     private static void putUserInDatabase(final User user, @Nullable final ContentValues customContentValues) {
         final ContentValues contentValues = customContentValues != null ? customContentValues : new ContentValues();
+        //TODO remove clear call for all contentValues if not required
         contentValues.clear();
         contentValues.put(UserTable.ID, user.getId());
         contentValues.put(UserTable.FIRST_NAME, user.getFirstName());
@@ -131,10 +138,12 @@ public class VkRepository {
         contentValues.put(UserTable.ONLINE, user.getOnline());
         contentValues.put(UserTable.PHOTO_100_URL, user.getPhoto100Url());
         contentValues.put(UserTable.PHOTO_MAX_URL, user.getPhotoMaxUrl());
+
         Parcel parcel = Parcel.obtain();
         parcel.writeParcelable(user.getCropPhoto(), 0);
         contentValues.put(UserTable.CROP_PHOTO, parcel.marshall());
         parcel.recycle();
+
         databaseHelper.insert(USER_TABLE_NAME, contentValues);
     }
 
@@ -202,10 +211,13 @@ public class VkRepository {
                 if (friends != null) {
                     final ContentValues contentValues = new ContentValues();
 
+                    ///TODo start transaction
                     for (User user : friends) {
                         putFriendInDatabase(user, contentValues);
                         putUserInDatabase(user, contentValues);
                     }
+
+                    //TODO finish transaction
                 }
             }
         });
@@ -214,17 +226,21 @@ public class VkRepository {
     private static boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
         final Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size));
 
+        //TODO possible NPE
         if (friendsCursor.getCount() > 0) {
             List<User> friendList = new ArrayList<>();
 
             while (friendsCursor.moveToNext()) {
                 User user = new User();
+                //TODo calculate index once
                 user.setId(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ID)));
                 user.setFirstName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.FIRST_NAME)));
                 user.setLastName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.LAST_NAME)));
                 user.setOnline(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ONLINE)));
                 user.setPhoto100Url(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
                 user.setPhotoMaxUrl(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+
+
                 Parcel parcel = Parcel.obtain();
                 byte[] bytes = friendsCursor.getBlob(friendsCursor.getColumnIndex(UserTable.CROP_PHOTO));
                 parcel.unmarshall(bytes, 0, bytes.length);
@@ -409,6 +425,8 @@ public class VkRepository {
         databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
     }
 
+
+    //TODO move to HttpClient/Network class
     private static void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
         executor.execute(new Runnable() {
             @Override
@@ -438,6 +456,7 @@ public class VkRepository {
         return resultOutputStream.toString();
     }
 
+    //TOVO move to SQL query class
     private static String getLimitDatabaseQuery(String tableName, int startPosition, int size) {
         return new StringBuilder()
                 .append(SELECT_FROM)
@@ -453,6 +472,7 @@ public class VkRepository {
                 FriendTable.USER_ID, UserTable.ID, UserTable.FIRST_NAME, UserTable.LAST_NAME, startPosition, size);
     }
 
+    //TODO move to API class
     private static String getSelectDatabaseQuery(String tableName, String param) {
         return new StringBuilder()
                 .append(SELECT_FROM)

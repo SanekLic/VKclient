@@ -134,6 +134,7 @@ public class ImageLoader {
                 if (imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl)) {
                     Boolean isCircular = (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
                     Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
+                    //TODO move to background thread
                     imageView.setImageBitmap(getPostProcessedBitmap(resultBitmap, isCircular, crop));
 
                     Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);

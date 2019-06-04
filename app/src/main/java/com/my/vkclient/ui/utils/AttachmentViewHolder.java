@@ -25,7 +25,8 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
         if (Attachment.Type.Photo.equals(attachment.getType())) {
             setPhotoToImageView(attachment.getPhoto().getSizes());
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
-            setPhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
+            //TODO fix crash, photo can be null
+//            setPhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
         } else if (Attachment.Type.Video.equals((attachment.getType()))) {
             ImageLoader.getImageFromUrl(attachImageView, attachment.getVideo().getPhoto320Url(), 320, 240);
         } else if (Attachment.Type.Link.equals(attachment.getType()) && attachment.getLink().getPhoto() != null) {
@@ -40,7 +41,9 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
     private void setPhotoToImageView(List<Size> photoSizes) {
         Size showSize = photoSizes.get(0);
 
+        //TODO move this logic to imageloader and load image depend on view size
         for (Size size : photoSizes) {
+            //TODO magic number
             if (Math.abs(size.getHeight() - 192) < Math.abs(showSize.getHeight() - 192)) {
                 showSize = size;
             }
