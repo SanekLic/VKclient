@@ -50,8 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
 
             final StringBuilder builder = new StringBuilder();
 
-            for (int i = 0; i < fields.length; i++) {
-                final Field field = fields[i];
+            for (final Field field : fields) {
                 String type = STRING_EMPTY;
 
                 final dbPrimaryKey primaryKeyAnnotation = field.getAnnotation(dbPrimaryKey.class);
