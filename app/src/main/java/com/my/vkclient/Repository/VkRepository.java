@@ -97,29 +97,29 @@ public class VkRepository {
     }
 
     private static boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
-        final Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID), String.valueOf(userId));
+        try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID), String.valueOf(userId))) {
+            if (userCursor.moveToFirst()) {
+                User user = new User();
+                user.setId(userCursor.getInt(userCursor.getColumnIndex(UserTable.ID)));
+                user.setFirstName(userCursor.getString(userCursor.getColumnIndex(UserTable.FIRST_NAME)));
+                user.setLastName(userCursor.getString(userCursor.getColumnIndex(UserTable.LAST_NAME)));
+                user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)) > 0);
+                user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
+                user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+                Parcel parcel = Parcel.obtain();
+                byte[] bytes = userCursor.getBlob(userCursor.getColumnIndex(UserTable.CROP_PHOTO));
+                parcel.unmarshall(bytes, 0, bytes.length);
+                parcel.setDataPosition(0);
+                user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
+                parcel.recycle();
 
-        if (userCursor.moveToFirst()) {
-            User user = new User();
-            user.setId(userCursor.getInt(userCursor.getColumnIndex(UserTable.ID)));
-            user.setFirstName(userCursor.getString(userCursor.getColumnIndex(UserTable.FIRST_NAME)));
-            user.setLastName(userCursor.getString(userCursor.getColumnIndex(UserTable.LAST_NAME)));
-            user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)));
-            user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-            user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
-            Parcel parcel = Parcel.obtain();
-            byte[] bytes = userCursor.getBlob(userCursor.getColumnIndex(UserTable.CROP_PHOTO));
-            parcel.unmarshall(bytes, 0, bytes.length);
-            parcel.setDataPosition(0);
-            user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
-            parcel.recycle();
+                resultCallback.onResult(user);
 
-            resultCallback.onResult(user);
+                return true;
+            }
 
-            return true;
+            return false;
         }
-
-        return false;
     }
 
     private static void putUserInDatabase(final User user, @Nullable final ContentValues customContentValues) {
@@ -163,20 +163,20 @@ public class VkRepository {
     }
 
     private static boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
-        final Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID), String.valueOf(groupId));
+        try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID), String.valueOf(groupId))) {
+            if (groupCursor.moveToFirst()) {
+                Group group = new Group();
+                group.setId(groupCursor.getInt(groupCursor.getColumnIndex(GroupTable.ID)));
+                group.setName(groupCursor.getString(groupCursor.getColumnIndex(GroupTable.NAME)));
+                group.setPhoto100(groupCursor.getString(groupCursor.getColumnIndex(GroupTable.PHOTO_100)));
 
-        if (groupCursor.moveToFirst()) {
-            Group group = new Group();
-            group.setId(groupCursor.getInt(groupCursor.getColumnIndex(GroupTable.ID)));
-            group.setName(groupCursor.getString(groupCursor.getColumnIndex(GroupTable.NAME)));
-            group.setPhoto100(groupCursor.getString(groupCursor.getColumnIndex(GroupTable.PHOTO_100)));
+                resultCallback.onResult(group);
 
-            resultCallback.onResult(group);
+                return true;
+            }
 
-            return true;
+            return false;
         }
-
-        return false;
     }
 
     private static void putGroupInDatabase(final Group group, @Nullable final ContentValues customContentValues) {
@@ -212,35 +212,36 @@ public class VkRepository {
     }
 
     private static boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
-        final Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size));
+        try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
 
-        if (friendsCursor.getCount() > 0) {
-            List<User> friendList = new ArrayList<>();
+            if (friendsCursor.getCount() > 0) {
+                List<User> friendList = new ArrayList<>();
 
-            while (friendsCursor.moveToNext()) {
-                User user = new User();
-                user.setId(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ID)));
-                user.setFirstName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.FIRST_NAME)));
-                user.setLastName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.LAST_NAME)));
-                user.setOnline(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ONLINE)));
-                user.setPhoto100Url(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-                user.setPhotoMaxUrl(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
-                Parcel parcel = Parcel.obtain();
-                byte[] bytes = friendsCursor.getBlob(friendsCursor.getColumnIndex(UserTable.CROP_PHOTO));
-                parcel.unmarshall(bytes, 0, bytes.length);
-                parcel.setDataPosition(0);
-                user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
-                parcel.recycle();
+                while (friendsCursor.moveToNext()) {
+                    User user = new User();
+                    user.setId(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ID)));
+                    user.setFirstName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.FIRST_NAME)));
+                    user.setLastName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.LAST_NAME)));
+                    user.setOnline(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ONLINE)) > 0);
+                    user.setPhoto100Url(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
+                    user.setPhotoMaxUrl(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+                    Parcel parcel = Parcel.obtain();
+                    byte[] bytes = friendsCursor.getBlob(friendsCursor.getColumnIndex(UserTable.CROP_PHOTO));
+                    parcel.unmarshall(bytes, 0, bytes.length);
+                    parcel.setDataPosition(0);
+                    user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
+                    parcel.recycle();
 
-                friendList.add(user);
+                    friendList.add(user);
+                }
+
+                resultCallback.onResult(friendList);
+
+                return true;
             }
 
-            resultCallback.onResult(friendList);
-
-            return true;
+            return false;
         }
-
-        return false;
     }
 
     private static void putFriendInDatabase(final User friend, @NonNull final ContentValues contentValues) {
@@ -251,91 +252,91 @@ public class VkRepository {
     }
 
     public static void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
-//        int startPosition = 0;
-//
-//        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
-//            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
-//        }
-//
-//        final Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size));
-//
-//        if (newsCursor.getCount() > 0) {
-//            List<News> newsList = new ArrayList<>();
-//
-//            while (newsCursor.moveToNext()) {
-//                News news = new News();
-//                news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
-//                news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
-//                news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
-//                news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
-//                news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
-//
-//                Parcel parcel = Parcel.obtain();
-//                byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COPY_HISTORY));
-//                if (bytes != null) {
-//                    parcel.unmarshall(bytes, 0, bytes.length);
-//                    parcel.setDataPosition(0);
-//                    try {
-//                        news.setCopyHistory(Arrays.asList((News[]) parcel.readParcelableArray(News.class.getClassLoader())));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                parcel.recycle();
-//
-//                parcel = Parcel.obtain();
-//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COMMENTS));
-//                parcel.unmarshall(bytes, 0, bytes.length);
-//                parcel.setDataPosition(0);
-//                news.setComments((Comments) parcel.readParcelable(Comments.class.getClassLoader()));
-//                parcel.recycle();
-//
-//                parcel = Parcel.obtain();
-//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.LIKES));
-//                parcel.unmarshall(bytes, 0, bytes.length);
-//                parcel.setDataPosition(0);
-//                news.setLikes((Likes) parcel.readParcelable(Likes.class.getClassLoader()));
-//                parcel.recycle();
-//
-//                parcel = Parcel.obtain();
-//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.REPOSTS));
-//                parcel.unmarshall(bytes, 0, bytes.length);
-//                parcel.setDataPosition(0);
-//                news.setReposts((Reposts) parcel.readParcelable(Reposts.class.getClassLoader()));
-//                parcel.recycle();
-//
-//                parcel = Parcel.obtain();
-//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.VIEWS));
-//                parcel.unmarshall(bytes, 0, bytes.length);
-//                parcel.setDataPosition(0);
-//                news.setViews((Views) parcel.readParcelable(Views.class.getClassLoader()));
-//                parcel.recycle();
-//
-//                parcel = Parcel.obtain();
-//                bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.ATTACHMENTS));
-//                if (bytes != null) {
-//                    parcel.unmarshall(bytes, 0, bytes.length);
-//                    parcel.setDataPosition(0);
-//                    try {
-//                        news.setAttachments(Arrays.asList((Attachment[]) parcel.readParcelableArray(Attachment.class.getClassLoader())));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                parcel.recycle();
-//
-//                newsList.add(news);
-//            }
-//
-//            NewsResponse newsResponse = new NewsResponse();
-//
-//            newsResponse.getResponse().setNewsList(newsList);
-//            newsResponse.getResponse().setNextFrom(startPosition + newsList.size() + STRING_SLASH);
-//
-//            resultCallback.onResult(newsResponse.getResponse());
-//
-//            return;
-//        }
+        int startPosition = 0;
+
+        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
+            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
+        }
+
+        try (Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size))) {
+            if (newsCursor.getCount() > 0) {
+                List<News> newsList = new ArrayList<>();
+
+                while (newsCursor.moveToNext()) {
+                    News news = new News();
+                    news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
+                    news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
+                    news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
+                    news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
+                    news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
+
+                    Parcel parcel = Parcel.obtain();
+                    byte[] bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COPY_HISTORY));
+                    if (bytes != null) {
+                        parcel.unmarshall(bytes, 0, bytes.length);
+                        parcel.setDataPosition(0);
+                        try {
+                            news.setCopyHistory(Arrays.asList((News[]) parcel.readParcelableArray(News.class.getClassLoader())));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    parcel.recycle();
+
+                    parcel = Parcel.obtain();
+                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.COMMENTS));
+                    parcel.unmarshall(bytes, 0, bytes.length);
+                    parcel.setDataPosition(0);
+                    news.setComments((Comments) parcel.readParcelable(Comments.class.getClassLoader()));
+                    parcel.recycle();
+
+                    parcel = Parcel.obtain();
+                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.LIKES));
+                    parcel.unmarshall(bytes, 0, bytes.length);
+                    parcel.setDataPosition(0);
+                    news.setLikes((Likes) parcel.readParcelable(Likes.class.getClassLoader()));
+                    parcel.recycle();
+
+                    parcel = Parcel.obtain();
+                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.REPOSTS));
+                    parcel.unmarshall(bytes, 0, bytes.length);
+                    parcel.setDataPosition(0);
+                    news.setReposts((Reposts) parcel.readParcelable(Reposts.class.getClassLoader()));
+                    parcel.recycle();
+
+                    parcel = Parcel.obtain();
+                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.VIEWS));
+                    parcel.unmarshall(bytes, 0, bytes.length);
+                    parcel.setDataPosition(0);
+                    news.setViews((Views) parcel.readParcelable(Views.class.getClassLoader()));
+                    parcel.recycle();
+
+                    parcel = Parcel.obtain();
+                    bytes = newsCursor.getBlob(newsCursor.getColumnIndex(NewsTable.ATTACHMENTS));
+                    if (bytes != null) {
+                        parcel.unmarshall(bytes, 0, bytes.length);
+                        parcel.setDataPosition(0);
+                        try {
+                            news.setAttachments(Arrays.asList((Attachment[]) parcel.readParcelableArray(Attachment.class.getClassLoader())));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    parcel.recycle();
+
+                    newsList.add(news);
+                }
+
+                NewsResponse newsResponse = new NewsResponse();
+
+                newsResponse.getResponse().setNewsList(newsList);
+                newsResponse.getResponse().setNextFrom(startPosition + newsList.size() + STRING_SLASH);
+
+                resultCallback.onResult(newsResponse.getResponse());
+
+                return;
+            }
+        }
 
         getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override

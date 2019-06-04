@@ -1,4 +1,4 @@
-package com.my.vkclient.ui.utils;
+package com.my.vkclient.ui.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -32,13 +32,13 @@ class FriendViewHolder extends RecyclerView.ViewHolder {
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
         ImageLoader.getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0);
 
-        if (user.getOnline() == 0) {
-            if (onlineStatusImageView.getVisibility() != View.GONE) {
-                onlineStatusImageView.setVisibility(View.GONE);
-            }
-        } else {
+        if (user.getOnline()) {
             if (onlineStatusImageView.getVisibility() != View.VISIBLE) {
                 onlineStatusImageView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (onlineStatusImageView.getVisibility() != View.GONE) {
+                onlineStatusImageView.setVisibility(View.GONE);
             }
         }
     }

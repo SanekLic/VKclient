@@ -15,7 +15,7 @@ import com.my.vkclient.R;
 import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.ui.activity.UserActivity;
-import com.my.vkclient.ui.utils.FriendRecyclerViewAdapter;
+import com.my.vkclient.ui.adapters.FriendRecyclerViewAdapter;
 
 public class FriendsFragment extends Fragment {
     private FriendRecyclerViewAdapter friendRecyclerViewAdapter;

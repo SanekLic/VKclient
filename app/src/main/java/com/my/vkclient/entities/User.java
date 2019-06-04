@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-
 public class User implements Parcelable {
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
@@ -22,7 +20,7 @@ public class User implements Parcelable {
     @SerializedName("id")
     private int id;
     @SerializedName("online")
-    private int online;
+    private Boolean online;
     @SerializedName("first_name")
     private String firstName;
     @SerializedName("last_name")
@@ -39,7 +37,8 @@ public class User implements Parcelable {
 
     protected User(Parcel in) {
         id = in.readInt();
-        online = in.readInt();
+        byte tmpOnline = in.readByte();
+        online = tmpOnline == 0 ? null : tmpOnline == 1;
         firstName = in.readString();
         lastName = in.readString();
         photoMaxUrl = in.readString();
@@ -50,7 +49,7 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(online);
+        dest.writeByte((byte) (online == null ? 0 : online ? 1 : 2));
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(photoMaxUrl);
@@ -71,11 +70,11 @@ public class User implements Parcelable {
         this.id = id;
     }
 
-    public int getOnline() {
+    public Boolean getOnline() {
         return online;
     }
 
-    public void setOnline(int online) {
+    public void setOnline(Boolean online) {
         this.online = online;
     }
 

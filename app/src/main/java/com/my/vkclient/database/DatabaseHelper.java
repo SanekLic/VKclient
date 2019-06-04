@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.fields.dbAutoincrement;
+import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbFloat;
 import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbParcelable;
@@ -24,8 +25,9 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.my.vkclient.Constants.Database.DROP_TABLE_IF_EXISTS;
 import static com.my.vkclient.Constants.Database.FIELD_DONT_HAVE_TYPE_ANNOTATION;
-import static com.my.vkclient.Constants.Database.UPGRADE_NOT_SUPPORTED;
+import static com.my.vkclient.Constants.Database.SQL_TABLE_CREATE_TEMPLATE;
 import static com.my.vkclient.Constants.STRING_COMMA;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.STRING_SPACE;
@@ -60,6 +62,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
                 for (final Annotation typeAnnotation : annotations) {
                     if (typeAnnotation instanceof dbString) {
                         type = ((dbString) typeAnnotation).name();
+                    } else if (typeAnnotation instanceof dbBoolean) {
+                        type = ((dbBoolean) typeAnnotation).name();
                     } else if (typeAnnotation instanceof dbInt) {
                         type = ((dbInt) typeAnnotation).name();
                     } else if (typeAnnotation instanceof dbFloat) {
@@ -101,7 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
                 }
             }
 
-            return String.format(Constants.Database.SQL_TABLE_CREATE_TEMPLATE, tableName, builder.toString());
+            return String.format(SQL_TABLE_CREATE_TEMPLATE, tableName, builder.toString());
         } else {
             return STRING_EMPTY;
         }
@@ -118,7 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
     }
 
     @Override
-    public void onCreate(final SQLiteDatabase sqLiteDatabase) {
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
         for (final Class<?> table : getTables()) {
 
             final String createTableString = getCreateTableString(table);
@@ -130,26 +134,29 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
     }
 
     @Override
-    public void onUpgrade(final SQLiteDatabase sqLiteDatabase, final int oldVersion, final int newVersion) {
-        throw new UnsupportedOperationException(UPGRADE_NOT_SUPPORTED);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        dropAllTable(sqLiteDatabase);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        dropAllTable(sqLiteDatabase);
+    }
+
+    private void dropAllTable(SQLiteDatabase sqLiteDatabase) {
+        for (final Class<?> table : getTables()) {
+            String format = String.format(DROP_TABLE_IF_EXISTS, getTableName(table));
+            sqLiteDatabase.execSQL(format);
+        }
+
+        onCreate(sqLiteDatabase);
     }
 
     @Override
     public Cursor query(final String sql, final String... selectionArgs) {
         final SQLiteDatabase readableDatabase = getReadableDatabase();
 
-        readableDatabase.beginTransaction();
-
-        final Cursor cursor;
-
-        try {
-            cursor = readableDatabase.rawQuery(sql, selectionArgs);
-            readableDatabase.setTransactionSuccessful();
-        } finally {
-            readableDatabase.endTransaction();
-        }
-
-        return cursor;
+        return readableDatabase.rawQuery(sql, selectionArgs);
     }
 
     @Override

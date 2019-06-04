@@ -1,4 +1,4 @@
-package com.my.vkclient.ui.utils;
+package com.my.vkclient.ui.adapters;
 
 import android.support.v7.util.DiffUtil;
 

@@ -20,17 +20,18 @@ public class Reposts implements Parcelable {
     @SerializedName("count")
     private int count;
     @SerializedName("user_reposted")
-    private int userReposted;
+    private Boolean userReposted;
 
     protected Reposts(Parcel in) {
         count = in.readInt();
-        userReposted = in.readInt();
+        byte tmpUserReposted = in.readByte();
+        userReposted = tmpUserReposted == 0 ? null : tmpUserReposted == 1;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(count);
-        dest.writeInt(userReposted);
+        dest.writeByte((byte) (userReposted == null ? 0 : userReposted ? 1 : 2));
     }
 
     @Override
@@ -42,8 +43,7 @@ public class Reposts implements Parcelable {
         return count;
     }
 
-    public int getUserReposted() {
+    public Boolean getUserReposted() {
         return userReposted;
     }
-
 }

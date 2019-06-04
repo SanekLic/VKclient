@@ -13,8 +13,13 @@ import java.util.List;
 
 public class GsonAdapter {
 
+    private static Gson gson = new Gson().newBuilder()
+            .registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter())
+            .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
+            .create();
+
     public static List<User> getFriendsFromJson(String jsonFriends) {
-        FriendResponse friendResponse = new Gson().fromJson(jsonFriends, FriendResponse.class);
+        FriendResponse friendResponse = gson.fromJson(jsonFriends, FriendResponse.class);
 
         if (friendResponse == null || friendResponse.getResponse() == null) {
             return null;
@@ -24,7 +29,7 @@ public class GsonAdapter {
     }
 
     public static User getUserFromJson(String jsonUser) {
-        UserResponse userResponse = new Gson().fromJson(jsonUser, UserResponse.class);
+        UserResponse userResponse = gson.fromJson(jsonUser, UserResponse.class);
 
         if (userResponse == null || userResponse.getUserList() == null) {
             return null;
@@ -34,7 +39,7 @@ public class GsonAdapter {
     }
 
     public static Group getGroupFromJson(String jsonGroup) {
-        GroupResponse groupResponse = new Gson().fromJson(jsonGroup, GroupResponse.class);
+        GroupResponse groupResponse = gson.fromJson(jsonGroup, GroupResponse.class);
 
         if (groupResponse == null || groupResponse.getGroupList() == null) {
             return null;
@@ -44,8 +49,6 @@ public class GsonAdapter {
     }
 
     public static NewsResponse.Response getNewsFromJson(String jsonNews) {
-        Gson gson = new Gson().newBuilder().registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter()).create();
-
         NewsResponse newsResponse = gson.fromJson(jsonNews, NewsResponse.class);
 
         if (newsResponse == null) {

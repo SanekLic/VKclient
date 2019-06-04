@@ -1,6 +1,5 @@
-package com.my.vkclient.ui.utils;
+package com.my.vkclient.ui.adapters;
 
-import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 
 import com.my.vkclient.entities.News;

@@ -20,25 +20,28 @@ public class Likes implements Parcelable {
     @SerializedName("count")
     private int count;
     @SerializedName("user_likes")
-    private int userLikes;
+    private Boolean userLikes;
     @SerializedName("can_like")
-    private int canLike;
+    private Boolean canLike;
     @SerializedName("can_publish")
-    private int canPublish;
+    private Boolean canPublish;
 
     protected Likes(Parcel in) {
         count = in.readInt();
-        userLikes = in.readInt();
-        canLike = in.readInt();
-        canPublish = in.readInt();
+        byte tmpUserLikes = in.readByte();
+        userLikes = tmpUserLikes == 0 ? null : tmpUserLikes == 1;
+        byte tmpCanLike = in.readByte();
+        canLike = tmpCanLike == 0 ? null : tmpCanLike == 1;
+        byte tmpCanPublish = in.readByte();
+        canPublish = tmpCanPublish == 0 ? null : tmpCanPublish == 1;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(count);
-        dest.writeInt(userLikes);
-        dest.writeInt(canLike);
-        dest.writeInt(canPublish);
+        dest.writeByte((byte) (userLikes == null ? 0 : userLikes ? 1 : 2));
+        dest.writeByte((byte) (canLike == null ? 0 : canLike ? 1 : 2));
+        dest.writeByte((byte) (canPublish == null ? 0 : canPublish ? 1 : 2));
     }
 
     @Override
@@ -50,15 +53,15 @@ public class Likes implements Parcelable {
         return count;
     }
 
-    public int getUserLikes() {
+    public Boolean getUserLikes() {
         return userLikes;
     }
 
-    public int getCanLike() {
+    public Boolean getCanLike() {
         return canLike;
     }
 
-    public int getCanPublish() {
+    public Boolean getCanPublish() {
         return canPublish;
     }
 }

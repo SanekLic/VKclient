@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.ui.utils.NewsRecyclerViewAdapter;
+import com.my.vkclient.ui.adapters.NewsRecyclerViewAdapter;
 
 public class NewsFragment extends Fragment {
     @Override

@@ -20,17 +20,18 @@ public class Comments implements Parcelable {
     @SerializedName("count")
     private int count;
     @SerializedName("can_post")
-    private int canPost;
+    private Boolean canPost;
 
     protected Comments(Parcel in) {
         count = in.readInt();
-        canPost = in.readInt();
+        byte tmpCanPost = in.readByte();
+        canPost = tmpCanPost == 0 ? null : tmpCanPost == 1;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(count);
-        dest.writeInt(canPost);
+        dest.writeByte((byte) (canPost == null ? 0 : canPost ? 1 : 2));
     }
 
     @Override
@@ -42,7 +43,7 @@ public class Comments implements Parcelable {
         return count;
     }
 
-    public int getCanPost() {
+    public Boolean getCanPost() {
         return canPost;
     }
 }

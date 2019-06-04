@@ -15,8 +15,6 @@ import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
-import java.util.List;
-
 import static com.my.vkclient.Constants.STRING_SPACE;
 import static com.my.vkclient.Constants.USER_ID_INTENT_KEY;
 

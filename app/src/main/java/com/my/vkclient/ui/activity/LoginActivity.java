@@ -8,10 +8,10 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.ui.utils.LoginWebViewCallback;
+import com.my.vkclient.ui.adapters.LoginWebViewCallback;
 import com.my.vkclient.R;
 import com.my.vkclient.Repository.VkRepository;
-import com.my.vkclient.ui.utils.LoginWebViewClient;
+import com.my.vkclient.ui.adapters.LoginWebViewClient;
 
 public class LoginActivity extends AppCompatActivity {
     private WebView loginWebView;

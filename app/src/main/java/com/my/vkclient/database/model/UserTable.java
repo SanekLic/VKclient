@@ -2,8 +2,9 @@ package com.my.vkclient.database.model;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
-import com.my.vkclient.database.fields.dbParcelable;
+import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbInt;
+import com.my.vkclient.database.fields.dbParcelable;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 
@@ -13,7 +14,7 @@ public class UserTable {
     @dbPrimaryKey
     public static final String ID = "ID";
 
-    @dbInt
+    @dbBoolean
     public static final String ONLINE = "ONLINE";
 
     @dbString
