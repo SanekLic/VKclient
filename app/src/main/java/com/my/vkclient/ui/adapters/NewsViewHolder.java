@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
-import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;

@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.utils.ResultCallback;
-import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +40,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_friend, parent, false);
 
-        return new FriendViewHolder(view);
-    }
-
-    @Override
-    public void onViewAttachedToWindow(@NonNull final FriendViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
+        final FriendViewHolder holder = new FriendViewHolder(view);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +53,14 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
                 }
             }
         });
+
+        return holder;
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull final FriendViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+
         validateLoadMoreItems();
     }
 

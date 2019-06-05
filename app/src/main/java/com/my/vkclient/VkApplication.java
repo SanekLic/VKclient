@@ -2,7 +2,7 @@ package com.my.vkclient;
 
 import android.app.Application;
 
-import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.repository.VkRepository;
 
 public class VkApplication extends Application {
     @Override

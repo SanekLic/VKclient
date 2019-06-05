@@ -8,10 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.my.vkclient.R;
-import com.my.vkclient.Repository.VkRepository;
 import com.my.vkclient.entities.CropPhoto;
-import com.my.vkclient.entities.Size;
+import com.my.vkclient.entities.Rect;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
@@ -58,15 +58,15 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void setMaxSizePhotoToImageView(CropPhoto cropPhoto) {
-        Size showSize = cropPhoto.getPhoto().getSizes().get(0);
+//        Size showSize = cropPhoto.getPhoto().getSizes().get(0);
+//
+//        for (Size size : cropPhoto.getPhoto().getSizes()) {
+//            if (size.getWidth() > showSize.getWidth()) {
+//                showSize = size;
+//            }
+//        }
 
-        for (Size size : cropPhoto.getPhoto().getSizes()) {
-            if (size.getWidth() > showSize.getWidth()) {
-                showSize = size;
-            }
-        }
-
-        userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, cropPhoto.getRect());
-        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
+        userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, new Rect(cropPhoto.getCropRectX(), cropPhoto.getCropRectY(), cropPhoto.getCropRectX2(), cropPhoto.getCropRectY2()));
+        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, cropPhoto.getCropPhotoUrl(), cropPhoto.getCropPhotoWidth(), cropPhoto.getCropPhotoHeight());
     }
 }

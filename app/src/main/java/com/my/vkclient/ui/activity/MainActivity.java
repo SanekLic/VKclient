@@ -4,20 +4,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.my.vkclient.R;
+import com.my.vkclient.ui.adapters.ViewPagerAdapter;
 import com.my.vkclient.ui.fragment.FriendsFragment;
 import com.my.vkclient.ui.fragment.NewsFragment;
 import com.my.vkclient.ui.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NewsFragment newsFragment;
-    private FriendsFragment friendsFragment;
-    private SettingsFragment settingsFragment;
+    private ViewPager contentViewPager;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,42 +25,59 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        setupFragment();
+        setupViewPager();
         setupBottomNavigation();
     }
 
-    private void setupFragment() {
-        newsFragment = new NewsFragment();
-        friendsFragment = new FriendsFragment();
-        settingsFragment = new SettingsFragment();
+    private void setupViewPager() {
+        contentViewPager = findViewById(R.id.contentViewPager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragment(new NewsFragment());
+        viewPagerAdapter.addFragment(new FriendsFragment());
+        viewPagerAdapter.addFragment(new SettingsFragment());
+        contentViewPager.setAdapter(viewPagerAdapter);
+        contentViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                bottomNavigationView.setSelected(false);
+                bottomNavigationView.getMenu().getItem(i).setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
                 switch (menuItem.getItemId()) {
                     case R.id.action_news:
-                        fragmentTransaction.replace(R.id.contentFrameLayout, newsFragment);
+                        contentViewPager.setCurrentItem(0);
 
-                        break;
+                        return true;
                     case R.id.action_friends:
-                        fragmentTransaction.replace(R.id.contentFrameLayout, friendsFragment);
+                        contentViewPager.setCurrentItem(1);
 
-                        break;
+                        return true;
                     case R.id.action_settings:
-                        fragmentTransaction.replace(R.id.contentFrameLayout, settingsFragment);
+                        contentViewPager.setCurrentItem(2);
 
-                        break;
+                        return true;
                 }
 
-                fragmentTransaction.commit();
-                return true;
+                return false;
             }
         });
     }

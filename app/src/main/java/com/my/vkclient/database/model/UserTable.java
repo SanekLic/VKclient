@@ -3,8 +3,8 @@ package com.my.vkclient.database.model;
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
 import com.my.vkclient.database.fields.dbBoolean;
+import com.my.vkclient.database.fields.dbFloat;
 import com.my.vkclient.database.fields.dbInt;
-import com.my.vkclient.database.fields.dbParcelable;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 
@@ -29,6 +29,24 @@ public class UserTable {
     @dbString
     public static final String PHOTO_100_URL = "PHOTO_100_URL";
 
-    @dbParcelable
-    public static final String CROP_PHOTO = "CROP_PHOTO";
+    @dbString
+    public static final String CROP_PHOTO_URL = "CROP_PHOTO_URL";
+
+    @dbInt
+    public static final String CROP_PHOTO_WIDTH = "CROP_PHOTO_WIDTH";
+
+    @dbInt
+    public static final String CROP_PHOTO_HEIGHT = "CROP_PHOTO_HEIGHT";
+
+    @dbFloat
+    public static final String CROP_RECT_X = "CROP_RECT_X";
+
+    @dbFloat
+    public static final String CROP_RECT_Y = "CROP_RECT_Y";
+
+    @dbFloat
+    public static final String CROP_RECT_X_2 = "CROP_RECT_X_2";
+
+    @dbFloat
+    public static final String CROP_RECT_Y_2 = "CROP_RECT_Y_2";
 }

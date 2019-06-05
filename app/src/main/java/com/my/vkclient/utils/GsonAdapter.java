@@ -1,6 +1,7 @@
 package com.my.vkclient.utils;
 
 import com.google.gson.Gson;
+import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.FriendResponse;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.GroupResponse;
@@ -12,13 +13,26 @@ import com.my.vkclient.entities.VkDate;
 import java.util.List;
 
 public class GsonAdapter {
+    private static GsonAdapter instance;
+    private Gson gson;
 
-    private static Gson gson = new Gson().newBuilder()
-            .registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter())
-            .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
-            .create();
+    private GsonAdapter() {
+        gson = new Gson().newBuilder()
+                .registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter())
+                .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
+                .registerTypeAdapter(CropPhoto.class, new CropPhotoGsonTypeAdapter())
+                .create();
+    }
 
-    public static List<User> getFriendsFromJson(String jsonFriends) {
+    public static GsonAdapter getInstance() {
+        if (instance == null) {
+            instance = new GsonAdapter();
+        }
+
+        return instance;
+    }
+
+    public List<User> getFriendsFromJson(String jsonFriends) {
         FriendResponse friendResponse = gson.fromJson(jsonFriends, FriendResponse.class);
 
         if (friendResponse == null || friendResponse.getResponse() == null) {
@@ -28,7 +42,7 @@ public class GsonAdapter {
         return friendResponse.getResponse().getUserList();
     }
 
-    public static User getUserFromJson(String jsonUser) {
+    public User getUserFromJson(String jsonUser) {
         UserResponse userResponse = gson.fromJson(jsonUser, UserResponse.class);
 
         if (userResponse == null || userResponse.getUserList() == null) {
@@ -38,7 +52,7 @@ public class GsonAdapter {
         return userResponse.getUserList().get(0);
     }
 
-    public static Group getGroupFromJson(String jsonGroup) {
+    public Group getGroupFromJson(String jsonGroup) {
         GroupResponse groupResponse = gson.fromJson(jsonGroup, GroupResponse.class);
 
         if (groupResponse == null || groupResponse.getGroupList() == null) {
@@ -48,7 +62,7 @@ public class GsonAdapter {
         return groupResponse.getGroupList().get(0);
     }
 
-    public static NewsResponse.Response getNewsFromJson(String jsonNews) {
+    public NewsResponse.Response getNewsFromJson(String jsonNews) {
         NewsResponse newsResponse = gson.fromJson(jsonNews, NewsResponse.class);
 
         if (newsResponse == null) {

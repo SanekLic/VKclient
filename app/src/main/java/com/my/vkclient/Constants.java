@@ -10,8 +10,9 @@ public interface Constants {
     String STRING_EMPTY = "";
     String STRING_SPACE = " ";
     String STRING_SLASH = "/";
-    int INT_THOUSAND = 1000;
     String USER_ID_INTENT_KEY = "UserId";
+    int INT_THOUSAND = 1000;
+    int PERCENTAGE = 100;
 
     interface Database {
         String USER_TABLE_NAME = "USER_TABLE_NAME";
@@ -22,7 +23,7 @@ public interface Constants {
         String DATABASE_NAME = "VK_DATABASE";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 1;
+        int DATABASE_VERSION = 2;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";

@@ -8,9 +8,9 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.ui.adapters.LoginWebViewCallback;
 import com.my.vkclient.R;
-import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.repository.VkRepository;
+import com.my.vkclient.ui.adapters.LoginWebViewCallback;
 import com.my.vkclient.ui.adapters.LoginWebViewClient;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,26 +33,16 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
                 VkRepository.getInstance().setAccessToken(receivedAccessToken);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
 
-                        finish();
-                    }
-                });
+                finish();
             }
 
             @Override
             public void onLoadingFinished() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loginWebView.setVisibility(View.VISIBLE);
-                        loginProgressBar.setVisibility(View.GONE);
-                    }
-                });
+                loginWebView.setVisibility(View.VISIBLE);
+                loginProgressBar.setVisibility(View.GONE);
             }
         });
 

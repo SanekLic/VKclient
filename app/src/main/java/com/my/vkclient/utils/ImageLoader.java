@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Rect;
 
@@ -25,7 +26,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ImageLoader {
-    private static final int PERCENTAGE = 100;
     private static ImageLoader instance;
     private final LruCache<String, Bitmap> lruCache;
     private Executor executor;
@@ -153,10 +153,10 @@ public class ImageLoader {
     private Bitmap cropBitmap(Bitmap input, Rect crop) {
         int width = input.getWidth();
         int height = input.getHeight();
-        float x = width * crop.getX() / PERCENTAGE;
-        float y = height * crop.getY() / PERCENTAGE;
-        float x2 = width * crop.getX2() / PERCENTAGE;
-        float y2 = height * crop.getY2() / PERCENTAGE;
+        float x = width * crop.getX() / Constants.PERCENTAGE;
+        float y = height * crop.getY() / Constants.PERCENTAGE;
+        float x2 = width * crop.getX2() / Constants.PERCENTAGE;
+        float y2 = height * crop.getY2() / Constants.PERCENTAGE;
         Bitmap output = Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
 
         return output;
@@ -172,9 +172,9 @@ public class ImageLoader {
             Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
 
             if (crop != null) {
-                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888), crop));
+                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8), crop));
             } else {
-                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ARGB_8888));
+                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8));
             }
         }
 

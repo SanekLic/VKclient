@@ -1,4 +1,4 @@
-package com.my.vkclient.Repository;
+package com.my.vkclient.repository;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,16 +14,12 @@ import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
 import com.my.vkclient.database.model.UserTable;
 import com.my.vkclient.entities.Attachment;
-import com.my.vkclient.entities.Comments;
 import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Group;
-import com.my.vkclient.entities.Likes;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
-import com.my.vkclient.entities.Reposts;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.entities.Views;
-import com.my.vkclient.entities.VkDate;
+import com.my.vkclient.utils.GsonAdapter;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -32,7 +28,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -49,11 +44,6 @@ import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
 import static com.my.vkclient.Constants.STRING_COMMA;
 import static com.my.vkclient.Constants.STRING_EQUALS;
 import static com.my.vkclient.Constants.STRING_QUESTION;
-import static com.my.vkclient.Constants.STRING_SLASH;
-import static com.my.vkclient.utils.GsonAdapter.getFriendsFromJson;
-import static com.my.vkclient.utils.GsonAdapter.getGroupFromJson;
-import static com.my.vkclient.utils.GsonAdapter.getNewsFromJson;
-import static com.my.vkclient.utils.GsonAdapter.getUserFromJson;
 
 public class VkRepository {
     private static VkRepository instance;
@@ -96,7 +86,7 @@ public class VkRepository {
                 getResultStringFromUrl(getUserRequest(userId), new ResultCallback<String>() {
                     @Override
                     public void onResult(String result) {
-                        User user = getUserFromJson(result);
+                        User user = GsonAdapter.getInstance().getUserFromJson(result);
                         resultCallback.onResult(user);
 
                         if (user != null) {
@@ -111,21 +101,7 @@ public class VkRepository {
     private boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
         try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID), String.valueOf(userId))) {
             if (userCursor.moveToFirst()) {
-                User user = new User();
-                user.setId(userCursor.getInt(userCursor.getColumnIndex(UserTable.ID)));
-                user.setFirstName(userCursor.getString(userCursor.getColumnIndex(UserTable.FIRST_NAME)));
-                user.setLastName(userCursor.getString(userCursor.getColumnIndex(UserTable.LAST_NAME)));
-                user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)) > 0);
-                user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-                user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
-                Parcel parcel = Parcel.obtain();
-                byte[] bytes = userCursor.getBlob(userCursor.getColumnIndex(UserTable.CROP_PHOTO));
-                parcel.unmarshall(bytes, 0, bytes.length);
-                parcel.setDataPosition(0);
-                user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
-                parcel.recycle();
-
-                resultCallback.onResult(user);
+                resultCallback.onResult(getUserFromCursor(userCursor));
 
                 return true;
             }
@@ -143,10 +119,17 @@ public class VkRepository {
         contentValues.put(UserTable.ONLINE, user.getOnline());
         contentValues.put(UserTable.PHOTO_100_URL, user.getPhoto100Url());
         contentValues.put(UserTable.PHOTO_MAX_URL, user.getPhotoMaxUrl());
-        Parcel parcel = Parcel.obtain();
-        parcel.writeParcelable(user.getCropPhoto(), 0);
-        contentValues.put(UserTable.CROP_PHOTO, parcel.marshall());
-        parcel.recycle();
+
+        if (user.getCropPhoto() != null) {
+            contentValues.put(UserTable.CROP_PHOTO_URL, user.getCropPhoto().getCropPhotoUrl());
+            contentValues.put(UserTable.CROP_PHOTO_HEIGHT, user.getCropPhoto().getCropPhotoHeight());
+            contentValues.put(UserTable.CROP_PHOTO_WIDTH, user.getCropPhoto().getCropPhotoWidth());
+            contentValues.put(UserTable.CROP_RECT_X, user.getCropPhoto().getCropRectX());
+            contentValues.put(UserTable.CROP_RECT_X_2, user.getCropPhoto().getCropRectX2());
+            contentValues.put(UserTable.CROP_RECT_Y, user.getCropPhoto().getCropRectY());
+            contentValues.put(UserTable.CROP_RECT_Y_2, user.getCropPhoto().getCropRectY2());
+        }
+
         databaseHelper.insert(USER_TABLE_NAME, contentValues);
     }
 
@@ -162,7 +145,7 @@ public class VkRepository {
                 getResultStringFromUrl(getGroupRequest(groupId), new ResultCallback<String>() {
                     @Override
                     public void onResult(String result) {
-                        Group group = getGroupFromJson(result);
+                        Group group = GsonAdapter.getInstance().getGroupFromJson(result);
                         resultCallback.onResult(group);
 
                         if (group != null) {
@@ -208,7 +191,7 @@ public class VkRepository {
         getResultStringFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                List<User> friends = getFriendsFromJson(result);
+                List<User> friends = GsonAdapter.getInstance().getFriendsFromJson(result);
                 resultCallback.onResult(friends);
 
                 if (friends != null) {
@@ -230,21 +213,7 @@ public class VkRepository {
                 List<User> friendList = new ArrayList<>();
 
                 while (friendsCursor.moveToNext()) {
-                    User user = new User();
-                    user.setId(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ID)));
-                    user.setFirstName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.FIRST_NAME)));
-                    user.setLastName(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.LAST_NAME)));
-                    user.setOnline(friendsCursor.getInt(friendsCursor.getColumnIndex(UserTable.ONLINE)) > 0);
-                    user.setPhoto100Url(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-                    user.setPhotoMaxUrl(friendsCursor.getString(friendsCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
-                    Parcel parcel = Parcel.obtain();
-                    byte[] bytes = friendsCursor.getBlob(friendsCursor.getColumnIndex(UserTable.CROP_PHOTO));
-                    parcel.unmarshall(bytes, 0, bytes.length);
-                    parcel.setDataPosition(0);
-                    user.setCropPhoto((CropPhoto) parcel.readParcelable(CropPhoto.class.getClassLoader()));
-                    parcel.recycle();
-
-                    friendList.add(user);
+                    friendList.add(getUserFromCursor(friendsCursor));
                 }
 
                 resultCallback.onResult(friendList);
@@ -254,6 +223,26 @@ public class VkRepository {
 
             return false;
         }
+    }
+
+    private User getUserFromCursor(Cursor userCursor) {
+        User user = new User();
+        user.setId(userCursor.getInt(userCursor.getColumnIndex(UserTable.ID)));
+        user.setFirstName(userCursor.getString(userCursor.getColumnIndex(UserTable.FIRST_NAME)));
+        user.setLastName(userCursor.getString(userCursor.getColumnIndex(UserTable.LAST_NAME)));
+        user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)) > 0);
+        user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
+        user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+        user.setCropPhoto(new CropPhoto());
+        user.getCropPhoto().setCropPhotoUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.CROP_PHOTO_URL)));
+        user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_HEIGHT)));
+        user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_WIDTH)));
+        user.getCropPhoto().setCropRectX(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X)));
+        user.getCropPhoto().setCropRectX2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X_2)));
+        user.getCropPhoto().setCropRectY(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y)));
+        user.getCropPhoto().setCropRectY2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y_2)));
+
+        return user;
     }
 
     private void putFriendInDatabase(final User friend, @NonNull final ContentValues contentValues) {
@@ -353,7 +342,7 @@ public class VkRepository {
         getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                NewsResponse.Response news = getNewsFromJson(result);
+                NewsResponse.Response news = GsonAdapter.getInstance().getNewsFromJson(result);
 
                 if (news != null) {
                     final ContentValues contentValues = new ContentValues();

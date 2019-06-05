@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.Repository.VkRepository;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
