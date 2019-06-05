@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.fields.dbAutoincrement;
@@ -16,6 +15,7 @@ import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbParcelable;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
+import com.my.vkclient.database.model.AttachmentTable;
 import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
@@ -40,7 +40,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
     }
 
     private static List<Class<?>> getTables() {
-        return Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class, NewsTable.class);
+        return Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class,
+                NewsTable.class, AttachmentTable.class);
     }
 
     private String getCreateTableString(final Class<?> tableClass) {

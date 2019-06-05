@@ -33,10 +33,10 @@ public class ImageLoader {
     private ImageLoader() {
         executor = Executors.newCachedThreadPool();
 
-        lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 4)) {
+        lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / Constants.ONE_KB / 4)) {
             @Override
             protected int sizeOf(final String key, final Bitmap value) {
-                return value.getByteCount() / 1024;
+                return value.getByteCount() / Constants.ONE_KB;
             }
         };
     }
@@ -82,7 +82,7 @@ public class ImageLoader {
         try (InputStream urlInputStream = new URL(requestUrl).openStream();
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[Constants.ONE_KB];
             int length;
 
             while ((length = urlInputStream.read(buffer)) != -1) {

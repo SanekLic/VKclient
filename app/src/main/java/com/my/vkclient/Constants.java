@@ -13,12 +13,14 @@ public interface Constants {
     String USER_ID_INTENT_KEY = "UserId";
     int INT_THOUSAND = 1000;
     int PERCENTAGE = 100;
+    int ONE_KB = 1024;
 
     interface Database {
         String USER_TABLE_NAME = "USER_TABLE_NAME";
         String FRIEND_TABLE_NAME = "FRIEND_TABLE_NAME";
         String GROUP_TABLE_NAME = "GROUP_TABLE_NAME";
         String NEWS_TABLE_NAME = "NEWS_TABLE_NAME";
+        String ATTACHMENT_TABLE_NAME = "ATTACHMENT_TABLE_NAME";
 
         String DATABASE_NAME = "VK_DATABASE";
         String PRIMARY_KEY = "PRIMARY KEY";

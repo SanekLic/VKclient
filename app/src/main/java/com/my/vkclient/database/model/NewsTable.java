@@ -3,8 +3,8 @@ package com.my.vkclient.database.model;
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
 import com.my.vkclient.database.fields.dbAutoincrement;
+import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbInt;
-import com.my.vkclient.database.fields.dbParcelable;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 
@@ -30,21 +30,24 @@ public class NewsTable {
     @dbString
     public static final String TEXT = "TEXT";
 
-    @dbParcelable
-    public static final String COPY_HISTORY = "COPY_HISTORY";
+    @dbInt
+    public static final String COPY_NEWS_ID = "COPY_NEWS_ID";
 
-    @dbParcelable
-    public static final String COMMENTS = "COMMENTS";
+    @dbInt
+    public static final String COMMENTS_COUNT = "COMMENTS_COUNT";
 
-    @dbParcelable
-    public static final String LIKES = "LIKES";
+    @dbInt
+    public static final String LIKES_COUNT = "LIKES_COUNT";
 
-    @dbParcelable
-    public static final String REPOSTS = "REPOSTS";
+    @dbBoolean
+    public static final String USER_LIKES = "USER_LIKES";
 
-    @dbParcelable
-    public static final String VIEWS = "VIEWS";
+    @dbBoolean
+    public static final String CAN_LIKE = "CAN_LIKE";
 
-    @dbParcelable
-    public static final String ATTACHMENTS = "ATTACHMENTS";
+    @dbInt
+    public static final String REPOSTS_COUNT = "REPOSTS_COUNT";
+
+    @dbInt
+    public static final String VIEWS_COUNT = "VIEWS_COUNT";
 }

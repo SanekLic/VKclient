@@ -47,7 +47,10 @@ public class UserActivity extends AppCompatActivity {
                                 .append(user.getLastName()).toString());
 
                         if (user.getCropPhoto() != null) {
-                            setMaxSizePhotoToImageView(user.getCropPhoto());
+                            userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, new Rect(user.getCropPhoto().getCropRectX(), user.getCropPhoto().getCropRectY(),
+                                    user.getCropPhoto().getCropRectX2(), user.getCropPhoto().getCropRectY2()));
+                            ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, user.getCropPhoto().getCropPhotoUrl(),
+                                    user.getCropPhoto().getCropPhotoWidth(), user.getCropPhoto().getCropPhotoHeight());
                         } else {
                             ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, user.getPhotoMaxUrl(), 0, 0);
                         }
@@ -55,18 +58,5 @@ public class UserActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private void setMaxSizePhotoToImageView(CropPhoto cropPhoto) {
-//        Size showSize = cropPhoto.getPhoto().getSizes().get(0);
-//
-//        for (Size size : cropPhoto.getPhoto().getSizes()) {
-//            if (size.getWidth() > showSize.getWidth()) {
-//                showSize = size;
-//            }
-//        }
-
-        userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, new Rect(cropPhoto.getCropRectX(), cropPhoto.getCropRectY(), cropPhoto.getCropRectX2(), cropPhoto.getCropRectY2()));
-        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, cropPhoto.getCropPhotoUrl(), cropPhoto.getCropPhotoWidth(), cropPhoto.getCropPhotoHeight());
     }
 }

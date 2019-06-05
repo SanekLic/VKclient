@@ -25,17 +25,11 @@ public class CropPhoto implements Parcelable {
     private Rect crop;
 
     private String cropPhotoUrl;
-
     private int cropPhotoWidth;
-
     private int cropPhotoHeight;
-
     private float cropRectX;
-
     private float cropRectY;
-
     private float cropRectX2;
-
     private float cropRectY2;
 
     public CropPhoto() {
@@ -45,6 +39,27 @@ public class CropPhoto implements Parcelable {
         photo = in.readParcelable(Photo.class.getClassLoader());
         rect = in.readParcelable(Rect.class.getClassLoader());
         crop = in.readParcelable(Rect.class.getClassLoader());
+        cropPhotoUrl = in.readString();
+        cropPhotoWidth = in.readInt();
+        cropPhotoHeight = in.readInt();
+        cropRectX = in.readFloat();
+        cropRectY = in.readFloat();
+        cropRectX2 = in.readFloat();
+        cropRectY2 = in.readFloat();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(photo, flags);
+        dest.writeParcelable(rect, flags);
+        dest.writeParcelable(crop, flags);
+        dest.writeString(cropPhotoUrl);
+        dest.writeInt(cropPhotoWidth);
+        dest.writeInt(cropPhotoHeight);
+        dest.writeFloat(cropRectX);
+        dest.writeFloat(cropRectY);
+        dest.writeFloat(cropRectX2);
+        dest.writeFloat(cropRectY2);
     }
 
     public int getCropPhotoWidth() {
@@ -101,13 +116,6 @@ public class CropPhoto implements Parcelable {
 
     public void setCropRectY2(float cropRectY2) {
         this.cropRectY2 = cropRectY2;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(photo, flags);
-        dest.writeParcelable(rect, flags);
-        dest.writeParcelable(crop, flags);
     }
 
     @Override

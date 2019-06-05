@@ -24,9 +24,40 @@ public class Photo implements Parcelable {
     @SerializedName("sizes")
     private List<Size> sizes;
 
+    private String url;
+    private int width;
+    private int height;
+
+    public Photo() {
+    }
+
     protected Photo(Parcel in) {
         id = in.readInt();
         sizes = in.createTypedArrayList(Size.CREATOR);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
@@ -44,7 +75,15 @@ public class Photo implements Parcelable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public List<Size> getSizes() {
         return sizes;
+    }
+
+    public void setSizes(List<Size> sizes) {
+        this.sizes = sizes;
     }
 }

@@ -3,9 +3,7 @@ package com.my.vkclient.repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.DatabaseHelper;
@@ -13,7 +11,6 @@ import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
 import com.my.vkclient.database.model.UserTable;
-import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
@@ -44,6 +41,7 @@ import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
 import static com.my.vkclient.Constants.STRING_COMMA;
 import static com.my.vkclient.Constants.STRING_EQUALS;
 import static com.my.vkclient.Constants.STRING_QUESTION;
+import static com.my.vkclient.Constants.STRING_SLASH;
 
 public class VkRepository {
     private static VkRepository instance;
@@ -90,7 +88,7 @@ public class VkRepository {
                         resultCallback.onResult(user);
 
                         if (user != null) {
-                            putUserInDatabase(user, null);
+                            putUserInDatabase(user);
                         }
                     }
                 });
@@ -110,16 +108,14 @@ public class VkRepository {
         }
     }
 
-    private void putUserInDatabase(final User user, @Nullable final ContentValues customContentValues) {
-        final ContentValues contentValues = customContentValues != null ? customContentValues : new ContentValues();
-        contentValues.clear();
+    private void putUserInDatabase(final User user) {
+        ContentValues contentValues = new ContentValues();
         contentValues.put(UserTable.ID, user.getId());
         contentValues.put(UserTable.FIRST_NAME, user.getFirstName());
         contentValues.put(UserTable.LAST_NAME, user.getLastName());
         contentValues.put(UserTable.ONLINE, user.getOnline());
         contentValues.put(UserTable.PHOTO_100_URL, user.getPhoto100Url());
         contentValues.put(UserTable.PHOTO_MAX_URL, user.getPhotoMaxUrl());
-
         if (user.getCropPhoto() != null) {
             contentValues.put(UserTable.CROP_PHOTO_URL, user.getCropPhoto().getCropPhotoUrl());
             contentValues.put(UserTable.CROP_PHOTO_HEIGHT, user.getCropPhoto().getCropPhotoHeight());
@@ -149,7 +145,7 @@ public class VkRepository {
                         resultCallback.onResult(group);
 
                         if (group != null) {
-                            putGroupInDatabase(group, null);
+                            putGroupInDatabase(group);
                         }
                     }
                 });
@@ -174,9 +170,8 @@ public class VkRepository {
         }
     }
 
-    private void putGroupInDatabase(final Group group, @Nullable final ContentValues customContentValues) {
-        final ContentValues contentValues = customContentValues != null ? customContentValues : new ContentValues();
-        contentValues.clear();
+    private void putGroupInDatabase(final Group group) {
+        ContentValues contentValues = new ContentValues();
         contentValues.put(GroupTable.ID, group.getId());
         contentValues.put(GroupTable.NAME, group.getName());
         contentValues.put(GroupTable.PHOTO_100, group.getPhoto100());
@@ -195,11 +190,9 @@ public class VkRepository {
                 resultCallback.onResult(friends);
 
                 if (friends != null) {
-                    final ContentValues contentValues = new ContentValues();
-
                     for (User user : friends) {
-                        putFriendInDatabase(user, contentValues);
-                        putUserInDatabase(user, contentValues);
+                        putFriendInDatabase(user);
+                        putUserInDatabase(user);
                     }
                 }
             }
@@ -233,32 +226,35 @@ public class VkRepository {
         user.setOnline(userCursor.getInt(userCursor.getColumnIndex(UserTable.ONLINE)) > 0);
         user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
         user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
-        user.setCropPhoto(new CropPhoto());
-        user.getCropPhoto().setCropPhotoUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.CROP_PHOTO_URL)));
-        user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_HEIGHT)));
-        user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_WIDTH)));
-        user.getCropPhoto().setCropRectX(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X)));
-        user.getCropPhoto().setCropRectX2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X_2)));
-        user.getCropPhoto().setCropRectY(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y)));
-        user.getCropPhoto().setCropRectY2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y_2)));
+        String cropPhotoUrl = userCursor.getString(userCursor.getColumnIndex(UserTable.CROP_PHOTO_URL));
+        if (cropPhotoUrl != null) {
+            user.setCropPhoto(new CropPhoto());
+            user.getCropPhoto().setCropPhotoUrl(cropPhotoUrl);
+            user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_HEIGHT)));
+            user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(userCursor.getColumnIndex(UserTable.CROP_PHOTO_WIDTH)));
+            user.getCropPhoto().setCropRectX(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X)));
+            user.getCropPhoto().setCropRectX2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_X_2)));
+            user.getCropPhoto().setCropRectY(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y)));
+            user.getCropPhoto().setCropRectY2(userCursor.getFloat(userCursor.getColumnIndex(UserTable.CROP_RECT_Y_2)));
+        }
 
         return user;
     }
 
-    private void putFriendInDatabase(final User friend, @NonNull final ContentValues contentValues) {
-        contentValues.clear();
+    private void putFriendInDatabase(final User friend) {
+        ContentValues contentValues = new ContentValues();
         contentValues.put(FriendTable.USER_ID, friend.getId());
         contentValues.put(FriendTable.FRIEND_LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         databaseHelper.insert(FRIEND_TABLE_NAME, contentValues);
     }
 
     public void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
-//        int startPosition = 0;
-//
-//        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
-//            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
-//        }
-//
+        int startPosition = 0;
+
+        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
+            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
+        }
+
 //        try (Cursor newsCursor = databaseHelper.query(getLimitDatabaseQuery(NEWS_TABLE_NAME, startPosition, size))) {
 //            if (newsCursor.getCount() > 0) {
 //                List<News> newsList = new ArrayList<>();
@@ -345,18 +341,16 @@ public class VkRepository {
                 NewsResponse.Response news = GsonAdapter.getInstance().getNewsFromJson(result);
 
                 if (news != null) {
-                    final ContentValues contentValues = new ContentValues();
-
                     for (Group group : news.getGroupList()) {
-                        putGroupInDatabase(group, contentValues);
+                        putGroupInDatabase(group);
                     }
 
                     for (User user : news.getUserList()) {
-                        putUserInDatabase(user, contentValues);
+                        putUserInDatabase(user);
                     }
 
                     for (News putNews : news.getNewsList()) {
-                        putNewsInDatabase(putNews, contentValues);
+                        putNewsInDatabase(putNews);
                     }
                 }
 
@@ -365,50 +359,43 @@ public class VkRepository {
         });
     }
 
-    private void putNewsInDatabase(final News news, @NonNull final ContentValues contentValues) {
-        contentValues.clear();
+    private long putNewsInDatabase(final News news) {
+        long copyNewsId = 0;
+        if (news.getCopyHistory() != null) {
+            copyNewsId = putNewsInDatabase(news.getCopyHistory().get(0));
+        }
+        ContentValues contentValues = new ContentValues();
         contentValues.put(NewsTable.TYPE, news.getType());
         contentValues.put(NewsTable.SOURCE_ID, news.getSourceId());
         contentValues.put(NewsTable.FROM_ID, news.getFromId());
         contentValues.put(NewsTable.DATE, news.getDate().toString());
         contentValues.put(NewsTable.TEXT, news.getText());
-        Parcel parcel;
 
-        if (news.getCopyHistory() != null) {
-            parcel = Parcel.obtain();
-            parcel.writeParcelableArray(news.getCopyHistory().toArray(new News[0]), 0);
-            contentValues.put(NewsTable.COPY_HISTORY, parcel.marshall());
-            parcel.recycle();
+        if (copyNewsId > 0) {
+            contentValues.put(NewsTable.COPY_NEWS_ID, copyNewsId);
         }
 
-        parcel = Parcel.obtain();
-        parcel.writeParcelable(news.getComments(), 0);
-        contentValues.put(NewsTable.COMMENTS, parcel.marshall());
-        parcel.recycle();
-
-        parcel = Parcel.obtain();
-        parcel.writeParcelable(news.getLikes(), 0);
-        contentValues.put(NewsTable.LIKES, parcel.marshall());
-        parcel.recycle();
-
-        parcel = Parcel.obtain();
-        parcel.writeParcelable(news.getReposts(), 0);
-        contentValues.put(NewsTable.REPOSTS, parcel.marshall());
-        parcel.recycle();
-
-        parcel = Parcel.obtain();
-        parcel.writeParcelable(news.getViews(), 0);
-        contentValues.put(NewsTable.VIEWS, parcel.marshall());
-        parcel.recycle();
-
-        if (news.getAttachments() != null) {
-            parcel = Parcel.obtain();
-            parcel.writeParcelableArray(news.getAttachments().toArray(new Attachment[0]), 0);
-            contentValues.put(NewsTable.ATTACHMENTS, parcel.marshall());
-            parcel.recycle();
+        if (news.getComments() != null) {
+            contentValues.put(NewsTable.COMMENTS_COUNT, news.getComments().getCount());
         }
 
-        databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
+        if (news.getLikes() != null) {
+            contentValues.put(NewsTable.LIKES_COUNT, news.getLikes().getCount());
+            contentValues.put(NewsTable.USER_LIKES, news.getLikes().getUserLikes());
+            contentValues.put(NewsTable.CAN_LIKE, news.getLikes().getCanLike());
+        }
+
+        if (news.getReposts() != null) {
+            contentValues.put(NewsTable.REPOSTS_COUNT, news.getReposts().getCount());
+        }
+
+        if (news.getViews() != null) {
+            contentValues.put(NewsTable.VIEWS_COUNT, news.getViews().getCount());
+        }
+
+        long newsId = databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
+
+        return newsId;
     }
 
     private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
@@ -430,7 +417,7 @@ public class VkRepository {
 
     private String readStream(final InputStream inputStream) throws IOException {
         ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[Constants.ONE_KB];
         int length;
 
         while ((length = inputStream.read(buffer)) != -1) {

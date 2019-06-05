@@ -26,11 +26,42 @@ public class Video implements Parcelable {
     @SerializedName("photo_800")
     private String photo800Url;
 
+    private String url;
+    private int width;
+    private int height;
+
+    public Video() {
+    }
+
     protected Video(Parcel in) {
         id = in.readInt();
         photo320Url = in.readString();
         photo640Url = in.readString();
         photo800Url = in.readString();
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
@@ -50,15 +81,31 @@ public class Video implements Parcelable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getPhoto320Url() {
         return photo320Url;
+    }
+
+    public void setPhoto320Url(String photo320Url) {
+        this.photo320Url = photo320Url;
     }
 
     public String getPhoto640Url() {
         return photo640Url;
     }
 
+    public void setPhoto640Url(String photo640Url) {
+        this.photo640Url = photo640Url;
+    }
+
     public String getPhoto800Url() {
         return photo800Url;
+    }
+
+    public void setPhoto800Url(String photo800Url) {
+        this.photo800Url = photo800Url;
     }
 }

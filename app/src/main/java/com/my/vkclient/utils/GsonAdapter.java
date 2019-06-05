@@ -6,8 +6,10 @@ import com.my.vkclient.entities.FriendResponse;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.GroupResponse;
 import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
+import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.VkDate;
 
 import java.util.List;
@@ -21,6 +23,8 @@ public class GsonAdapter {
                 .registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter())
                 .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
                 .registerTypeAdapter(CropPhoto.class, new CropPhotoGsonTypeAdapter())
+                .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
+                .registerTypeAdapter(Video.class, new VideoGsonTypeAdapter())
                 .create();
     }
 
