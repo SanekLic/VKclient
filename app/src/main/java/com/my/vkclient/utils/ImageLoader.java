@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -28,10 +30,12 @@ import java.util.concurrent.Executors;
 public class ImageLoader {
     private static ImageLoader instance;
     private final LruCache<String, Bitmap> lruCache;
+    private final Handler mainLooperHandler;
     private Executor executor;
 
     private ImageLoader() {
         executor = Executors.newCachedThreadPool();
+        mainLooperHandler = new Handler(Looper.getMainLooper());
 
         lruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / Constants.INT_ONE_KB / 4)) {
             @Override
@@ -106,7 +110,7 @@ public class ImageLoader {
             final Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
             final Bitmap postProcessedBitmap = getPostProcessedBitmap(resultBitmap, isCircular, crop);
 
-            imageView.post(new Runnable() {
+            mainLooperHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     imageView.setImageBitmap(postProcessedBitmap);
@@ -157,9 +161,8 @@ public class ImageLoader {
         float y = height * crop.getY() / Constants.PERCENTAGE;
         float x2 = width * crop.getX2() / Constants.PERCENTAGE;
         float y2 = height * crop.getY2() / Constants.PERCENTAGE;
-        Bitmap output = Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
 
-        return output;
+        return Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
     }
 
     public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
@@ -181,7 +184,7 @@ public class ImageLoader {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if(requestUrl == null){
+                if (requestUrl == null) {
                     return;
                 }
 

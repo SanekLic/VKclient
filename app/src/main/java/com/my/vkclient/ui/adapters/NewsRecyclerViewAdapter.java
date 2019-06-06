@@ -27,11 +27,12 @@ public class NewsRecyclerViewAdapter extends RecyclerView.Adapter<NewsViewHolder
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
     private boolean isLoadComplete;
-    private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
+    private Handler mainLooperHandler;
     private String nextFrom = STRING_EMPTY;
 
     public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
+        mainLooperHandler = new Handler(Looper.getMainLooper());
     }
 
     @NonNull

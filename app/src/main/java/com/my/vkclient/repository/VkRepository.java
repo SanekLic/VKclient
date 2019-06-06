@@ -35,7 +35,6 @@ import com.my.vkclient.utils.ResultCallback;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -114,7 +113,6 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-
                 if (getGroupFromDatabase(groupId, resultCallback)) {
                     return;
                 }
@@ -214,6 +212,7 @@ public class VkRepository {
         contentValues.put(UserTable.ONLINE, user.getOnline());
         contentValues.put(UserTable.PHOTO_100_URL, user.getPhoto100Url());
         contentValues.put(UserTable.PHOTO_MAX_URL, user.getPhotoMaxUrl());
+
         if (user.getCropPhoto() != null) {
             contentValues.put(UserTable.CROP_PHOTO_URL, user.getCropPhoto().getCropPhotoUrl());
             contentValues.put(UserTable.CROP_PHOTO_HEIGHT, user.getCropPhoto().getCropPhotoHeight());
@@ -271,6 +270,13 @@ public class VkRepository {
         }
     }
 
+    private void putFriendInDatabase(final User friend) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FriendTable.USER_ID, friend.getId());
+        contentValues.put(FriendTable.FRIEND_LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+        databaseHelper.insert(FRIEND_TABLE_NAME, contentValues);
+    }
+
     private User getUserFromCursor(Cursor userCursor) {
         User user = new User();
         user.setId(userCursor.getInt(userCursor.getColumnIndex(UserTable.ID)));
@@ -293,13 +299,6 @@ public class VkRepository {
         }
 
         return user;
-    }
-
-    private void putFriendInDatabase(final User friend) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FriendTable.USER_ID, friend.getId());
-        contentValues.put(FriendTable.FRIEND_LAST_UPDATE, Calendar.getInstance().getTime().getTime());
-        databaseHelper.insert(FRIEND_TABLE_NAME, contentValues);
     }
 
     private boolean getNewsFromDatabase(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
@@ -520,32 +519,21 @@ public class VkRepository {
     }
 
     private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(requestUrl);
-                    String result = readStream(url.openStream());
-                    resultCallback.onResult(result);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        try (InputStream inputStream = new URL(requestUrl).openStream();
+             ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[Constants.INT_ONE_KB];
+            int length;
+
+            while ((length = inputStream.read(buffer)) != -1) {
+                resultOutputStream.write(buffer, 0, length);
             }
-        });
-    }
 
-    private String readStream(final InputStream inputStream) throws IOException {
-        ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[Constants.INT_ONE_KB];
-        int length;
-
-        while ((length = inputStream.read(buffer)) != -1) {
-            resultOutputStream.write(buffer, 0, length);
+            String result = resultOutputStream.toString();
+            resultCallback.onResult(result);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        return resultOutputStream.toString();
     }
 
     private String getLimitDatabaseQuery(String tableName, int startPosition, int size) {

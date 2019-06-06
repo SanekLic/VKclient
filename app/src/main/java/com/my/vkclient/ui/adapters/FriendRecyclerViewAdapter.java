@@ -26,12 +26,13 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     private boolean isLoading;
     private boolean isLoadComplete;
     private UserDiffUtilCallback userDiffUtilCallback;
-    private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
+    private Handler mainLooperHandler;
     private ResultCallback<User> itemClickListener;
 
     public FriendRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
         userDiffUtilCallback = new UserDiffUtilCallback();
+        mainLooperHandler = new Handler(Looper.getMainLooper());
     }
 
     @NonNull

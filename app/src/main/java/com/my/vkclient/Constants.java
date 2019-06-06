@@ -18,16 +18,16 @@ public interface Constants {
     int INT_ONE_KB = 1024;
 
     interface Database {
-        String USER_TABLE_NAME = "USER_TABLE_NAME";
-        String FRIEND_TABLE_NAME = "FRIEND_TABLE_NAME";
-        String GROUP_TABLE_NAME = "GROUP_TABLE_NAME";
-        String NEWS_TABLE_NAME = "NEWS_TABLE_NAME";
-        String ATTACHMENT_TABLE_NAME = "ATTACHMENT_TABLE_NAME";
+        String USER_TABLE_NAME = "USER_TABLE";
+        String FRIEND_TABLE_NAME = "FRIEND_TABLE";
+        String GROUP_TABLE_NAME = "GROUP_TABLE";
+        String NEWS_TABLE_NAME = "NEWS_TABLE";
+        String ATTACHMENT_TABLE_NAME = "ATTACHMENT_TABLE";
 
-        String DATABASE_NAME = "VK_DATABASE";
+        String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 2;
+        int DATABASE_VERSION = 1;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -40,9 +40,6 @@ public interface Constants {
     }
 
     interface API_VK {
-        //        public static final String GROUP_FIELDS = "&fields=";
-//        public static final String API_VK_GET_AUTHORIZE_URL = "https://oauth.vk.com/authorize?client_id=6870329&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,photos,audio,video,status,wall,messages,notifications&response_type=token&v=5.92&state=requestToken";
-//        public static final String API_VK_GET_FRIENDS_LIST_URL = "https://api.vk.com/method/friends.get?order=hints&fields=photo_50,photo_100,photo_200_orig,online&v=5.92&access_token=";
         String ACCESS_TOKEN = "&v=5.92&access_token=";
         String API_VK_OAUTH_VK_COM = "https://oauth.vk.com/";
         String API_VK_RESPONSE_ACCESS_DENIED_ERROR = API_VK_OAUTH_VK_COM + "blank.html#error=access_denied&error_reason=user_denied";
