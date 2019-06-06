@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.my.vkclient.R;
-import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Rect;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
@@ -35,7 +34,7 @@ public class UserActivity extends AppCompatActivity {
         userNameTextView = findViewById(R.id.userNameTextView);
         userPhotoImageView = findViewById(R.id.userPhotoImageView);
 
-        VkRepository.getInstance().getUserById(userId, new ResultCallback<User>() {
+        VkRepository.getInstance().getUser(userId, new ResultCallback<User>() {
             @Override
             public void onResult(final User user) {
                 runOnUiThread(new Runnable() {

@@ -22,9 +22,40 @@ public class Link implements Parcelable {
     @SerializedName("photo")
     private Photo photo;
 
+    private String photoUrl;
+    private int photoWidth;
+    private int photoHeight;
+
+    public Link() {
+    }
+
     protected Link(Parcel in) {
         url = in.readString();
         photo = in.readParcelable(Photo.class.getClassLoader());
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public int getPhotoWidth() {
+        return photoWidth;
+    }
+
+    public void setPhotoWidth(int photoWidth) {
+        this.photoWidth = photoWidth;
+    }
+
+    public int getPhotoHeight() {
+        return photoHeight;
+    }
+
+    public void setPhotoHeight(int photoHeight) {
+        this.photoHeight = photoHeight;
     }
 
     @Override
@@ -42,7 +73,15 @@ public class Link implements Parcelable {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public Photo getPhoto() {
         return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
     }
 }

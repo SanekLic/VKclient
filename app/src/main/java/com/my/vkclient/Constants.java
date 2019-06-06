@@ -2,6 +2,7 @@ package com.my.vkclient;
 
 public interface Constants {
     String STRING_EQUALS = "=";
+    String STRING_NOT_EQUALS = "<>";
     String STRING_QUESTION = "?";
     String STRING_AND = "&";
     String STRING_COMMA = ",";
@@ -11,9 +12,10 @@ public interface Constants {
     String STRING_SPACE = " ";
     String STRING_SLASH = "/";
     String USER_ID_INTENT_KEY = "UserId";
+    int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int PERCENTAGE = 100;
-    int ONE_KB = 1024;
+    int INT_ONE_KB = 1024;
 
     interface Database {
         String USER_TABLE_NAME = "USER_TABLE_NAME";
@@ -30,9 +32,9 @@ public interface Constants {
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
         String SELECT_FROM = "SELECT * FROM ";
-        String DATABASE_WHERE = " WHERE ";
-        String DATABASE_JOIN_LIMIT = " JOIN %1$s ON %2$s = %3$s order by %4$s, %5$s LIMIT %6$s,%7$s";
-        String DATABASE_LIMIT = " LIMIT ";
+        String DATABASE_WHERE = " WHERE %s %s %s";
+        String DATABASE_JOIN = " JOIN %s ON %s = %s order by %s, %s";
+        String DATABASE_LIMIT = " LIMIT %s,%s";
 
         String FIELD_DONT_HAVE_TYPE_ANNOTATION = "Field don't have type annotation";
     }

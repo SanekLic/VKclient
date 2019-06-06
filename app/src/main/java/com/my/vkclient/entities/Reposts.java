@@ -22,6 +22,9 @@ public class Reposts implements Parcelable {
     @SerializedName("user_reposted")
     private Boolean userReposted;
 
+    public Reposts() {
+    }
+
     protected Reposts(Parcel in) {
         count = in.readInt();
         byte tmpUserReposted = in.readByte();
@@ -43,7 +46,15 @@ public class Reposts implements Parcelable {
         return count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public Boolean getUserReposted() {
         return userReposted;
+    }
+
+    public void setUserReposted(Boolean userReposted) {
+        this.userReposted = userReposted;
     }
 }

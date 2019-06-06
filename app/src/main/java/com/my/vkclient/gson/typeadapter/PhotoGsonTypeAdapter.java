@@ -1,4 +1,4 @@
-package com.my.vkclient.utils;
+package com.my.vkclient.gson.typeadapter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;

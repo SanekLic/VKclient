@@ -1,22 +1,34 @@
-package com.my.vkclient.utils;
+package com.my.vkclient.gson;
 
 import com.google.gson.Gson;
 import com.my.vkclient.entities.CropPhoto;
+import com.my.vkclient.entities.Doc;
 import com.my.vkclient.entities.FriendResponse;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.GroupResponse;
+import com.my.vkclient.entities.Link;
 import com.my.vkclient.entities.NewsResponse;
 import com.my.vkclient.entities.Photo;
+import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.VkDate;
+import com.my.vkclient.gson.typeadapter.BooleanGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.CropPhotoGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.DocGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.LinkGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.PhotoGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.PodcastGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.VideoGsonTypeAdapter;
+import com.my.vkclient.gson.typeadapter.VkDateGsonTypeAdapter;
 
 import java.util.List;
 
 public class GsonAdapter {
     private static GsonAdapter instance;
     private Gson gson;
+    private Gson gsonWithPhotoRypeAdapter;
 
     private GsonAdapter() {
         gson = new Gson().newBuilder()
@@ -25,6 +37,13 @@ public class GsonAdapter {
                 .registerTypeAdapter(CropPhoto.class, new CropPhotoGsonTypeAdapter())
                 .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
                 .registerTypeAdapter(Video.class, new VideoGsonTypeAdapter())
+                .registerTypeAdapter(Doc.class, new DocGsonTypeAdapter())
+                .registerTypeAdapter(Link.class, new LinkGsonTypeAdapter())
+                .registerTypeAdapter(Podcast.class, new PodcastGsonTypeAdapter())
+                .create();
+
+        gsonWithPhotoRypeAdapter = new Gson().newBuilder()
+                .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
                 .create();
     }
 
@@ -34,6 +53,10 @@ public class GsonAdapter {
         }
 
         return instance;
+    }
+
+    public Gson getGsonWithPhotoRypeAdapter() {
+        return gsonWithPhotoRypeAdapter;
     }
 
     public List<User> getFriendsFromJson(String jsonFriends) {
@@ -49,7 +72,7 @@ public class GsonAdapter {
     public User getUserFromJson(String jsonUser) {
         UserResponse userResponse = gson.fromJson(jsonUser, UserResponse.class);
 
-        if (userResponse == null || userResponse.getUserList() == null) {
+        if (userResponse == null || userResponse.getUserList() == null || userResponse.getUserList().size() == 0) {
             return null;
         }
 

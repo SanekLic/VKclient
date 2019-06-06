@@ -29,10 +29,15 @@ public class Attachment implements Parcelable {
     private Video video;
     @SerializedName("doc")
     private Doc doc;
+    @SerializedName("audio")
+    private Audio audio;
     @SerializedName("link")
     private Link link;
     @SerializedName("podcast")
     private Podcast podcast;
+
+    public Attachment() {
+    }
 
     protected Attachment(Parcel in) {
         type = in.readString();
@@ -41,6 +46,14 @@ public class Attachment implements Parcelable {
         doc = in.readParcelable(Doc.class.getClassLoader());
         link = in.readParcelable(Link.class.getClassLoader());
         podcast = in.readParcelable(Podcast.class.getClassLoader());
+    }
+
+    public Audio getAudio() {
+        return audio;
+    }
+
+    public void setAudio(Audio audio) {
+        this.audio = audio;
     }
 
     @Override
@@ -62,24 +75,48 @@ public class Attachment implements Parcelable {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Photo getPhoto() {
         return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
     }
 
     public Video getVideo() {
         return video;
     }
 
+    public void setVideo(Video video) {
+        this.video = video;
+    }
+
     public Doc getDoc() {
         return doc;
+    }
+
+    public void setDoc(Doc doc) {
+        this.doc = doc;
     }
 
     public Link getLink() {
         return link;
     }
 
+    public void setLink(Link link) {
+        this.link = link;
+    }
+
     public Podcast getPodcast() {
         return podcast;
+    }
+
+    public void setPodcast(Podcast podcast) {
+        this.podcast = podcast;
     }
 
     @StringDef({Type.Photo, Type.Doc, Type.Audio, Type.Video, Type.Link, Type.Podcast})

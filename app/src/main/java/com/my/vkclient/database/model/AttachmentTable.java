@@ -2,6 +2,7 @@ package com.my.vkclient.database.model;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
+import com.my.vkclient.database.fields.dbAutoincrement;
 import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
@@ -10,6 +11,7 @@ import com.my.vkclient.database.fields.dbString;
 public class AttachmentTable {
     @dbInt
     @dbPrimaryKey
+    @dbAutoincrement
     public static final String ID = "ID";
 
     @dbInt
@@ -28,12 +30,62 @@ public class AttachmentTable {
     public static final String PHOTO_HEIGHT = "PHOTO_HEIGHT";
 
     @dbString
-    public static final String VIDEO_URL = "VIDEO_URL";
+    public static final String VIDEO_TITLE = "VIDEO_TITLE";
+
+    @dbString
+    public static final String VIDEO_PHOTO_URL = "VIDEO_PHOTO_URL";
 
     @dbInt
-    public static final String VIDEO_WIDTH = "VIDEO_WIDTH";
+    public static final String VIDEO_PHOTO_WIDTH = "VIDEO_PHOTO_WIDTH";
 
     @dbInt
-    public static final String VIDEO_HEIGHT = "VIDEO_HEIGHT";
+    public static final String VIDEO_PHOTO_HEIGHT = "VIDEO_PHOTO_HEIGHT";
 
+    @dbString
+    public static final String DOC_URL = "DOC_URL";
+
+    @dbString
+    public static final String DOC_PHOTO_URL = "DOC_PHOTO_URL";
+
+    @dbInt
+    public static final String DOC_PHOTO_WIDTH = "DOC_PHOTO_WIDTH";
+
+    @dbInt
+    public static final String DOC_PHOTO_HEIGHT = "DOC_PHOTO_HEIGHT";
+
+    @dbString
+    public static final String AUDIO_TITLE = "AUDIO_TITLE";
+
+    @dbString
+    public static final String AUDIO_ARTIST = "AUDIO_ARTIST";
+
+    @dbString
+    public static final String AUDIO_URL = "AUDIO_URL";
+
+    @dbString
+    public static final String LINK_URL = "LINK_URL";
+
+    @dbString
+    public static final String LINK_PHOTO_URL = "LINK_PHOTO_URL";
+
+    @dbInt
+    public static final String LINK_PHOTO_WIDTH = "LINK_PHOTO_WIDTH";
+
+    @dbInt
+    public static final String LINK_PHOTO_HEIGHT = "LINK_PHOTO_HEIGHT";
+
+    @dbString
+    public static final String PODCAST_TITLE = "PODCAST_TITLE";
+
+    @dbString
+    public static final String PODCAST_URL = "PODCAST_URL";
+
+    @dbString
+    public static final String PODCAST_PHOTO_URL = "PODCAST_PHOTO_URL";
+
+    @dbInt
+    public static final String PODCAST_PHOTO_WIDTH = "PODCAST_PHOTO_WIDTH";
+
+    @dbInt
+    public static final String PODCAST_PHOTO_HEIGHT = "PODCAST_PHOTO_HEIGHT";
 }

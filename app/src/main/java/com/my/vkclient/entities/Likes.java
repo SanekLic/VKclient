@@ -26,6 +26,9 @@ public class Likes implements Parcelable {
     @SerializedName("can_publish")
     private Boolean canPublish;
 
+    public Likes() {
+    }
+
     protected Likes(Parcel in) {
         count = in.readInt();
         byte tmpUserLikes = in.readByte();
@@ -53,15 +56,31 @@ public class Likes implements Parcelable {
         return count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public Boolean getUserLikes() {
         return userLikes;
+    }
+
+    public void setUserLikes(Boolean userLikes) {
+        this.userLikes = userLikes;
     }
 
     public Boolean getCanLike() {
         return canLike;
     }
 
+    public void setCanLike(Boolean canLike) {
+        this.canLike = canLike;
+    }
+
     public Boolean getCanPublish() {
         return canPublish;
+    }
+
+    public void setCanPublish(Boolean canPublish) {
+        this.canPublish = canPublish;
     }
 }

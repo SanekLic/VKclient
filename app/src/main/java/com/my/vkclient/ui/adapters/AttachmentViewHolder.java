@@ -4,12 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
-import com.my.vkclient.entities.Size;
-
-import java.util.List;
+import com.my.vkclient.utils.ImageLoader;
 
 class AttachmentViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,29 +20,19 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(Attachment attachment) {
         if (Attachment.Type.Photo.equals(attachment.getType())) {
-            setPhotoToImageView(attachment.getPhoto().getSizes());
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getPhoto().getUrl(), attachment.getPhoto().getWidth(), attachment.getPhoto().getHeight());
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
-            setPhotoToImageView(attachment.getDoc().getPreview().getPhoto().getSizes());
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getDoc().getPhotoUrl(), attachment.getDoc().getPhotoWidth(), attachment.getDoc().getPhotoHeight());
         } else if (Attachment.Type.Video.equals((attachment.getType()))) {
-            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getVideo().getPhoto320Url(), 320, 240);
-        } else if (Attachment.Type.Link.equals(attachment.getType()) && attachment.getLink().getPhoto() != null) {
-            setPhotoToImageView(attachment.getLink().getPhoto().getSizes());
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getVideo().getPhotoUrl(), attachment.getVideo().getPhotoWidth(), attachment.getVideo().getPhotoHeight());
+        } else if (Attachment.Type.Link.equals(attachment.getType())) {
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getLink().getPhotoUrl(), attachment.getLink().getPhotoWidth(), attachment.getLink().getPhotoHeight());
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
-            setPhotoToImageView(attachment.getPodcast().getPodcastInfo().getCover().getSizes());
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getPodcast().getPhotoUrl(), attachment.getPodcast().getPhotoWidth(), attachment.getPodcast().getPhotoHeight());
+        } else if (Attachment.Type.Audio.equals(attachment.getType())) {
+            attachImageView.setImageResource(R.drawable.ic_music);
         } else {
             attachImageView.setImageDrawable(null);
         }
-    }
-
-    private void setPhotoToImageView(List<Size> photoSizes) {
-        Size showSize = photoSizes.get(0);
-
-        for (Size size : photoSizes) {
-            if (Math.abs(size.getHeight() - 192) < Math.abs(showSize.getHeight() - 192)) {
-                showSize = size;
-            }
-        }
-
-        ImageLoader.getInstance().getImageFromUrl(attachImageView, showSize.getUrl(), showSize.getWidth(), showSize.getHeight());
     }
 }

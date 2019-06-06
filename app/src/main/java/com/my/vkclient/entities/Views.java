@@ -21,6 +21,9 @@ public class Views implements Parcelable {
     @SerializedName("count")
     private int count;
 
+    public Views() {
+    }
+
     protected Views(Parcel in) {
         count = in.readInt();
     }
@@ -37,5 +40,9 @@ public class Views implements Parcelable {
 
     public int getCount() {
         return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
