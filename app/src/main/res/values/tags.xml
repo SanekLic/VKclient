@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="IMAGE_TAG_URL" type="id"/>
     <item name="IMAGE_TAG_IS_CIRCULAR" type="id"/>
     <item name="IMAGE_TAG_CROP" type="id"/>
+    <item name="IMAGE_TAG_LOAD_ITERATION" type="id"/>
 </resources>

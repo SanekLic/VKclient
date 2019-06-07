@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Video implements Parcelable {
+public class Video extends AttachmentPhoto implements Parcelable {
     public static final Creator<Video> CREATOR = new Creator<Video>() {
         @Override
         public Video createFromParcel(Parcel in) {
@@ -28,10 +28,6 @@ public class Video implements Parcelable {
     @SerializedName("photo_800")
     private String photo800Url;
 
-    private String photoUrl;
-    private int photoWidth;
-    private int photoHeight;
-
     public Video() {
     }
 
@@ -48,30 +44,6 @@ public class Video implements Parcelable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public int getPhotoWidth() {
-        return photoWidth;
-    }
-
-    public void setPhotoWidth(int photoWidth) {
-        this.photoWidth = photoWidth;
-    }
-
-    public int getPhotoHeight() {
-        return photoHeight;
-    }
-
-    public void setPhotoHeight(int photoHeight) {
-        this.photoHeight = photoHeight;
     }
 
     @Override

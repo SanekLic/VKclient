@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Doc implements Parcelable {
+public class Doc extends AttachmentPhoto implements Parcelable {
     public static final Creator<Doc> CREATOR = new Creator<Doc>() {
         @Override
         public Doc createFromParcel(Parcel in) {
@@ -24,10 +24,6 @@ public class Doc implements Parcelable {
     @SerializedName("preview")
     private Preview preview;
 
-    private String photoUrl;
-    private int photoWidth;
-    private int photoHeight;
-
     public Doc() {
     }
 
@@ -35,30 +31,6 @@ public class Doc implements Parcelable {
         id = in.readInt();
         url = in.readString();
         preview = in.readParcelable(Preview.class.getClassLoader());
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public int getPhotoWidth() {
-        return photoWidth;
-    }
-
-    public void setPhotoWidth(int photoWidth) {
-        this.photoWidth = photoWidth;
-    }
-
-    public int getPhotoHeight() {
-        return photoHeight;
-    }
-
-    public void setPhotoHeight(int photoHeight) {
-        this.photoHeight = photoHeight;
     }
 
     @Override

@@ -19,9 +19,9 @@ public class CropPhotoGsonTypeAdapter implements JsonDeserializer<CropPhoto> {
             CropPhoto cropPhoto = new CropPhoto();
             if (fromJson.getPhoto() != null) {
 
-                cropPhoto.setCropPhotoUrl(fromJson.getPhoto().getUrl());
-                cropPhoto.setCropPhotoHeight(fromJson.getPhoto().getHeight());
-                cropPhoto.setCropPhotoWidth(fromJson.getPhoto().getWidth());
+                cropPhoto.setCropPhotoUrl(fromJson.getPhoto().getPhotoUrl());
+                cropPhoto.setCropPhotoHeight(fromJson.getPhoto().getPhotoHeight());
+                cropPhoto.setCropPhotoWidth(fromJson.getPhoto().getPhotoWidth());
             }
 
             if (fromJson.getCrop() != null) {

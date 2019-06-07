@@ -20,7 +20,7 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(Attachment attachment) {
         if (Attachment.Type.Photo.equals(attachment.getType())) {
-            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getPhoto().getUrl(), attachment.getPhoto().getWidth(), attachment.getPhoto().getHeight());
+            ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getPhoto().getPhotoUrl(), attachment.getPhoto().getPhotoWidth(), attachment.getPhoto().getPhotoHeight());
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
             ImageLoader.getInstance().getImageFromUrl(attachImageView, attachment.getDoc().getPhotoUrl(), attachment.getDoc().getPhotoWidth(), attachment.getDoc().getPhotoHeight());
         } else if (Attachment.Type.Video.equals((attachment.getType()))) {

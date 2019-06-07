@@ -104,23 +104,21 @@ public class ImageLoader {
         return null;
     }
 
-    private void setResultToImageView(final ImageView imageView, final Bitmap resultBitmap, final String requestUrl) {
-        if (imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl)) {
-            final Boolean isCircular = (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
-            final Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
-            final Bitmap postProcessedBitmap = getPostProcessedBitmap(resultBitmap, isCircular, crop);
+    private void setResultToImageView(final ImageView imageView, final Bitmap resultBitmap) {
+        final Boolean isCircular = (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
+        final Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
+        final Bitmap postProcessedBitmap = getPostProcessedBitmap(resultBitmap, isCircular, crop);
 
-            mainLooperHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.setImageBitmap(postProcessedBitmap);
+        mainLooperHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                imageView.setImageBitmap(postProcessedBitmap);
 
-                    Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
-                    animator.setTarget(imageView);
-                    animator.start();
-                }
-            });
-        }
+                Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
+                animator.setTarget(imageView);
+                animator.start();
+            }
+        });
     }
 
     private Bitmap getPostProcessedBitmap(final Bitmap inputBitmap, final Boolean isCircular, final Rect crop) {
@@ -166,9 +164,6 @@ public class ImageLoader {
     }
 
     public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
-        imageView.setAlpha(0f);
-        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
-
         if (initialWidth == 0 || initialHeight == 0) {
             imageView.setImageDrawable(null);
         } else {
@@ -181,13 +176,18 @@ public class ImageLoader {
             }
         }
 
+        if (requestUrl == null) {
+            return;
+        }
+
+        Integer imageTagOldLoadIteration = (Integer) imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION);
+        final Integer imageTagNewLoadIteration = imageTagOldLoadIteration == null ? 0 : imageTagOldLoadIteration + 1;
+
+        imageView.setTag(R.id.IMAGE_TAG_LOAD_ITERATION, imageTagNewLoadIteration);
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (requestUrl == null) {
-                    return;
-                }
-
                 Bitmap resultBitmap = getFromMemoryCache(requestUrl);
 
                 if (resultBitmap == null) {
@@ -197,12 +197,14 @@ public class ImageLoader {
                     if (resultBitmap == null) {
                         resultBitmap = getFromNetwork(requestUrl, imageCacheFile);
                     }
-
-                    putInMemoryCache(resultBitmap, requestUrl);
                 }
 
                 if (resultBitmap != null) {
-                    setResultToImageView(imageView, resultBitmap, requestUrl);
+                    if (imageTagNewLoadIteration.equals(imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION))) {
+                        setResultToImageView(imageView, resultBitmap);
+                    }
+
+                    putInMemoryCache(resultBitmap, requestUrl);
                 }
             }
         });

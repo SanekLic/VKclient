@@ -21,9 +21,9 @@ public class DocGsonTypeAdapter implements JsonDeserializer<Doc> {
             doc.setUrl(fromJson.getUrl());
 
             if (fromJson.getPreview() != null && fromJson.getPreview().getPhoto() != null) {
-                doc.setPhotoUrl(fromJson.getPreview().getPhoto().getUrl());
-                doc.setPhotoHeight(fromJson.getPreview().getPhoto().getHeight());
-                doc.setPhotoWidth(fromJson.getPreview().getPhoto().getWidth());
+                doc.setPhotoUrl(fromJson.getPreview().getPhoto().getPhotoUrl());
+                doc.setPhotoHeight(fromJson.getPreview().getPhoto().getPhotoHeight());
+                doc.setPhotoWidth(fromJson.getPreview().getPhoto().getPhotoWidth());
             }
 
             return doc;

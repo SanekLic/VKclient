@@ -13,6 +13,7 @@ import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
 import com.my.vkclient.database.model.UserTable;
 import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.entities.AttachmentPhoto;
 import com.my.vkclient.entities.Audio;
 import com.my.vkclient.entities.Comments;
 import com.my.vkclient.entities.CropPhoto;
@@ -304,7 +305,7 @@ public class VkRepository {
     private boolean getNewsFromDatabase(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
         int startPosition = 0;
 
-        if (!startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
+        if (startFrom != null && !startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
             startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
         }
 
@@ -337,6 +338,7 @@ public class VkRepository {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -346,23 +348,17 @@ public class VkRepository {
 
         if (Attachment.Type.Photo.equals(attachment.getType())) {
             Photo photo = new Photo();
-            photo.setUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_URL)));
-            photo.setHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_HEIGHT)));
-            photo.setWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_WIDTH)));
+            setAttachmentPhotoFromCursor(attachmentCursor, photo);
             attachment.setPhoto(photo);
         } else if (Attachment.Type.Video.equals(attachment.getType())) {
             Video video = new Video();
             video.setTitle(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.VIDEO_TITLE)));
-            video.setPhotoUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.VIDEO_PHOTO_URL)));
-            video.setPhotoHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.VIDEO_PHOTO_HEIGHT)));
-            video.setPhotoWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.VIDEO_PHOTO_WIDTH)));
+            setAttachmentPhotoFromCursor(attachmentCursor, video);
             attachment.setVideo(video);
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
             Doc doc = new Doc();
             doc.setUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.DOC_URL)));
-            doc.setPhotoUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.DOC_PHOTO_URL)));
-            doc.setPhotoHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.DOC_PHOTO_HEIGHT)));
-            doc.setPhotoWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.DOC_PHOTO_WIDTH)));
+            setAttachmentPhotoFromCursor(attachmentCursor, doc);
             attachment.setDoc(doc);
         } else if (Attachment.Type.Audio.equals(attachment.getType())) {
             Audio audio = new Audio();
@@ -373,20 +369,22 @@ public class VkRepository {
         } else if (Attachment.Type.Link.equals(attachment.getType())) {
             Link link = new Link();
             link.setUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.LINK_URL)));
-            link.setPhotoUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.LINK_PHOTO_URL)));
-            link.setPhotoHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.LINK_PHOTO_HEIGHT)));
-            link.setPhotoWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.LINK_PHOTO_WIDTH)));
+            setAttachmentPhotoFromCursor(attachmentCursor, link);
             attachment.setLink(link);
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
             Podcast podcast = new Podcast();
             podcast.setTitle(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.PODCAST_TITLE)));
             podcast.setUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.PODCAST_URL)));
-            podcast.setPhotoUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.PODCAST_PHOTO_URL)));
-            podcast.setPhotoHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PODCAST_PHOTO_HEIGHT)));
-            podcast.setPhotoWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PODCAST_PHOTO_WIDTH)));
+            setAttachmentPhotoFromCursor(attachmentCursor, podcast);
             attachment.setPodcast(podcast);
         }
         return attachment;
+    }
+
+    private void setAttachmentPhotoFromCursor(Cursor attachmentCursor, AttachmentPhoto attachmentPhoto) {
+        attachmentPhoto.setPhotoUrl(attachmentCursor.getString(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_URL)));
+        attachmentPhoto.setPhotoHeight(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_HEIGHT)));
+        attachmentPhoto.setPhotoWidth(attachmentCursor.getInt(attachmentCursor.getColumnIndex(AttachmentTable.PHOTO_WIDTH)));
     }
 
     private News getNewsFromCursor(Cursor newsCursor) {
@@ -483,39 +481,35 @@ public class VkRepository {
             contentValues.put(AttachmentTable.TYPE, attachment.getType());
 
             if (Attachment.Type.Photo.equals(attachment.getType())) {
-                contentValues.put(AttachmentTable.PHOTO_URL, attachment.getPhoto().getUrl());
-                contentValues.put(AttachmentTable.PHOTO_HEIGHT, attachment.getPhoto().getHeight());
-                contentValues.put(AttachmentTable.PHOTO_WIDTH, attachment.getPhoto().getWidth());
+                addAttachmentPhotoToContentValues(contentValues, attachment.getPhoto());
             } else if (Attachment.Type.Video.equals(attachment.getType())) {
                 contentValues.put(AttachmentTable.VIDEO_TITLE, attachment.getVideo().getTitle());
-                contentValues.put(AttachmentTable.VIDEO_PHOTO_URL, attachment.getVideo().getPhotoUrl());
-                contentValues.put(AttachmentTable.VIDEO_PHOTO_WIDTH, attachment.getVideo().getPhotoWidth());
-                contentValues.put(AttachmentTable.VIDEO_PHOTO_HEIGHT, attachment.getVideo().getPhotoHeight());
+                addAttachmentPhotoToContentValues(contentValues, attachment.getVideo());
             } else if (Attachment.Type.Doc.equals(attachment.getType())) {
                 contentValues.put(AttachmentTable.DOC_URL, attachment.getDoc().getUrl());
-                contentValues.put(AttachmentTable.DOC_PHOTO_URL, attachment.getDoc().getPhotoUrl());
-                contentValues.put(AttachmentTable.DOC_PHOTO_WIDTH, attachment.getDoc().getPhotoWidth());
-                contentValues.put(AttachmentTable.DOC_PHOTO_HEIGHT, attachment.getDoc().getPhotoHeight());
+                addAttachmentPhotoToContentValues(contentValues, attachment.getDoc());
             } else if (Attachment.Type.Audio.equals(attachment.getType())) {
                 contentValues.put(AttachmentTable.AUDIO_TITLE, attachment.getAudio().getTitle());
                 contentValues.put(AttachmentTable.AUDIO_ARTIST, attachment.getAudio().getArtist());
                 contentValues.put(AttachmentTable.AUDIO_URL, attachment.getAudio().getUrl());
             } else if (Attachment.Type.Link.equals(attachment.getType())) {
                 contentValues.put(AttachmentTable.LINK_URL, attachment.getLink().getUrl());
-                contentValues.put(AttachmentTable.LINK_PHOTO_URL, attachment.getLink().getPhotoUrl());
-                contentValues.put(AttachmentTable.LINK_PHOTO_WIDTH, attachment.getLink().getPhotoWidth());
-                contentValues.put(AttachmentTable.LINK_PHOTO_HEIGHT, attachment.getLink().getPhotoHeight());
+                addAttachmentPhotoToContentValues(contentValues, attachment.getLink());
             } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
                 contentValues.put(AttachmentTable.PODCAST_TITLE, attachment.getPodcast().getTitle());
                 contentValues.put(AttachmentTable.PODCAST_URL, attachment.getPodcast().getUrl());
-                contentValues.put(AttachmentTable.PODCAST_PHOTO_URL, attachment.getPodcast().getPhotoUrl());
-                contentValues.put(AttachmentTable.PODCAST_PHOTO_WIDTH, attachment.getPodcast().getPhotoWidth());
-                contentValues.put(AttachmentTable.PODCAST_PHOTO_HEIGHT, attachment.getPodcast().getPhotoHeight());
+                addAttachmentPhotoToContentValues(contentValues, attachment.getPodcast());
             }
 
             databaseHelper.insert(ATTACHMENT_TABLE_NAME, contentValues);
             contentValues.clear();
         }
+    }
+
+    private void addAttachmentPhotoToContentValues(ContentValues contentValues, AttachmentPhoto attachmentPhoto) {
+        contentValues.put(AttachmentTable.PHOTO_URL, attachmentPhoto.getPhotoUrl());
+        contentValues.put(AttachmentTable.PHOTO_HEIGHT, attachmentPhoto.getPhotoHeight());
+        contentValues.put(AttachmentTable.PHOTO_WIDTH, attachmentPhoto.getPhotoWidth());
     }
 
     private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {

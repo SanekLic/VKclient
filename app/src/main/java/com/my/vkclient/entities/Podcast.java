@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Podcast implements Parcelable {
+public class Podcast extends AttachmentPhoto implements Parcelable {
     public static final Creator<Podcast> CREATOR = new Creator<Podcast>() {
         @Override
         public Podcast createFromParcel(Parcel in) {
@@ -26,10 +26,6 @@ public class Podcast implements Parcelable {
     @SerializedName("podcast_info")
     private PodcastInfo podcastInfo;
 
-    private String photoUrl;
-    private int photoWidth;
-    private int photoHeight;
-
     public Podcast() {
     }
 
@@ -38,30 +34,6 @@ public class Podcast implements Parcelable {
         title = in.readString();
         url = in.readString();
         podcastInfo = in.readParcelable(PodcastInfo.class.getClassLoader());
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public int getPhotoWidth() {
-        return photoWidth;
-    }
-
-    public void setPhotoWidth(int photoWidth) {
-        this.photoWidth = photoWidth;
-    }
-
-    public int getPhotoHeight() {
-        return photoHeight;
-    }
-
-    public void setPhotoHeight(int photoHeight) {
-        this.photoHeight = photoHeight;
     }
 
     @Override

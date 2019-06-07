@@ -33,25 +33,7 @@ public class AttachmentTable {
     public static final String VIDEO_TITLE = "VIDEO_TITLE";
 
     @dbString
-    public static final String VIDEO_PHOTO_URL = "VIDEO_PHOTO_URL";
-
-    @dbInt
-    public static final String VIDEO_PHOTO_WIDTH = "VIDEO_PHOTO_WIDTH";
-
-    @dbInt
-    public static final String VIDEO_PHOTO_HEIGHT = "VIDEO_PHOTO_HEIGHT";
-
-    @dbString
     public static final String DOC_URL = "DOC_URL";
-
-    @dbString
-    public static final String DOC_PHOTO_URL = "DOC_PHOTO_URL";
-
-    @dbInt
-    public static final String DOC_PHOTO_WIDTH = "DOC_PHOTO_WIDTH";
-
-    @dbInt
-    public static final String DOC_PHOTO_HEIGHT = "DOC_PHOTO_HEIGHT";
 
     @dbString
     public static final String AUDIO_TITLE = "AUDIO_TITLE";
@@ -66,26 +48,8 @@ public class AttachmentTable {
     public static final String LINK_URL = "LINK_URL";
 
     @dbString
-    public static final String LINK_PHOTO_URL = "LINK_PHOTO_URL";
-
-    @dbInt
-    public static final String LINK_PHOTO_WIDTH = "LINK_PHOTO_WIDTH";
-
-    @dbInt
-    public static final String LINK_PHOTO_HEIGHT = "LINK_PHOTO_HEIGHT";
-
-    @dbString
     public static final String PODCAST_TITLE = "PODCAST_TITLE";
 
     @dbString
     public static final String PODCAST_URL = "PODCAST_URL";
-
-    @dbString
-    public static final String PODCAST_PHOTO_URL = "PODCAST_PHOTO_URL";
-
-    @dbInt
-    public static final String PODCAST_PHOTO_WIDTH = "PODCAST_PHOTO_WIDTH";
-
-    @dbInt
-    public static final String PODCAST_PHOTO_HEIGHT = "PODCAST_PHOTO_HEIGHT";
 }

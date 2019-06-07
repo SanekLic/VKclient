@@ -28,9 +28,9 @@ public class PhotoGsonTypeAdapter implements JsonDeserializer<Photo> {
                 }
 
                 String url = maxSize.getUrl() != null ? maxSize.getUrl() : maxSize.getSrc();
-                photo.setUrl(url);
-                photo.setHeight(maxSize.getHeight());
-                photo.setWidth(maxSize.getWidth());
+                photo.setPhotoUrl(url);
+                photo.setPhotoHeight(maxSize.getHeight());
+                photo.setPhotoWidth(maxSize.getWidth());
             }
 
             return photo;

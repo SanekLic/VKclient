@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.entities.AttachmentPhoto;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.User;
@@ -137,21 +138,11 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
             }
-            if (newsCopy.getText().contains("фотограф и хочешь")) {
-                int i = 0;
-                i++;
-            }
 
             setNewsText(newsCopy.getText());
             setAttachments(newsCopy.getAttachments());
             setVisibilityCopyNews(View.VISIBLE);
         } else {
-
-            if (news.getText().contains("фотограф и хочешь")) {
-                int i = 0;
-                i++;
-            }
-
             setNewsText(news.getText());
             setAttachments(news.getAttachments());
             setVisibilityCopyNews(View.GONE);
@@ -160,10 +151,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         likesTextView.setText(formatNumber(news.getLikes().getCount()));
         commentsTextView.setText(formatNumber(news.getComments().getCount()));
         repostsTextView.setText(formatNumber(news.getReposts().getCount()));
-        if (news.getViews() != null) {
-            viewsTextView.setText(formatNumber(news.getViews().getCount()));
-        } else
-            viewsTextView.setText(null);
+        viewsTextView.setText(formatNumber(news.getViews().getCount()));
     }
 
     private String formatNumber(int number) {
@@ -204,35 +192,35 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
                 Attachment attachment = attachments.get(i);
 
                 if (Attachment.Type.Photo.equals(attachment.getType())) {
-                    ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachment.getPhoto().getUrl(), attachment.getPhoto().getWidth(), attachment.getPhoto().getHeight());
+                    setAttachmentImage(attachment.getPhoto());
                     attachments.remove(i);
 
                     break;
                 }
 
                 if (Attachment.Type.Doc.equals(attachment.getType())) {
-                    ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachment.getDoc().getPhotoUrl(), attachment.getDoc().getPhotoWidth(), attachment.getDoc().getPhotoHeight());
+                    setAttachmentImage(attachment.getDoc());
                     attachments.remove(i);
 
                     break;
                 }
 
                 if (Attachment.Type.Video.equals(attachment.getType())) {
-                    ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachment.getVideo().getPhotoUrl(), attachment.getVideo().getPhotoWidth(), attachment.getVideo().getPhotoHeight());
+                    setAttachmentImage(attachment.getVideo());
                     attachments.remove(i);
 
                     break;
                 }
 
                 if (Attachment.Type.Link.equals(attachment.getType())) {
-                    ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachment.getLink().getPhotoUrl(), attachment.getLink().getPhotoWidth(), attachment.getLink().getPhotoHeight());
+                    setAttachmentImage(attachment.getLink());
                     attachments.remove(i);
 
                     break;
                 }
 
                 if (Attachment.Type.Podcast.equals(attachment.getType())) {
-                    ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachment.getPodcast().getPhotoUrl(), attachment.getPodcast().getPhotoWidth(), attachment.getPodcast().getPhotoHeight());
+                    setAttachmentImage(attachment.getPodcast());
                     attachments.remove(i);
 
                     break;
@@ -241,6 +229,10 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
         }
 
         attachmentRecyclerViewAdapter.setItems(attachments);
+    }
+
+    private void setAttachmentImage(AttachmentPhoto attachmentPhoto) {
+        ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachmentPhoto.getPhotoUrl(), attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
     }
 
     private void setVisibilityCopyNews(int visible) {

@@ -21,9 +21,9 @@ public class LinkGsonTypeAdapter implements JsonDeserializer<Link> {
             link.setUrl(fromJson.getUrl());
 
             if (fromJson.getPhoto() != null) {
-                link.setPhotoUrl(fromJson.getPhoto().getUrl());
-                link.setPhotoHeight(fromJson.getPhoto().getHeight());
-                link.setPhotoWidth(fromJson.getPhoto().getWidth());
+                link.setPhotoUrl(fromJson.getPhoto().getPhotoUrl());
+                link.setPhotoHeight(fromJson.getPhoto().getPhotoHeight());
+                link.setPhotoWidth(fromJson.getPhoto().getPhotoWidth());
             }
 
             return link;

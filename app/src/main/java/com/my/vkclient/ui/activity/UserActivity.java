@@ -48,6 +48,7 @@ public class UserActivity extends AppCompatActivity {
                         if (user.getCropPhoto() != null) {
                             userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, new Rect(user.getCropPhoto().getCropRectX(), user.getCropPhoto().getCropRectY(),
                                     user.getCropPhoto().getCropRectX2(), user.getCropPhoto().getCropRectY2()));
+
                             ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, user.getCropPhoto().getCropPhotoUrl(),
                                     user.getCropPhoto().getCropPhotoWidth(), user.getCropPhoto().getCropPhotoHeight());
                         } else {

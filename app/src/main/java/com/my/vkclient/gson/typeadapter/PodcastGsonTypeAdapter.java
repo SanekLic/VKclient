@@ -22,9 +22,9 @@ public class PodcastGsonTypeAdapter implements JsonDeserializer<Podcast> {
             podcast.setTitle(fromJson.getTitle());
 
             if (fromJson.getPodcastInfo() != null && fromJson.getPodcastInfo().getCover() != null) {
-                podcast.setPhotoUrl(fromJson.getPodcastInfo().getCover().getUrl());
-                podcast.setPhotoHeight(fromJson.getPodcastInfo().getCover().getHeight());
-                podcast.setPhotoWidth(fromJson.getPodcastInfo().getCover().getWidth());
+                podcast.setPhotoUrl(fromJson.getPodcastInfo().getCover().getPhotoUrl());
+                podcast.setPhotoHeight(fromJson.getPodcastInfo().getCover().getPhotoHeight());
+                podcast.setPhotoWidth(fromJson.getPodcastInfo().getCover().getPhotoWidth());
             }
 
             return podcast;
