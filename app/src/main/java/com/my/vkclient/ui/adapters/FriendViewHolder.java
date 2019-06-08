@@ -1,6 +1,5 @@
 package com.my.vkclient.ui.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,7 +9,7 @@ import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
 
-class FriendViewHolder extends RecyclerView.ViewHolder {
+class FriendViewHolder extends BaseViewHolder<User> {
     private ImageView friendPhotoView;
     private TextView friendNameView;
     private ImageView onlineStatusImageView;

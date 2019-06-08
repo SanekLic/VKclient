@@ -11,14 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHolder> {
+public class FriendRecyclerViewAdapter extends BaseRecyclerViewAdapter<User> {
 
     private static final int PAGE_SIZE = 20;
     private List<User> friendList = new ArrayList<>();
@@ -35,9 +35,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
         mainLooperHandler = new Handler(Looper.getMainLooper());
     }
 
-    @NonNull
     @Override
-    public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    BaseViewHolder getViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_friend, parent, false);
 
@@ -59,20 +58,20 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendViewHo
     }
 
     @Override
-    public void onViewAttachedToWindow(@NonNull final FriendViewHolder holder) {
+    int getListItemCount() {
+        return friendList.size();
+    }
+
+    @Override
+    User getItem(int position) {
+        return friendList.get(position);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull final BaseViewHolder holder) {
         super.onViewAttachedToWindow(holder);
 
         validateLoadMoreItems();
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
-        holder.bind(friendList.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return friendList.size();
     }
 
     public void initialLoadItems() {
