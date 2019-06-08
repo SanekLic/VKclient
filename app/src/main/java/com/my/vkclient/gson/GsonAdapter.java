@@ -13,7 +13,6 @@ import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
 import com.my.vkclient.entities.Video;
-import com.my.vkclient.entities.VkDate;
 import com.my.vkclient.gson.typeadapter.BooleanGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.CropPhotoGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.DocGsonTypeAdapter;
@@ -21,18 +20,16 @@ import com.my.vkclient.gson.typeadapter.LinkGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.PhotoGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.PodcastGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.VideoGsonTypeAdapter;
-import com.my.vkclient.gson.typeadapter.VkDateGsonTypeAdapter;
 
 import java.util.List;
 
 public class GsonAdapter {
     private static GsonAdapter instance;
     private Gson gson;
-    private Gson gsonWithPhotoRypeAdapter;
+    private Gson gsonWithPhotoTypeAdapter;
 
     private GsonAdapter() {
         gson = new Gson().newBuilder()
-                .registerTypeAdapter(VkDate.class, new VkDateGsonTypeAdapter())
                 .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
                 .registerTypeAdapter(CropPhoto.class, new CropPhotoGsonTypeAdapter())
                 .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
@@ -42,7 +39,7 @@ public class GsonAdapter {
                 .registerTypeAdapter(Podcast.class, new PodcastGsonTypeAdapter())
                 .create();
 
-        gsonWithPhotoRypeAdapter = new Gson().newBuilder()
+        gsonWithPhotoTypeAdapter = new Gson().newBuilder()
                 .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
                 .create();
     }
@@ -55,8 +52,8 @@ public class GsonAdapter {
         return instance;
     }
 
-    public Gson getGsonWithPhotoRypeAdapter() {
-        return gsonWithPhotoRypeAdapter;
+    public Gson getGsonWithPhotoTypeAdapter() {
+        return gsonWithPhotoTypeAdapter;
     }
 
     public List<User> getFriendsFromJson(String jsonFriends) {

@@ -1,8 +1,10 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,12 +21,12 @@ import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-class NewsViewHolder extends RecyclerView.ViewHolder {
+class NewsViewHolder extends BaseViewHolder<News> {
     private final TextView likesTextView;
     private final TextView commentsTextView;
     private final TextView repostsTextView;
@@ -65,7 +67,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(News news) {
-        sourceNewsDateTextView.setText(news.getDate().toString());
+        sourceNewsDateTextView.setText(Utils.getInstance().getSimpleDate(news.getDate()));
 
         if (news.getSourceId() < 0) {
             VkRepository.getInstance().getGroup(news.getSourceId() * (-1), new ResultCallback<Group>() {
@@ -103,7 +105,7 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
 
         if (news.getCopyHistory() != null) {
             News newsCopy = news.getCopyHistory().get(news.getCopyHistory().size() - 1);
-            fromNewsDateTextView.setText(newsCopy.getDate().toString());
+            fromNewsDateTextView.setText(Utils.getInstance().getSimpleDate(newsCopy.getDate()));
 
             if (newsCopy.getFromId() < 0) {
                 VkRepository.getInstance().getGroup(newsCopy.getFromId() * (-1), new ResultCallback<Group>() {
@@ -148,24 +150,19 @@ class NewsViewHolder extends RecyclerView.ViewHolder {
             setVisibilityCopyNews(View.GONE);
         }
 
-        likesTextView.setText(formatNumber(news.getLikes().getCount()));
-        commentsTextView.setText(formatNumber(news.getComments().getCount()));
-        repostsTextView.setText(formatNumber(news.getReposts().getCount()));
-        viewsTextView.setText(formatNumber(news.getViews().getCount()));
-    }
-
-    private String formatNumber(int number) {
-        if (number == 0) {
-            return Constants.STRING_EMPTY;
+        if (news.getLikes().getUserLikes()) {
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(this.context, R.drawable.ic_fill_likes), null, null, null);
+        } else{
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(this.context, R.drawable.ic_likes), null, null, null);
         }
 
-        if (number < Constants.INT_THOUSAND) {
-            return String.valueOf(number);
+        likesTextView.setText(Utils.getInstance().formatNumber(news.getLikes().getCount()));
+        commentsTextView.setText(Utils.getInstance().formatNumber(news.getComments().getCount()));
+        repostsTextView.setText(Utils.getInstance().formatNumber(news.getReposts().getCount()));
+
+        if (news.getViews() != null) {
+            viewsTextView.setText(Utils.getInstance().formatNumber(news.getViews().getCount()));
         }
-
-        int exp = (int) (Math.log(number) / Math.log(Constants.INT_THOUSAND));
-
-        return String.format(Locale.US, Constants.STRING_NUMBER_FORMAT, number / Math.pow(Constants.INT_THOUSAND, exp), Constants.STRING_NUMBER_POSTFIX.charAt(exp - 1));
     }
 
     private void setNewsText(String text) {

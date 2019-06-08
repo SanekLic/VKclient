@@ -12,13 +12,15 @@ import android.view.ViewGroup;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
-import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.activity.UserActivity;
 import com.my.vkclient.ui.adapters.FriendRecyclerViewAdapter;
+import com.my.vkclient.utils.ResultCallback;
+
+import java.util.List;
 
 public class FriendsFragment extends Fragment {
-    private FriendRecyclerViewAdapter friendRecyclerViewAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,7 +37,12 @@ public class FriendsFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         friendRecyclerView.setLayoutManager(linearLayoutManager);
-        friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager);
+        FriendRecyclerViewAdapter friendRecyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager) {
+            @Override
+            public void load(int startPosition, int size, ResultCallback<List<User>> listResultCallback) {
+                VkRepository.getInstance().getFriends(startPosition, size, listResultCallback);
+            }
+        };
         friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
             public void onResult(User user) {

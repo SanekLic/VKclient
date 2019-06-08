@@ -29,9 +29,9 @@ import com.my.vkclient.entities.Reposts;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.Views;
-import com.my.vkclient.entities.VkDate;
 import com.my.vkclient.gson.GsonAdapter;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -194,7 +194,7 @@ public class VkRepository {
     }
 
     private boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
-        try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, STRING_EQUALS, String.valueOf(userId)))) {
+        try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(userId)))) {
             if (userCursor.moveToFirst()) {
                 resultCallback.onResult(getUserFromCursor(userCursor));
 
@@ -208,6 +208,7 @@ public class VkRepository {
     private void putUserInDatabase(final User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(UserTable.ID, user.getId());
+        contentValues.put(UserTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(UserTable.FIRST_NAME, user.getFirstName());
         contentValues.put(UserTable.LAST_NAME, user.getLastName());
         contentValues.put(UserTable.ONLINE, user.getOnline());
@@ -228,7 +229,7 @@ public class VkRepository {
     }
 
     private boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
-        try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, STRING_EQUALS, String.valueOf(groupId)))) {
+        try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(groupId)))) {
             if (groupCursor.moveToFirst()) {
                 Group group = new Group();
                 group.setId(groupCursor.getInt(groupCursor.getColumnIndex(GroupTable.ID)));
@@ -247,6 +248,7 @@ public class VkRepository {
     private void putGroupInDatabase(final Group group) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GroupTable.ID, group.getId());
+        contentValues.put(GroupTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(GroupTable.NAME, group.getName());
         contentValues.put(GroupTable.PHOTO_100, group.getPhoto100());
         databaseHelper.insert(GROUP_TABLE_NAME, contentValues);
@@ -274,7 +276,7 @@ public class VkRepository {
     private void putFriendInDatabase(final User friend) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(FriendTable.USER_ID, friend.getId());
-        contentValues.put(FriendTable.FRIEND_LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+        contentValues.put(FriendTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         databaseHelper.insert(FRIEND_TABLE_NAME, contentValues);
     }
 
@@ -318,7 +320,8 @@ public class VkRepository {
 
                     int copyNewsId = newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.COPY_NEWS_ID));
                     if (copyNewsId != 0) {
-                        try (Cursor copyNewsCursor = databaseHelper.query(getSelectDatabaseQuery(NEWS_TABLE_NAME, NewsTable.ID, STRING_EQUALS, String.valueOf(copyNewsId)))) {
+                        try (Cursor copyNewsCursor = databaseHelper.query(getSelectDatabaseQuery(NEWS_TABLE_NAME,
+                                NewsTable.ID, String.valueOf(copyNewsId)))) {
                             if (copyNewsCursor.moveToFirst()) {
                                 news.setCopyHistory(Collections.singletonList(getNewsFromCursor(copyNewsCursor)));
                             }
@@ -390,10 +393,11 @@ public class VkRepository {
     private News getNewsFromCursor(Cursor newsCursor) {
         News news = new News();
 
+        news.setId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.ID)));
         news.setType(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TYPE)));
         news.setSourceId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.SOURCE_ID)));
         news.setFromId(newsCursor.getInt(newsCursor.getColumnIndex(NewsTable.FROM_ID)));
-        news.setDate(new VkDate(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.DATE))));
+        news.setDate(newsCursor.getLong(newsCursor.getColumnIndex(NewsTable.DATE)));
         news.setText(newsCursor.getString(newsCursor.getColumnIndex(NewsTable.TEXT)));
 
         Comments comments = new Comments();
@@ -415,7 +419,7 @@ public class VkRepository {
         news.setViews(views);
 
         try (Cursor attachmentCursor = databaseHelper.query(
-                getSelectDatabaseQuery(ATTACHMENT_TABLE_NAME, AttachmentTable.NEWS_ID, STRING_EQUALS,
+                getSelectDatabaseQuery(ATTACHMENT_TABLE_NAME, AttachmentTable.NEWS_ID,
                         newsCursor.getString(newsCursor.getColumnIndex(NewsTable.ID))))) {
             if (attachmentCursor.getCount() > 0) {
                 List<Attachment> attachmentList = new ArrayList<>();
@@ -436,15 +440,18 @@ public class VkRepository {
         if (news.getCopyHistory() != null) {
             copyNewsId = putNewsInDatabase(news.getCopyHistory().get(0));
         }
+
         ContentValues contentValues = new ContentValues();
+        contentValues.put(NewsTable.ID, news.getId());
+        contentValues.put(NewsTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(NewsTable.TYPE, news.getType());
         contentValues.put(NewsTable.SOURCE_ID, news.getSourceId());
         contentValues.put(NewsTable.FROM_ID, news.getFromId());
-        contentValues.put(NewsTable.DATE, news.getDate().toString());
+        contentValues.put(NewsTable.DATE, Utils.getInstance().getSimpleDate(news.getDate()));
         contentValues.put(NewsTable.TEXT, news.getText());
 
-        if (copyNewsId > 0) {
-            contentValues.put(NewsTable.COPY_NEWS_ID, copyNewsId);
+        if (news.getCopyHistory() != null) {
+            contentValues.put(NewsTable.COPY_NEWS_ID, news.getCopyHistory().get(0).getId());
         }
 
         if (news.getComments() != null) {
@@ -468,7 +475,7 @@ public class VkRepository {
         long newsId = databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
 
         if (news.getAttachments() != null) {
-            putAttachmentsInDatabase(news.getAttachments(), newsId);
+            putAttachmentsInDatabase(news.getAttachments(), news.getId());
         }
 
         return newsId;
@@ -530,10 +537,6 @@ public class VkRepository {
         }
     }
 
-    private String getLimitDatabaseQuery(String tableName, int startPosition, int size) {
-        return SELECT_FROM + tableName + String.format(DATABASE_LIMIT, startPosition, size);
-    }
-
     private String getNewsLimitDatabaseQuery(int startPosition, int size) {
         return SELECT_FROM + NEWS_TABLE_NAME + String.format(DATABASE_WHERE, NewsTable.FROM_ID, STRING_EQUALS, INT_ZERO) + String.format(DATABASE_LIMIT, startPosition, size);
     }
@@ -545,8 +548,8 @@ public class VkRepository {
                 String.format(DATABASE_LIMIT, startPosition, size);
     }
 
-    private String getSelectDatabaseQuery(String tableName, String columnName, String condition, String value) {
-        return SELECT_FROM + tableName + String.format(DATABASE_WHERE, columnName, condition, value);
+    private String getSelectDatabaseQuery(String tableName, String columnName, String value) {
+        return SELECT_FROM + tableName + String.format(DATABASE_WHERE, columnName, Constants.STRING_EQUALS, value);
     }
 
     private String getFriendsRequest(int startPosition, int size) {

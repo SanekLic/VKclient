@@ -19,6 +19,8 @@ public class News implements Parcelable {
             return new News[size];
         }
     };
+    @SerializedName("post_id")
+    private int id;
     @SerializedName("type")
     private String type;
     @SerializedName("source_id")
@@ -26,7 +28,7 @@ public class News implements Parcelable {
     @SerializedName("from_id")
     private int fromId;
     @SerializedName("date")
-    private VkDate date;
+    private long date;
     @SerializedName("text")
     private String text;
     @SerializedName("copy_history")
@@ -46,10 +48,11 @@ public class News implements Parcelable {
     }
 
     protected News(Parcel in) {
+        id = in.readInt();
         type = in.readString();
         sourceId = in.readInt();
         fromId = in.readInt();
-        date = in.readParcelable(VkDate.class.getClassLoader());
+        date = in.readLong();
         text = in.readString();
         copyHistory = in.createTypedArrayList(News.CREATOR);
         comments = in.readParcelable(Comments.class.getClassLoader());
@@ -61,10 +64,11 @@ public class News implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(type);
         dest.writeInt(sourceId);
         dest.writeInt(fromId);
-        dest.writeParcelable(date, flags);
+        dest.writeLong(date);
         dest.writeString(text);
         dest.writeTypedList(copyHistory);
         dest.writeParcelable(comments, flags);
@@ -77,6 +81,14 @@ public class News implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getType() {
@@ -101,14 +113,6 @@ public class News implements Parcelable {
 
     public void setFromId(int fromId) {
         this.fromId = fromId;
-    }
-
-    public VkDate getDate() {
-        return date;
-    }
-
-    public void setDate(VkDate date) {
-        this.date = date;
     }
 
     public String getText() {
@@ -165,5 +169,13 @@ public class News implements Parcelable {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }

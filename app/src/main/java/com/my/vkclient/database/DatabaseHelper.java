@@ -12,7 +12,7 @@ import com.my.vkclient.database.fields.dbAutoincrement;
 import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbFloat;
 import com.my.vkclient.database.fields.dbInt;
-import com.my.vkclient.database.fields.dbParcelable;
+import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 import com.my.vkclient.database.model.AttachmentTable;
@@ -69,8 +69,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
                         type = ((dbInt) typeAnnotation).name();
                     } else if (typeAnnotation instanceof dbFloat) {
                         type = ((dbFloat) typeAnnotation).name();
-                    } else if (typeAnnotation instanceof dbParcelable) {
-                        type = ((dbParcelable) typeAnnotation).name();
+                    } else if (typeAnnotation instanceof dbLong) {
+                        type = ((dbLong) typeAnnotation).name();
                     } else if (!(typeAnnotation instanceof dbPrimaryKey) && !(typeAnnotation instanceof dbAutoincrement)) {
                         throw new IllegalStateException(FIELD_DONT_HAVE_TYPE_ANNOTATION);
                     }

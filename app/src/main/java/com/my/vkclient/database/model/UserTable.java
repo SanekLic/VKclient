@@ -5,6 +5,7 @@ import com.my.vkclient.database.Table;
 import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbFloat;
 import com.my.vkclient.database.fields.dbInt;
+import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 
@@ -13,6 +14,9 @@ public class UserTable {
     @dbInt
     @dbPrimaryKey
     public static final String ID = "ID";
+
+    @dbLong
+    public static final String LAST_UPDATE = "LAST_UPDATE";
 
     @dbBoolean
     public static final String ONLINE = "ONLINE";

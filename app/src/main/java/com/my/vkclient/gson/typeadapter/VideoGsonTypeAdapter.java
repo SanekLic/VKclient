@@ -13,7 +13,7 @@ public class VideoGsonTypeAdapter implements JsonDeserializer<Video> {
 
     @Override
     public Video deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Video fromJson = GsonAdapter.getInstance().getGsonWithPhotoRypeAdapter().fromJson(json, typeOfT);
+        Video fromJson = GsonAdapter.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             Video video = new Video();

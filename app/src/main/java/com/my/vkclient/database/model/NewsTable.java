@@ -2,9 +2,9 @@ package com.my.vkclient.database.model;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
-import com.my.vkclient.database.fields.dbAutoincrement;
 import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbInt;
+import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
 
@@ -12,8 +12,10 @@ import com.my.vkclient.database.fields.dbString;
 public class NewsTable {
     @dbInt
     @dbPrimaryKey
-    @dbAutoincrement
     public static final String ID = "ID";
+
+    @dbLong
+    public static final String LAST_UPDATE = "LAST_UPDATE";
 
     @dbString
     public static final String TYPE = "TYPE";
@@ -24,7 +26,7 @@ public class NewsTable {
     @dbInt
     public static final String FROM_ID = "FROM_ID";
 
-    @dbString
+    @dbLong
     public static final String DATE = "DATE";
 
     @dbString

@@ -10,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
+import com.my.vkclient.entities.News;
+import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.adapters.NewsRecyclerViewAdapter;
+import com.my.vkclient.utils.ResultCallback;
 
 public class NewsFragment extends Fragment {
     @Override
@@ -28,7 +32,18 @@ public class NewsFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         newsRecyclerView.setLayoutManager(linearLayoutManager);
-        NewsRecyclerViewAdapter newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(linearLayoutManager);
+        NewsRecyclerViewAdapter newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(linearLayoutManager) {
+            @Override
+            public void load(String startPosition, int size, ResultCallback<NewsResponse.Response> listResultCallback) {
+                VkRepository.getInstance().getNews(startPosition, size, listResultCallback);
+            }
+        };
+        newsRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<News>() {
+            @Override
+            public void onResult(News result) {
+
+            }
+        });
         newsRecyclerView.setAdapter(newsRecyclerViewAdapter);
 
         newsRecyclerViewAdapter.initialLoadItems();

@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface dbParcelable {
-    String name() default "NONE";
+public @interface dbLong {
+    String name() default "LONG";
 }

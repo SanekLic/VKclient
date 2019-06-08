@@ -1,128 +1,69 @@
 package com.my.vkclient.ui.adapters;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRecyclerViewAdapter extends BaseRecyclerViewAdapter<User> {
-
-    private static final int PAGE_SIZE = 20;
-    private List<User> friendList = new ArrayList<>();
-    private LinearLayoutManager linearLayoutManager;
-    private boolean isLoading;
-    private boolean isLoadComplete;
-    private UserDiffUtilCallback userDiffUtilCallback;
-    private Handler mainLooperHandler;
-    private ResultCallback<User> itemClickListener;
+public abstract class FriendRecyclerViewAdapter extends BaseRecyclerViewAdapter<User> {
 
     public FriendRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
-        this.linearLayoutManager = linearLayoutManager;
-        userDiffUtilCallback = new UserDiffUtilCallback();
-        mainLooperHandler = new Handler(Looper.getMainLooper());
+        super(linearLayoutManager);
     }
 
     @Override
-    BaseViewHolder getViewHolder(@NonNull ViewGroup parent, int viewType) {
+    BaseViewHolder<User> getViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_friend, parent, false);
 
-        final FriendViewHolder holder = new FriendViewHolder(view);
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (itemClickListener != null) {
-                    int position = holder.getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        itemClickListener.onResult(friendList.get(position));
-                    }
-                }
-            }
-        });
-
-        return holder;
+        return new FriendViewHolder(view);
     }
 
     @Override
-    int getListItemCount() {
-        return friendList.size();
-    }
-
-    @Override
-    User getItem(int position) {
-        return friendList.get(position);
-    }
-
-    @Override
-    public void onViewAttachedToWindow(@NonNull final BaseViewHolder holder) {
+    public void onViewAttachedToWindow(@NonNull final BaseViewHolder<User> holder) {
         super.onViewAttachedToWindow(holder);
 
-        validateLoadMoreItems();
+        if (validateLoadMoreItems()) {
+            loadMoreItems(totalItemCount, PAGE_SIZE);
+        }
     }
 
     public void initialLoadItems() {
         loadMoreItems(0, PAGE_SIZE * 2);
     }
 
-    public void setOnItemClickListener(ResultCallback<User> itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
+//    private void setItems(List<User> newFriendList) {
+//        userDiffUtilCallback
+//                .setOldList(friendList)
+//                .setNewList(newFriendList);
+//        friendList.clear();
+//        friendList.addAll(newFriendList);
+//        DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
+//    }
 
-    private void setItems(List<User> newFriendList) {
-        userDiffUtilCallback
-                .setOldList(friendList)
-                .setNewList(newFriendList);
-        friendList.clear();
-        friendList.addAll(newFriendList);
-        DiffUtil.calculateDiff(userDiffUtilCallback).dispatchUpdatesTo(this);
-    }
-
-    private void addItems(List<User> addFriendList) {
-        friendList.addAll(addFriendList);
-        notifyItemRangeInserted(friendList.size() - addFriendList.size(), addFriendList.size());
-    }
-
-    private void validateLoadMoreItems() {
-        if (!isLoading && !isLoadComplete) {
-            int totalItemCount = linearLayoutManager.getItemCount();
-            int visibleItemCount = linearLayoutManager.getChildCount();
-            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-
-            if ((visibleItemCount + firstVisibleItemPosition + PAGE_SIZE) >= totalItemCount
-                    && firstVisibleItemPosition >= 0) {
-                loadMoreItems(totalItemCount, PAGE_SIZE);
-            }
-        }
-    }
+    public abstract void load(final int startPosition, final int size, ResultCallback<List<User>> listResultCallback);
 
     private void loadMoreItems(final int startPosition, final int size) {
         isLoading = true;
 
-        VkRepository.getInstance().getFriends(startPosition, size, new ResultCallback<List<User>>() {
+        load(startPosition, size, new ResultCallback<List<User>>() {
             @Override
             public void onResult(final List<User> resultList) {
                 if (resultList != null) {
-                    if (resultList.size() < size) {
-                        isLoadComplete = true;
-                    }
-
                     mainLooperHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            if (resultList.size() < size) {
+                                setLoadComplete();
+                            }
+
                             addItems(resultList);
                             isLoading = false;
                         }

@@ -13,7 +13,7 @@ public class LinkGsonTypeAdapter implements JsonDeserializer<Link> {
 
     @Override
     public Link deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Link fromJson = GsonAdapter.getInstance().getGsonWithPhotoRypeAdapter().fromJson(json, typeOfT);
+        Link fromJson = GsonAdapter.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             Link link = new Link();
