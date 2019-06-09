@@ -31,7 +31,6 @@ import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.Views;
 import com.my.vkclient.gson.GsonAdapter;
 import com.my.vkclient.utils.ResultCallback;
-import com.my.vkclient.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,6 +46,7 @@ import java.util.concurrent.Executors;
 import static com.my.vkclient.Constants.Database.ATTACHMENT_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.DATABASE_JOIN;
 import static com.my.vkclient.Constants.Database.DATABASE_LIMIT;
+import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_DESC;
 import static com.my.vkclient.Constants.Database.DATABASE_WHERE;
 import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.GROUP_TABLE_NAME;
@@ -173,16 +173,22 @@ public class VkRepository {
                         NewsResponse.Response news = GsonAdapter.getInstance().getNewsFromJson(result);
 
                         if (news != null) {
-                            for (Group group : news.getGroupList()) {
-                                putGroupInDatabase(group);
+                            if (news.getGroupList() != null) {
+                                for (Group group : news.getGroupList()) {
+                                    putGroupInDatabase(group);
+                                }
                             }
 
-                            for (User user : news.getUserList()) {
-                                putUserInDatabase(user);
+                            if (news.getUserList() != null) {
+                                for (User user : news.getUserList()) {
+                                    putUserInDatabase(user);
+                                }
                             }
 
-                            for (News putNews : news.getNewsList()) {
-                                putNewsInDatabase(putNews);
+                            if (news.getNewsList() != null) {
+                                for (News putNews : news.getNewsList()) {
+                                    putNewsInDatabase(putNews);
+                                }
                             }
                         }
 
@@ -435,23 +441,20 @@ public class VkRepository {
         return news;
     }
 
-    private long putNewsInDatabase(final News news) {
-        long copyNewsId = 0;
-        if (news.getCopyHistory() != null) {
-            copyNewsId = putNewsInDatabase(news.getCopyHistory().get(0));
-        }
-
+    private void putNewsInDatabase(final News news) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(NewsTable.ID, news.getId());
         contentValues.put(NewsTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(NewsTable.TYPE, news.getType());
         contentValues.put(NewsTable.SOURCE_ID, news.getSourceId());
         contentValues.put(NewsTable.FROM_ID, news.getFromId());
-        contentValues.put(NewsTable.DATE, Utils.getInstance().getSimpleDate(news.getDate()));
+        contentValues.put(NewsTable.DATE, news.getDate());
         contentValues.put(NewsTable.TEXT, news.getText());
 
         if (news.getCopyHistory() != null) {
+            news.getCopyHistory().get(0).setId(news.getId() * -1);
             contentValues.put(NewsTable.COPY_NEWS_ID, news.getCopyHistory().get(0).getId());
+            putNewsInDatabase(news.getCopyHistory().get(0));
         }
 
         if (news.getComments() != null) {
@@ -472,13 +475,11 @@ public class VkRepository {
             contentValues.put(NewsTable.VIEWS_COUNT, news.getViews().getCount());
         }
 
-        long newsId = databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
+        databaseHelper.insert(NEWS_TABLE_NAME, contentValues);
 
         if (news.getAttachments() != null) {
             putAttachmentsInDatabase(news.getAttachments(), news.getId());
         }
-
-        return newsId;
     }
 
     private void putAttachmentsInDatabase(List<Attachment> attachmentList, long newsId) {
@@ -538,7 +539,8 @@ public class VkRepository {
     }
 
     private String getNewsLimitDatabaseQuery(int startPosition, int size) {
-        return SELECT_FROM + NEWS_TABLE_NAME + String.format(DATABASE_WHERE, NewsTable.FROM_ID, STRING_EQUALS, INT_ZERO) + String.format(DATABASE_LIMIT, startPosition, size);
+        return SELECT_FROM + NEWS_TABLE_NAME + String.format(DATABASE_WHERE, NewsTable.FROM_ID, STRING_EQUALS, INT_ZERO)
+                + String.format(DATABASE_ORDER_BY_DESC, NewsTable.DATE) + String.format(DATABASE_LIMIT, startPosition, size);
     }
 
     private String getFriendsJoinUserDatabaseQuery(int startPosition, int size) {

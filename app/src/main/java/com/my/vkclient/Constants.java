@@ -14,7 +14,6 @@ public interface Constants {
     String USER_ID_INTENT_KEY = "UserId";
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
-    int PERCENTAGE = 100;
     int INT_ONE_KB = 1024;
 
     interface Database {
@@ -27,7 +26,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 2;
+        int DATABASE_VERSION = 1;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -35,6 +34,7 @@ public interface Constants {
         String DATABASE_WHERE = " WHERE %s %s %s";
         String DATABASE_JOIN = " JOIN %s ON %s = %s order by %s, %s";
         String DATABASE_LIMIT = " LIMIT %s,%s";
+        String DATABASE_ORDER_BY_DESC = " ORDER BY %s DESC";
 
         String FIELD_DONT_HAVE_TYPE_ANNOTATION = "Field don't have type annotation";
     }
@@ -61,5 +61,10 @@ public interface Constants {
         String NEWS_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo";
         String NEWS_COUNT = "&count=";
         String API_VK_GET_GROUP_URL = API_VK_METHOD + "groups.getById?group_id=";
+    }
+
+    interface ImageLoader {
+        int PERCENTAGE = 100;
+        int IMAGE_COMPRESS_QUALITY = 100;
     }
 }

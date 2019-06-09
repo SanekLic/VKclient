@@ -18,7 +18,6 @@ import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Rect;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -73,30 +72,17 @@ public class ImageLoader {
         return null;
     }
 
-    private void putInDiskCache(final File imageCacheFile, final byte[] buffer) {
+    private void putInDiskCache(final Bitmap bitmap, final File imageCacheFile) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(imageCacheFile)) {
-            fileOutputStream.write(buffer);
-            fileOutputStream.flush();
+            bitmap.compress(Bitmap.CompressFormat.WEBP, Constants.ImageLoader.IMAGE_COMPRESS_QUALITY, fileOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private Bitmap getFromNetwork(final String requestUrl, final File imageCacheFile) {
-        try (InputStream urlInputStream = new URL(requestUrl).openStream();
-             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-
-            byte[] buffer = new byte[Constants.INT_ONE_KB];
-            int length;
-
-            while ((length = urlInputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, length);
-            }
-
-            buffer = byteArrayOutputStream.toByteArray();
-            putInDiskCache(imageCacheFile, buffer);
-
-            return BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
+    private Bitmap getFromNetwork(final String requestUrl) {
+        try (InputStream urlInputStream = new URL(requestUrl).openStream()) {
+            return BitmapFactory.decodeStream(urlInputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,15 +141,21 @@ public class ImageLoader {
     private Bitmap cropBitmap(Bitmap input, Rect crop) {
         int width = input.getWidth();
         int height = input.getHeight();
-        float x = width * crop.getX() / Constants.PERCENTAGE;
-        float y = height * crop.getY() / Constants.PERCENTAGE;
-        float x2 = width * crop.getX2() / Constants.PERCENTAGE;
-        float y2 = height * crop.getY2() / Constants.PERCENTAGE;
+        float x = width * crop.getX() / Constants.ImageLoader.PERCENTAGE;
+        float y = height * crop.getY() / Constants.ImageLoader.PERCENTAGE;
+        float x2 = width * crop.getX2() / Constants.ImageLoader.PERCENTAGE;
+        float y2 = height * crop.getY2() / Constants.ImageLoader.PERCENTAGE;
 
         return Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
     }
 
     public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
+        if (requestUrl == null || requestUrl.equals(imageView.getTag(R.id.IMAGE_TAG_URL))) {
+            return;
+        }
+
+        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
+
         if (initialWidth == 0 || initialHeight == 0) {
             imageView.setImageDrawable(null);
         } else {
@@ -174,10 +166,6 @@ public class ImageLoader {
             } else {
                 imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8));
             }
-        }
-
-        if (requestUrl == null) {
-            return;
         }
 
         Integer imageTagOldLoadIteration = (Integer) imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION);
@@ -195,16 +183,22 @@ public class ImageLoader {
                     resultBitmap = getFromDiskCache(imageCacheFile);
 
                     if (resultBitmap == null) {
-                        resultBitmap = getFromNetwork(requestUrl, imageCacheFile);
+                        resultBitmap = getFromNetwork(requestUrl);
+
+                        if (resultBitmap != null) {
+                            putInDiskCache(resultBitmap, imageCacheFile);
+                        }
+                    }
+
+                    if (resultBitmap != null) {
+                        putInMemoryCache(resultBitmap, requestUrl);
                     }
                 }
 
-                if (resultBitmap != null) {
-                    if (imageTagNewLoadIteration.equals(imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION))) {
-                        setResultToImageView(imageView, resultBitmap);
-                    }
-
-                    putInMemoryCache(resultBitmap, requestUrl);
+                if (resultBitmap != null &&
+                        imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl) &&
+                        imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION).equals(imageTagNewLoadIteration)) {
+                    setResultToImageView(imageView, resultBitmap);
                 }
             }
         });
