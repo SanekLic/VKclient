@@ -1,9 +1,6 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,10 +12,7 @@ import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.AttachmentPhoto;
-import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
-import com.my.vkclient.entities.User;
-import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.utils.Utils;
@@ -27,28 +21,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 class NewsViewHolder extends BaseViewHolder<News> {
-    private final TextView likesTextView;
-    private final TextView commentsTextView;
-    private final TextView repostsTextView;
-    private final TextView viewsTextView;
-    private final ImageView sourceIconImageView;
-    private final TextView sourceNameTextView;
-    private final TextView sourceNewsDateTextView;
-    private final ImageView fromIconImageView;
-    private final TextView fromNameTextView;
-    private final TextView fromNewsDateTextView;
-    private final TextView newsTextView;
-    private final ImageView newsPhotoImageView;
-    private final RecyclerView attachmentRecyclerView;
+    private TextView likesTextView;
+    private TextView commentsTextView;
+    private TextView repostsTextView;
+    private TextView viewsTextView;
+    private ImageView sourceIconImageView;
+    private TextView sourceNameTextView;
+    private TextView sourceNewsDateTextView;
+    private ImageView fromIconImageView;
+    private TextView fromNameTextView;
+    private TextView fromNewsDateTextView;
+    private TextView newsTextView;
+    private ImageView newsPhotoImageView;
+    private RecyclerView attachmentRecyclerView;
     private List<Attachment> attachments = new ArrayList<>();
-    private Handler mainLooperHandler = new Handler(Looper.getMainLooper());
     private Context context;
     private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
+    private News news;
+    private ResultCallback<News> onLikeClickListener;
 
     public NewsViewHolder(Context context, View itemView) {
         super(itemView);
 
         this.context = context;
+        setupView(itemView);
+        setupAttachmentRecyclerView();
+    }
+
+    private void setupView(View itemView) {
         sourceIconImageView = itemView.findViewById(R.id.sourceIconImageView);
         sourceNameTextView = itemView.findViewById(R.id.sourceNameTextView);
         sourceNewsDateTextView = itemView.findViewById(R.id.sourceNewsDateTextView);
@@ -59,88 +59,33 @@ class NewsViewHolder extends BaseViewHolder<News> {
         newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
         attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
         likesTextView = itemView.findViewById(R.id.likesTextView);
+        likesTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onLikeClickListener != null && news != null) {
+                    onLikeClickListener.onResult(news);
+                }
+            }
+        });
         commentsTextView = itemView.findViewById(R.id.commentsTextView);
         repostsTextView = itemView.findViewById(R.id.repostsTextView);
         viewsTextView = itemView.findViewById(R.id.viewsTextView);
+    }
 
-        setupAttachmentRecyclerView();
+    void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
+        this.onLikeClickListener = onLikeClickListener;
     }
 
     public void bind(News news) {
-        sourceNewsDateTextView.setText(Utils.getInstance().getSimpleDate(news.getDate()));
+        this.news = news;
 
-        if (news.getSourceId() < 0) {
-            VkRepository.getInstance().getGroup(news.getSourceId() * (-1), new ResultCallback<Group>() {
-                @Override
-                public void onResult(final Group result) {
-                    mainLooperHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (result != null) {
-                                sourceNameTextView.setText(result.getName());
-                                sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                ImageLoader.getInstance().getImageFromUrl(sourceIconImageView, result.getPhoto100(), 0, 0);
-                            }
-                        }
-                    });
-                }
-            });
-        } else {
-            VkRepository.getInstance().getUser(news.getSourceId(), new ResultCallback<User>() {
-                @Override
-                public void onResult(final User result) {
-                    mainLooperHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (result != null) {
-                                sourceNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
-                                sourceIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                ImageLoader.getInstance().getImageFromUrl(sourceIconImageView, result.getPhoto100Url(), 0, 0);
-                            }
-                        }
-                    });
-                }
-            });
-        }
+        sourceNewsDateTextView.setText(Utils.getInstance().getSimpleDate(news.getDate()));
+        setNewsSourceInfo(news, sourceNameTextView, sourceIconImageView);
 
         if (news.getCopyHistory() != null) {
-            News newsCopy = news.getCopyHistory().get(news.getCopyHistory().size() - 1);
+            News newsCopy = news.getCopyHistory().get(0);
             fromNewsDateTextView.setText(Utils.getInstance().getSimpleDate(newsCopy.getDate()));
-
-            if (newsCopy.getFromId() < 0) {
-                VkRepository.getInstance().getGroup(newsCopy.getFromId() * (-1), new ResultCallback<Group>() {
-                    @Override
-                    public void onResult(final Group result) {
-                        mainLooperHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (result != null) {
-                                    fromNameTextView.setText(result.getName());
-                                    fromIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                    ImageLoader.getInstance().getImageFromUrl(fromIconImageView, result.getPhoto100(), 0, 0);
-                                }
-                            }
-                        });
-                    }
-                });
-            } else {
-                VkRepository.getInstance().getUser(newsCopy.getFromId(), new ResultCallback<User>() {
-                    @Override
-                    public void onResult(final User result) {
-                        mainLooperHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (result != null) {
-                                    fromNameTextView.setText(new StringBuilder().append(result.getFirstName()).append(Constants.STRING_SPACE).append(result.getLastName()).toString());
-                                    fromIconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-                                    ImageLoader.getInstance().getImageFromUrl(fromIconImageView, result.getPhoto100Url(), 0, 0);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
+            setNewsSourceInfo(newsCopy, fromNameTextView, fromIconImageView);
             setNewsText(newsCopy.getText());
             setAttachments(newsCopy.getAttachments());
             setVisibilityCopyNews(View.VISIBLE);
@@ -151,9 +96,9 @@ class NewsViewHolder extends BaseViewHolder<News> {
         }
 
         if (news.getLikes().getUserLikes()) {
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(this.context, R.drawable.ic_fill_likes), null, null, null);
-        } else{
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(this.context, R.drawable.ic_likes), null, null, null);
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_fill_likes), null, null, null);
+        } else {
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_likes), null, null, null);
         }
 
         likesTextView.setText(Utils.getInstance().formatNumber(news.getLikes().getCount()));
@@ -162,6 +107,18 @@ class NewsViewHolder extends BaseViewHolder<News> {
 
         if (news.getViews() != null) {
             viewsTextView.setText(Utils.getInstance().formatNumber(news.getViews().getCount()));
+        }
+    }
+
+    private void setNewsSourceInfo(News news, TextView nameTextView, ImageView iconImageView) {
+        if (news.getGroup() != null) {
+            nameTextView.setText(news.getGroup().getName());
+            iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getGroup().getPhoto100Url(), 0, 0);
+        } else if (news.getUser() != null) {
+            nameTextView.setText(String.format(Constants.NAME_FORMAT, news.getUser().getFirstName(), news.getUser().getLastName()));
+            iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getUser().getPhoto100Url(), 0, 0);
         }
     }
 

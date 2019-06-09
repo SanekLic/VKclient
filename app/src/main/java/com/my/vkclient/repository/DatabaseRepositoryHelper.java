@@ -1,0 +1,633 @@
+package com.my.vkclient.repository;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+
+import com.my.vkclient.Constants;
+import com.my.vkclient.database.DatabaseHelper;
+import com.my.vkclient.database.model.AttachmentTable;
+import com.my.vkclient.database.model.FriendTable;
+import com.my.vkclient.database.model.GroupTable;
+import com.my.vkclient.database.model.NewsTable;
+import com.my.vkclient.database.model.UserTable;
+import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.entities.AttachmentPhoto;
+import com.my.vkclient.entities.Audio;
+import com.my.vkclient.entities.Comments;
+import com.my.vkclient.entities.CropPhoto;
+import com.my.vkclient.entities.Doc;
+import com.my.vkclient.entities.Group;
+import com.my.vkclient.entities.Likes;
+import com.my.vkclient.entities.Link;
+import com.my.vkclient.entities.News;
+import com.my.vkclient.entities.Photo;
+import com.my.vkclient.entities.Podcast;
+import com.my.vkclient.entities.Reposts;
+import com.my.vkclient.entities.User;
+import com.my.vkclient.entities.Video;
+import com.my.vkclient.entities.Views;
+import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.utils.ResultCallback;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+import static com.my.vkclient.Constants.Database.ATTACHMENT_TABLE_NAME;
+import static com.my.vkclient.Constants.Database.DATABASE_JOIN;
+import static com.my.vkclient.Constants.Database.DATABASE_LIMIT;
+import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_DESC;
+import static com.my.vkclient.Constants.Database.DATABASE_WHERE;
+import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
+import static com.my.vkclient.Constants.Database.GROUP_TABLE_NAME;
+import static com.my.vkclient.Constants.Database.NEWS_TABLE_NAME;
+import static com.my.vkclient.Constants.Database.SELECT_FROM;
+import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
+import static com.my.vkclient.Constants.INT_ZERO;
+import static com.my.vkclient.Constants.STRING_EQUALS;
+import static com.my.vkclient.Constants.STRING_SLASH;
+
+class DatabaseRepositoryHelper {
+    private DatabaseHelper databaseHelper;
+    private boolean userColumnIndexesReady;
+    private boolean groupColumnIndexesReady;
+    private boolean newsColumnIndexesReady;
+    private boolean attachmentColumnIndexesReady;
+    private int columnIndexUserId;
+    private int columnIndexUserFirstName;
+    private int columnIndexUserLastName;
+    private int columnIndexUserOnline;
+    private int columnIndexUserPhoto100Url;
+    private int columnIndexUserPhotoMaxUrl;
+    private int columnIndexUserCropPhotoUrl;
+    private int columnIndexUserCropPhotoHeight;
+    private int columnIndexUserCropPhotoWidth;
+    private int columnIndexUserCropRectX;
+    private int columnIndexUserCropRectX2;
+    private int columnIndexUserCropRectY;
+    private int columnIndexUserCropRectY2;
+    private int columnIndexGroupId;
+    private int columnIndexGroupName;
+    private int columnIndexGroupPhoto100Url;
+    private int columnIndexNewsId;
+    private int columnIndexNewsType;
+    private int columnIndexNewsSourceId;
+    private int columnIndexNewsFromId;
+    private int columnIndexNewsDate;
+    private int columnIndexNewsText;
+    private int columnIndexNewsCopyNewsId;
+    private int columnIndexNewsCommentsCount;
+    private int columnIndexNewsLikesCount;
+    private int columnIndexNewsUserLikes;
+    private int columnIndexNewsCanLikes;
+    private int columnIndexNewsRepostsCount;
+    private int columnIndexNewsViewsCount;
+    private int columnIndexAttachmentType;
+    private int columnIndexAttachmentVideoTitle;
+    private int columnIndexAttachmentDocUrl;
+    private int columnIndexAttachmentAudioArtist;
+    private int columnIndexAttachmentAudioTitle;
+    private int columnIndexAttachmentAudioUrl;
+    private int columnIndexAttachmentLinkUrl;
+    private int columnIndexAttachmentPodcastTitle;
+    private int columnIndexAttachmentPodcastUrl;
+    private int columnIndexAttachmentPhotoUrl;
+    private int columnIndexAttachmentPhotoHeight;
+    private int columnIndexAttachmentPhotoWidth;
+
+    DatabaseRepositoryHelper(@NonNull final Context context) {
+        databaseHelper = new DatabaseHelper(context);
+    }
+
+    boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
+        try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(userId)))) {
+            if (userCursor.moveToFirst()) {
+                resultCallback.onResult(getUserFromCursor(userCursor));
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    void putUserInDatabase(final User user) {
+        ContentValues contentValues = new ContentValues();
+        putUserToContentValue(user, contentValues);
+
+        databaseHelper.insert(USER_TABLE_NAME, contentValues);
+    }
+
+    void putUserListInDatabase(final List<User> userList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (User user : userList) {
+                putUserToContentValue(user, contentValues);
+
+                databaseHelper.insertWithoutTransaction(writableDatabase, USER_TABLE_NAME, contentValues);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
+        try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(groupId)))) {
+            if (groupCursor.moveToFirst()) {
+                resultCallback.onResult(getGroupFromCursor(groupCursor));
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    void putGroupInDatabase(final Group group) {
+        ContentValues contentValues = new ContentValues();
+        putGroupToContentValue(group, contentValues);
+        databaseHelper.insert(GROUP_TABLE_NAME, contentValues);
+    }
+
+    void putGroupListInDatabase(final List<Group> groupList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (Group group : groupList) {
+                putGroupToContentValue(group, contentValues);
+
+                databaseHelper.insertWithoutTransaction(writableDatabase, GROUP_TABLE_NAME, contentValues);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
+        try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
+            if (friendsCursor.getCount() > 0) {
+                List<User> friendList = new ArrayList<>();
+
+                while (friendsCursor.moveToNext()) {
+                    friendList.add(getUserFromCursor(friendsCursor));
+                }
+
+                resultCallback.onResult(friendList);
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    void putFriendListInDatabase(final List<User> friendList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (User user : friendList) {
+                contentValues.put(FriendTable.USER_ID, user.getId());
+                contentValues.put(FriendTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+
+                databaseHelper.insertWithoutTransaction(writableDatabase, FRIEND_TABLE_NAME, contentValues);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    boolean getNewsFromDatabase(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
+        int startPosition = 0;
+
+        if (startFrom != null && !startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
+            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
+        }
+
+        try (Cursor newsCursor = databaseHelper.query(getNewsLimitDatabaseQuery(startPosition, size))) {
+            if (newsCursor.getCount() > 0) {
+                List<News> newsList = new ArrayList<>();
+
+                while (newsCursor.moveToNext()) {
+                    News news = getNewsFromCursor(newsCursor);
+
+                    int copyNewsId = newsCursor.getInt(columnIndexNewsCopyNewsId);
+                    if (copyNewsId != 0) {
+                        try (Cursor copyNewsCursor = databaseHelper.query(getSelectDatabaseQuery(NEWS_TABLE_NAME,
+                                NewsTable.ID, String.valueOf(copyNewsId)))) {
+                            if (copyNewsCursor.moveToFirst()) {
+                                news.setCopyHistory(Collections.singletonList(getNewsFromCursor(copyNewsCursor)));
+                            }
+                        }
+                    }
+
+                    newsList.add(news);
+                }
+
+                NewsResponse newsResponse = new NewsResponse();
+
+                newsResponse.getResponse().setNewsList(newsList);
+                newsResponse.getResponse().setNextFrom((startPosition + newsList.size()) + STRING_SLASH);
+
+                resultCallback.onResult(newsResponse.getResponse());
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void putNewsInDatabaseWithoutAttachments(final News news) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            putNewsInDatabaseWithoutTransaction(writableDatabase, contentValues, news, false);
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    void putNewsListInDatabase(final List<News> newsList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+
+            for (News news : newsList) {
+                putNewsInDatabaseWithoutTransaction(writableDatabase, contentValues, news, true);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    private void putUserToContentValue(User user, ContentValues contentValues) {
+        contentValues.put(UserTable.ID, user.getId());
+        contentValues.put(UserTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+        contentValues.put(UserTable.FIRST_NAME, user.getFirstName());
+        contentValues.put(UserTable.LAST_NAME, user.getLastName());
+        contentValues.put(UserTable.ONLINE, user.getOnline());
+        contentValues.put(UserTable.PHOTO_100_URL, user.getPhoto100Url());
+        contentValues.put(UserTable.PHOTO_MAX_URL, user.getPhotoMaxUrl());
+
+        if (user.getCropPhoto() != null) {
+            contentValues.put(UserTable.CROP_PHOTO_URL, user.getCropPhoto().getCropPhotoUrl());
+            contentValues.put(UserTable.CROP_PHOTO_HEIGHT, user.getCropPhoto().getCropPhotoHeight());
+            contentValues.put(UserTable.CROP_PHOTO_WIDTH, user.getCropPhoto().getCropPhotoWidth());
+            contentValues.put(UserTable.CROP_RECT_X, user.getCropPhoto().getCropRectX());
+            contentValues.put(UserTable.CROP_RECT_X_2, user.getCropPhoto().getCropRectX2());
+            contentValues.put(UserTable.CROP_RECT_Y, user.getCropPhoto().getCropRectY());
+            contentValues.put(UserTable.CROP_RECT_Y_2, user.getCropPhoto().getCropRectY2());
+        }
+    }
+
+    private void putGroupToContentValue(Group group, ContentValues contentValues) {
+        contentValues.put(GroupTable.ID, group.getId());
+        contentValues.put(GroupTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+        contentValues.put(GroupTable.NAME, group.getName());
+        contentValues.put(GroupTable.PHOTO_100_URL, group.getPhoto100Url());
+    }
+
+    private void putNewsInDatabaseWithoutTransaction(SQLiteDatabase writableDatabase, ContentValues contentValues, News news, boolean withAttachments) {
+        contentValues.put(NewsTable.ID, news.getId());
+        contentValues.put(NewsTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+        contentValues.put(NewsTable.TYPE, news.getType());
+        contentValues.put(NewsTable.SOURCE_ID, news.getSourceId());
+        contentValues.put(NewsTable.FROM_ID, news.getFromId());
+        contentValues.put(NewsTable.DATE, news.getDate());
+        contentValues.put(NewsTable.TEXT, news.getText());
+
+        if (news.getCopyHistory() != null) {
+            news.getCopyHistory().get(0).setId(news.getId() * -1);
+            contentValues.put(NewsTable.COPY_NEWS_ID, news.getCopyHistory().get(0).getId());
+            ContentValues contentValuesCopyNews = new ContentValues();
+            putNewsInDatabaseWithoutTransaction(writableDatabase, contentValuesCopyNews, news.getCopyHistory().get(0), withAttachments);
+        }
+
+        if (news.getComments() != null) {
+            contentValues.put(NewsTable.COMMENTS_COUNT, news.getComments().getCount());
+        }
+
+        if (news.getLikes() != null) {
+            contentValues.put(NewsTable.LIKES_COUNT, news.getLikes().getCount());
+            contentValues.put(NewsTable.USER_LIKES, news.getLikes().getUserLikes());
+            contentValues.put(NewsTable.CAN_LIKE, news.getLikes().getCanLike());
+        }
+
+        if (news.getReposts() != null) {
+            contentValues.put(NewsTable.REPOSTS_COUNT, news.getReposts().getCount());
+        }
+
+        if (news.getViews() != null) {
+            contentValues.put(NewsTable.VIEWS_COUNT, news.getViews().getCount());
+        }
+
+        if (withAttachments && news.getAttachments() != null) {
+            putAttachmentsInDatabaseWithoutTransaction(writableDatabase, news.getAttachments(), news.getId());
+        }
+
+        databaseHelper.insertWithoutTransaction(writableDatabase, NEWS_TABLE_NAME, contentValues);
+    }
+
+    private Group getGroupFromCursor(Cursor groupCursor) {
+        Group group = new Group();
+        prepareIndexesGroupColumns(groupCursor);
+
+        group.setId(groupCursor.getInt(columnIndexGroupId));
+        group.setName(groupCursor.getString(columnIndexGroupName));
+        group.setPhoto100Url(groupCursor.getString(columnIndexGroupPhoto100Url));
+
+        return group;
+    }
+
+    private User getUserFromCursor(Cursor userCursor) {
+        User user = new User();
+        prepareIndexesUserColumns(userCursor);
+
+        user.setId(userCursor.getInt(columnIndexUserId));
+        user.setFirstName(userCursor.getString(columnIndexUserFirstName));
+        user.setLastName(userCursor.getString(columnIndexUserLastName));
+        user.setOnline(userCursor.getInt(columnIndexUserOnline) > 0);
+        user.setPhoto100Url(userCursor.getString(columnIndexUserPhoto100Url));
+        user.setPhotoMaxUrl(userCursor.getString(columnIndexUserPhotoMaxUrl));
+        String cropPhotoUrl = userCursor.getString(columnIndexUserCropPhotoUrl);
+
+        if (cropPhotoUrl != null) {
+            user.setCropPhoto(new CropPhoto());
+            user.getCropPhoto().setCropPhotoUrl(cropPhotoUrl);
+            user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(columnIndexUserCropPhotoHeight));
+            user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(columnIndexUserCropPhotoWidth));
+            user.getCropPhoto().setCropRectX(userCursor.getFloat(columnIndexUserCropRectX));
+            user.getCropPhoto().setCropRectX2(userCursor.getFloat(columnIndexUserCropRectX2));
+            user.getCropPhoto().setCropRectY(userCursor.getFloat(columnIndexUserCropRectY));
+            user.getCropPhoto().setCropRectY2(userCursor.getFloat(columnIndexUserCropRectY2));
+        }
+
+        return user;
+    }
+
+    private News getNewsFromCursor(Cursor newsCursor) {
+        News news = new News();
+        prepareIndexesNewsColumns(newsCursor);
+
+        news.setId(newsCursor.getInt(columnIndexNewsId));
+        news.setType(newsCursor.getString(columnIndexNewsType));
+        news.setSourceId(newsCursor.getInt(columnIndexNewsSourceId));
+        news.setFromId(newsCursor.getInt(columnIndexNewsFromId));
+        news.setDate(newsCursor.getLong(columnIndexNewsDate));
+        news.setText(newsCursor.getString(columnIndexNewsText));
+
+        Comments comments = new Comments();
+        comments.setCount(newsCursor.getInt(columnIndexNewsCommentsCount));
+        news.setComments(comments);
+
+        Likes likes = new Likes();
+        likes.setCount(newsCursor.getInt(columnIndexNewsLikesCount));
+        likes.setUserLikes(newsCursor.getInt(columnIndexNewsUserLikes) > 0);
+        likes.setCanLike(newsCursor.getInt(columnIndexNewsCanLikes) > 0);
+        news.setLikes(likes);
+
+        Reposts reposts = new Reposts();
+        reposts.setCount(newsCursor.getInt(columnIndexNewsRepostsCount));
+        news.setReposts(reposts);
+
+        Views views = new Views();
+        views.setCount(newsCursor.getInt(columnIndexNewsViewsCount));
+        news.setViews(views);
+
+        try (Cursor attachmentCursor = databaseHelper.query(
+                getSelectDatabaseQuery(ATTACHMENT_TABLE_NAME, AttachmentTable.NEWS_ID,
+                        newsCursor.getString(columnIndexNewsId)))) {
+            if (attachmentCursor.getCount() > 0) {
+                List<Attachment> attachmentList = new ArrayList<>();
+
+                while (attachmentCursor.moveToNext()) {
+                    attachmentList.add(getAttachmentFromCursor(attachmentCursor));
+                }
+
+                news.setAttachments(attachmentList);
+            }
+        }
+
+        int ownerId = news.getSourceId() == 0 ? news.getFromId() : news.getSourceId();
+        if (ownerId > 0) {
+            try (Cursor userCursor = databaseHelper.query(
+                    getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(ownerId)))) {
+                if (userCursor.moveToFirst()) {
+                    news.setUser(getUserFromCursor(userCursor));
+                }
+            }
+        } else {
+            ownerId *= -1;
+            try (Cursor groupCursor = databaseHelper.query(
+                    getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(ownerId)))) {
+                if (groupCursor.moveToFirst()) {
+                    news.setGroup(getGroupFromCursor(groupCursor));
+                }
+            }
+        }
+
+        return news;
+    }
+
+    private Attachment getAttachmentFromCursor(Cursor attachmentCursor) {
+        Attachment attachment = new Attachment();
+        prepareIndexesAttachmentColumns(attachmentCursor);
+        attachment.setType(attachmentCursor.getString(columnIndexAttachmentType));
+
+        if (Attachment.Type.Photo.equals(attachment.getType())) {
+            Photo photo = new Photo();
+            getAttachmentPhotoFromCursor(attachmentCursor, photo);
+            attachment.setPhoto(photo);
+        } else if (Attachment.Type.Video.equals(attachment.getType())) {
+            Video video = new Video();
+            video.setTitle(attachmentCursor.getString(columnIndexAttachmentVideoTitle));
+            getAttachmentPhotoFromCursor(attachmentCursor, video);
+            attachment.setVideo(video);
+        } else if (Attachment.Type.Doc.equals(attachment.getType())) {
+            Doc doc = new Doc();
+            doc.setUrl(attachmentCursor.getString(columnIndexAttachmentDocUrl));
+            getAttachmentPhotoFromCursor(attachmentCursor, doc);
+            attachment.setDoc(doc);
+        } else if (Attachment.Type.Audio.equals(attachment.getType())) {
+            Audio audio = new Audio();
+            audio.setArtist(attachmentCursor.getString(columnIndexAttachmentAudioArtist));
+            audio.setTitle(attachmentCursor.getString(columnIndexAttachmentAudioTitle));
+            audio.setUrl(attachmentCursor.getString(columnIndexAttachmentAudioUrl));
+            attachment.setAudio(audio);
+        } else if (Attachment.Type.Link.equals(attachment.getType())) {
+            Link link = new Link();
+            link.setUrl(attachmentCursor.getString(columnIndexAttachmentLinkUrl));
+            getAttachmentPhotoFromCursor(attachmentCursor, link);
+            attachment.setLink(link);
+        } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
+            Podcast podcast = new Podcast();
+            podcast.setTitle(attachmentCursor.getString(columnIndexAttachmentPodcastTitle));
+            podcast.setUrl(attachmentCursor.getString(columnIndexAttachmentPodcastUrl));
+            getAttachmentPhotoFromCursor(attachmentCursor, podcast);
+            attachment.setPodcast(podcast);
+        }
+        return attachment;
+    }
+
+    private void getAttachmentPhotoFromCursor(Cursor attachmentCursor, AttachmentPhoto attachmentPhoto) {
+        attachmentPhoto.setPhotoUrl(attachmentCursor.getString(columnIndexAttachmentPhotoUrl));
+        attachmentPhoto.setPhotoHeight(attachmentCursor.getInt(columnIndexAttachmentPhotoHeight));
+        attachmentPhoto.setPhotoWidth(attachmentCursor.getInt(columnIndexAttachmentPhotoWidth));
+    }
+
+    private void putAttachmentsInDatabaseWithoutTransaction(final SQLiteDatabase writableDatabase, List<Attachment> attachmentList, long newsId) {
+        ContentValues contentValues = new ContentValues();
+        for (Attachment attachment : attachmentList) {
+            putAttachmentToContentValues(newsId, contentValues, attachment);
+
+            databaseHelper.insertWithoutTransaction(writableDatabase, ATTACHMENT_TABLE_NAME, contentValues);
+            contentValues.clear();
+        }
+    }
+
+    private void putAttachmentToContentValues(long newsId, ContentValues contentValues, Attachment attachment) {
+        contentValues.put(AttachmentTable.NEWS_ID, newsId);
+        contentValues.put(AttachmentTable.TYPE, attachment.getType());
+
+        if (Attachment.Type.Photo.equals(attachment.getType())) {
+            putAttachmentPhotoToContentValues(contentValues, attachment.getPhoto());
+        } else if (Attachment.Type.Video.equals(attachment.getType())) {
+            contentValues.put(AttachmentTable.VIDEO_TITLE, attachment.getVideo().getTitle());
+            putAttachmentPhotoToContentValues(contentValues, attachment.getVideo());
+        } else if (Attachment.Type.Doc.equals(attachment.getType())) {
+            contentValues.put(AttachmentTable.DOC_URL, attachment.getDoc().getUrl());
+            putAttachmentPhotoToContentValues(contentValues, attachment.getDoc());
+        } else if (Attachment.Type.Audio.equals(attachment.getType())) {
+            contentValues.put(AttachmentTable.AUDIO_TITLE, attachment.getAudio().getTitle());
+            contentValues.put(AttachmentTable.AUDIO_ARTIST, attachment.getAudio().getArtist());
+            contentValues.put(AttachmentTable.AUDIO_URL, attachment.getAudio().getUrl());
+        } else if (Attachment.Type.Link.equals(attachment.getType())) {
+            contentValues.put(AttachmentTable.LINK_URL, attachment.getLink().getUrl());
+            putAttachmentPhotoToContentValues(contentValues, attachment.getLink());
+        } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
+            contentValues.put(AttachmentTable.PODCAST_TITLE, attachment.getPodcast().getTitle());
+            contentValues.put(AttachmentTable.PODCAST_URL, attachment.getPodcast().getUrl());
+            putAttachmentPhotoToContentValues(contentValues, attachment.getPodcast());
+        }
+    }
+
+    private void putAttachmentPhotoToContentValues(ContentValues contentValues, AttachmentPhoto attachmentPhoto) {
+        contentValues.put(AttachmentTable.PHOTO_URL, attachmentPhoto.getPhotoUrl());
+        contentValues.put(AttachmentTable.PHOTO_HEIGHT, attachmentPhoto.getPhotoHeight());
+        contentValues.put(AttachmentTable.PHOTO_WIDTH, attachmentPhoto.getPhotoWidth());
+    }
+
+    private String getNewsLimitDatabaseQuery(int startPosition, int size) {
+        return SELECT_FROM + NEWS_TABLE_NAME + String.format(DATABASE_WHERE, NewsTable.FROM_ID, STRING_EQUALS, INT_ZERO)
+                + String.format(DATABASE_ORDER_BY_DESC, NewsTable.DATE) + String.format(DATABASE_LIMIT, startPosition, size);
+    }
+
+    private String getFriendsJoinUserDatabaseQuery(int startPosition, int size) {
+        return SELECT_FROM + FRIEND_TABLE_NAME +
+                String.format(DATABASE_JOIN, USER_TABLE_NAME, FriendTable.USER_ID,
+                        UserTable.ID, UserTable.FIRST_NAME, UserTable.LAST_NAME) +
+                String.format(DATABASE_LIMIT, startPosition, size);
+    }
+
+    private String getSelectDatabaseQuery(String tableName, String columnName, String value) {
+        return SELECT_FROM + tableName + String.format(DATABASE_WHERE, columnName, Constants.STRING_EQUALS, value);
+    }
+
+    private void prepareIndexesUserColumns(Cursor cursor) {
+        if (!userColumnIndexesReady) {
+            columnIndexUserId = cursor.getColumnIndex(UserTable.ID);
+            columnIndexUserFirstName = cursor.getColumnIndex(UserTable.FIRST_NAME);
+            columnIndexUserLastName = cursor.getColumnIndex(UserTable.LAST_NAME);
+            columnIndexUserOnline = cursor.getColumnIndex(UserTable.ONLINE);
+            columnIndexUserPhoto100Url = cursor.getColumnIndex(UserTable.PHOTO_100_URL);
+            columnIndexUserPhotoMaxUrl = cursor.getColumnIndex(UserTable.PHOTO_MAX_URL);
+            columnIndexUserCropPhotoUrl = cursor.getColumnIndex(UserTable.CROP_PHOTO_URL);
+            columnIndexUserCropPhotoHeight = cursor.getColumnIndex(UserTable.CROP_PHOTO_HEIGHT);
+            columnIndexUserCropPhotoWidth = cursor.getColumnIndex(UserTable.CROP_PHOTO_WIDTH);
+            columnIndexUserCropRectX = cursor.getColumnIndex(UserTable.CROP_RECT_X);
+            columnIndexUserCropRectX2 = cursor.getColumnIndex(UserTable.CROP_RECT_X_2);
+            columnIndexUserCropRectY = cursor.getColumnIndex(UserTable.CROP_RECT_Y);
+            columnIndexUserCropRectY2 = cursor.getColumnIndex(UserTable.CROP_RECT_Y_2);
+
+            userColumnIndexesReady = true;
+        }
+    }
+
+    private void prepareIndexesGroupColumns(Cursor cursor) {
+        if (!groupColumnIndexesReady) {
+            columnIndexGroupId = cursor.getColumnIndex(GroupTable.ID);
+            columnIndexGroupName = cursor.getColumnIndex(GroupTable.NAME);
+            columnIndexGroupPhoto100Url = cursor.getColumnIndex(GroupTable.PHOTO_100_URL);
+
+            groupColumnIndexesReady = true;
+        }
+    }
+
+    private void prepareIndexesNewsColumns(Cursor cursor) {
+        if (!newsColumnIndexesReady) {
+            columnIndexNewsId = cursor.getColumnIndex(NewsTable.ID);
+            columnIndexNewsType = cursor.getColumnIndex(NewsTable.TYPE);
+            columnIndexNewsSourceId = cursor.getColumnIndex(NewsTable.SOURCE_ID);
+            columnIndexNewsFromId = cursor.getColumnIndex(NewsTable.FROM_ID);
+            columnIndexNewsDate = cursor.getColumnIndex(NewsTable.DATE);
+            columnIndexNewsText = cursor.getColumnIndex(NewsTable.TEXT);
+            columnIndexNewsCopyNewsId = cursor.getColumnIndex(NewsTable.COPY_NEWS_ID);
+            columnIndexNewsCommentsCount = cursor.getColumnIndex(NewsTable.COMMENTS_COUNT);
+            columnIndexNewsLikesCount = cursor.getColumnIndex(NewsTable.LIKES_COUNT);
+            columnIndexNewsUserLikes = cursor.getColumnIndex(NewsTable.USER_LIKES);
+            columnIndexNewsCanLikes = cursor.getColumnIndex(NewsTable.CAN_LIKE);
+            columnIndexNewsRepostsCount = cursor.getColumnIndex(NewsTable.REPOSTS_COUNT);
+            columnIndexNewsViewsCount = cursor.getColumnIndex(NewsTable.VIEWS_COUNT);
+
+            newsColumnIndexesReady = true;
+        }
+    }
+
+    private void prepareIndexesAttachmentColumns(Cursor cursor) {
+        if (!attachmentColumnIndexesReady) {
+            columnIndexAttachmentType = cursor.getColumnIndex(AttachmentTable.TYPE);
+            columnIndexAttachmentVideoTitle = cursor.getColumnIndex(AttachmentTable.VIDEO_TITLE);
+            columnIndexAttachmentDocUrl = cursor.getColumnIndex(AttachmentTable.DOC_URL);
+            columnIndexAttachmentAudioArtist = cursor.getColumnIndex(AttachmentTable.AUDIO_ARTIST);
+            columnIndexAttachmentAudioTitle = cursor.getColumnIndex(AttachmentTable.AUDIO_TITLE);
+            columnIndexAttachmentAudioUrl = cursor.getColumnIndex(AttachmentTable.AUDIO_URL);
+            columnIndexAttachmentLinkUrl = cursor.getColumnIndex(AttachmentTable.LINK_URL);
+            columnIndexAttachmentPodcastTitle = cursor.getColumnIndex(AttachmentTable.PODCAST_TITLE);
+            columnIndexAttachmentPodcastUrl = cursor.getColumnIndex(AttachmentTable.PODCAST_URL);
+            columnIndexAttachmentPhotoUrl = cursor.getColumnIndex(AttachmentTable.PHOTO_URL);
+            columnIndexAttachmentPhotoHeight = cursor.getColumnIndex(AttachmentTable.PHOTO_HEIGHT);
+            columnIndexAttachmentPhotoWidth = cursor.getColumnIndex(AttachmentTable.PHOTO_WIDTH);
+
+            attachmentColumnIndexesReady = true;
+        }
+    }
+}

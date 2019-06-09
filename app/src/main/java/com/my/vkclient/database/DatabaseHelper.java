@@ -96,11 +96,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
                         autoincrement = Constants.Database.AUTOINCREMENT;
                     }
 
-                    final String template = new StringBuilder()
-                            .append(fieldName).append(STRING_SPACE)
-                            .append(type).append(STRING_SPACE)
-                            .append(primaryKey).append(STRING_SPACE)
-                            .append(autoincrement).toString();
+                    final String template =
+                            fieldName + STRING_SPACE +
+                            type + STRING_SPACE +
+                            primaryKey + STRING_SPACE +
+                            autoincrement;
 
                     builder.append(template);
                 }
@@ -176,6 +176,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
         }
 
         return insert;
+    }
+
+    @Override
+    public long insertWithoutTransaction(final SQLiteDatabase writableDatabase, String tableName, ContentValues contentValues) {
+        return writableDatabase.insertWithOnConflict(tableName, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     @Override

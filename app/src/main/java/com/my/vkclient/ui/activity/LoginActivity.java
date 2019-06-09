@@ -1,6 +1,5 @@
 package com.my.vkclient.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,11 +20,18 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_login);
-        loginWebView = findViewById(R.id.loginWebView);
-        loginProgressBar = findViewById(R.id.loginProgressBar);
+//        if (VkRepository.getInstance().isOfflineAccess()) {
+//            MainActivity.show(LoginActivity.this);
+//
+//            finish();
+//        } else {
 
-        setupLoginWebView();
+            setContentView(R.layout.activity_login);
+            loginWebView = findViewById(R.id.loginWebView);
+            loginProgressBar = findViewById(R.id.loginProgressBar);
+
+            setupLoginWebView();
+//        }
     }
 
     private void setupLoginWebView() {
@@ -33,8 +39,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAccessGranted(String receivedAccessToken) {
                 VkRepository.getInstance().setAccessToken(receivedAccessToken);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+                MainActivity.show(LoginActivity.this);
 
                 finish();
             }

@@ -20,5 +20,5 @@ public class GroupTable {
     public static final String NAME = "NAME";
 
     @dbString
-    public static final String PHOTO_100 = "PHOTO_100";
+    public static final String PHOTO_100_URL = "PHOTO_100_URL";
 }

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.my.vkclient.R;
 import com.my.vkclient.entities.News;
-import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.adapters.NewsRecyclerViewAdapter;
 import com.my.vkclient.utils.ResultCallback;
@@ -28,20 +28,30 @@ public class NewsFragment extends Fragment {
     }
 
     private void setupRecyclerView(View view) {
-        RecyclerView newsRecyclerView = view.findViewById(R.id.newsRecyclerView);
+        final RecyclerView newsRecyclerView = view.findViewById(R.id.newsRecyclerView);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         newsRecyclerView.setLayoutManager(linearLayoutManager);
-        NewsRecyclerViewAdapter newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(linearLayoutManager) {
+        final NewsRecyclerViewAdapter newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(linearLayoutManager) {
             @Override
             public void load(String startPosition, int size, ResultCallback<NewsResponse.Response> listResultCallback) {
                 VkRepository.getInstance().getNews(startPosition, size, listResultCallback);
             }
         };
-        newsRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<News>() {
+        newsRecyclerViewAdapter.setOnLikeClickListener(new ResultCallback<News>() {
             @Override
-            public void onResult(News result) {
-
+            public void onResult(News news) {
+                VkRepository.getInstance().setLikeToNews(news, !news.getLikes().getUserLikes(), new ResultCallback<News>() {
+                    @Override
+                    public void onResult(News result) {
+                        newsRecyclerView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                newsRecyclerViewAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
             }
         });
         newsRecyclerView.setAdapter(newsRecyclerViewAdapter);

@@ -1,5 +1,7 @@
 package com.my.vkclient.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.ui.adapters.ViewPagerAdapter;
 import com.my.vkclient.ui.fragment.FriendsFragment;
@@ -27,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
 
         setupViewPager();
         setupBottomNavigation();
+    }
+
+    public static void show(final Context context){
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
     }
 
     private void setupViewPager() {

@@ -1,6 +1,5 @@
 package com.my.vkclient.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -10,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
@@ -21,7 +19,6 @@ import com.my.vkclient.utils.ResultCallback;
 import java.util.List;
 
 public class FriendsFragment extends Fragment {
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_friends, container, false);
@@ -46,9 +43,7 @@ public class FriendsFragment extends Fragment {
         friendRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<User>() {
             @Override
             public void onResult(User user) {
-                Intent intent = new Intent(FriendsFragment.this.getContext(), UserActivity.class);
-                intent.putExtra(Constants.USER_ID_INTENT_KEY, user.getId());
-                startActivity(intent);
+                UserActivity.show(FriendsFragment.this.getContext(), user.getId());
             }
         });
 

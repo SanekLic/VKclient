@@ -18,6 +18,7 @@ import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Rect;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,6 +53,78 @@ public class ImageLoader {
         return instance;
     }
 
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        if (reqWidth == 0 || reqHeight == 0) {
+            return 1;
+        }
+
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
+        if (requestUrl == null) {
+            return;
+        }
+
+        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
+
+        if (initialWidth == 0 || initialHeight == 0) {
+            imageView.setImageDrawable(null);
+        } else {
+            Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
+
+            if (crop != null) {
+                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8), crop));
+            } else {
+                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8));
+            }
+        }
+
+        imageView.setTag(R.id.IMAGE_TAG_SHOW_URL, null);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap resultBitmap = getFromMemoryCache(requestUrl);
+
+                if (resultBitmap == null) {
+                    File imageCacheFile = new File(imageView.getContext().getCacheDir().toString(), Uri.parse(requestUrl).getLastPathSegment());
+                    resultBitmap = getFromDiskCache(imageCacheFile, imageView);
+
+                    if (resultBitmap == null) {
+                        resultBitmap = getFromNetwork(imageCacheFile, imageView, requestUrl);
+                    }
+
+                    if (resultBitmap != null) {
+                        putInMemoryCache(resultBitmap, requestUrl);
+                    }
+                }
+
+                if (resultBitmap != null &&
+                        imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl) &&
+                        !imageView.getTag(R.id.IMAGE_TAG_URL).equals(imageView.getTag(R.id.IMAGE_TAG_SHOW_URL))) {
+                    imageView.setTag(R.id.IMAGE_TAG_SHOW_URL, requestUrl);
+                    setResultToImageView(imageView, resultBitmap);
+                }
+            }
+        });
+    }
+
     private Bitmap getFromMemoryCache(final String requestUrl) {
         synchronized (lruCache) {
             return lruCache.get(requestUrl);
@@ -64,25 +137,53 @@ public class ImageLoader {
         }
     }
 
-    private Bitmap getFromDiskCache(final File imageCacheFile) {
+    private Bitmap getFromDiskCache(final File imageCacheFile, ImageView imageView) {
         if (imageCacheFile.exists()) {
-            return BitmapFactory.decodeFile(imageCacheFile.getPath());
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+
+            BitmapFactory.decodeFile(imageCacheFile.getPath(), options);
+            options.inSampleSize = calculateInSampleSize(options, imageView.getWidth(), imageView.getHeight());
+            options.inJustDecodeBounds = false;
+
+            return BitmapFactory.decodeFile(imageCacheFile.getPath(), options);
         }
 
         return null;
     }
 
-    private void putInDiskCache(final Bitmap bitmap, final File imageCacheFile) {
+    private void putInDiskCache(final File imageCacheFile, final byte[] buffer) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(imageCacheFile)) {
-            bitmap.compress(Bitmap.CompressFormat.WEBP, Constants.ImageLoader.IMAGE_COMPRESS_QUALITY, fileOutputStream);
+            fileOutputStream.write(buffer);
+            fileOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private Bitmap getFromNetwork(final String requestUrl) {
-        try (InputStream urlInputStream = new URL(requestUrl).openStream()) {
-            return BitmapFactory.decodeStream(urlInputStream);
+    private Bitmap getFromNetwork( final File imageCacheFile, final ImageView imageView, final String requestUrl) {
+        try (InputStream urlInputStream = new URL(requestUrl).openStream();
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[Constants.INT_ONE_KB];
+            int length;
+
+            while ((length = urlInputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, length);
+            }
+
+            buffer = byteArrayOutputStream.toByteArray();
+
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+
+            BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+            options.inSampleSize = calculateInSampleSize(options, imageView.getWidth(), imageView.getHeight());
+            options.inJustDecodeBounds = false;
+
+            putInDiskCache(imageCacheFile, buffer);
+
+            return BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,60 +248,5 @@ public class ImageLoader {
         float y2 = height * crop.getY2() / Constants.ImageLoader.PERCENTAGE;
 
         return Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
-    }
-
-    public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
-        if (requestUrl == null || requestUrl.equals(imageView.getTag(R.id.IMAGE_TAG_URL))) {
-            return;
-        }
-
-        imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
-
-        if (initialWidth == 0 || initialHeight == 0) {
-            imageView.setImageDrawable(null);
-        } else {
-            Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
-
-            if (crop != null) {
-                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8), crop));
-            } else {
-                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8));
-            }
-        }
-
-        Integer imageTagOldLoadIteration = (Integer) imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION);
-        final Integer imageTagNewLoadIteration = imageTagOldLoadIteration == null ? 0 : imageTagOldLoadIteration + 1;
-
-        imageView.setTag(R.id.IMAGE_TAG_LOAD_ITERATION, imageTagNewLoadIteration);
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap resultBitmap = getFromMemoryCache(requestUrl);
-
-                if (resultBitmap == null) {
-                    File imageCacheFile = new File(imageView.getContext().getCacheDir().toString(), Uri.parse(requestUrl).getLastPathSegment());
-                    resultBitmap = getFromDiskCache(imageCacheFile);
-
-                    if (resultBitmap == null) {
-                        resultBitmap = getFromNetwork(requestUrl);
-
-                        if (resultBitmap != null) {
-                            putInDiskCache(resultBitmap, imageCacheFile);
-                        }
-                    }
-
-                    if (resultBitmap != null) {
-                        putInMemoryCache(resultBitmap, requestUrl);
-                    }
-                }
-
-                if (resultBitmap != null &&
-                        imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl) &&
-                        imageView.getTag(R.id.IMAGE_TAG_LOAD_ITERATION).equals(imageTagNewLoadIteration)) {
-                    setResultToImageView(imageView, resultBitmap);
-                }
-            }
-        });
     }
 }

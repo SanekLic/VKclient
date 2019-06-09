@@ -38,7 +38,8 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     @Override
     public BaseViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, @ViewType int viewType) {
         if (viewType == ViewType.LOADING) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_progress, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.layout_progress, parent, false);
 
             return new BaseViewHolder<T>(view) {
                 @Override

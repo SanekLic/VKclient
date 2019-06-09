@@ -1,5 +1,6 @@
 package com.my.vkclient.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Rect;
 import com.my.vkclient.entities.User;
@@ -14,13 +16,18 @@ import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
-import static com.my.vkclient.Constants.STRING_SPACE;
 import static com.my.vkclient.Constants.USER_ID_INTENT_KEY;
 
 public class UserActivity extends AppCompatActivity {
 
     private TextView userNameTextView;
     private ImageView userPhotoImageView;
+
+    public static void show(final Context context, final int userId) {
+        Intent intent = new Intent(context, UserActivity.class);
+        intent.putExtra(Constants.USER_ID_INTENT_KEY, userId);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,10 +47,7 @@ public class UserActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        userNameTextView.setText(new StringBuilder()
-                                .append(user.getFirstName())
-                                .append(STRING_SPACE)
-                                .append(user.getLastName()).toString());
+                        userNameTextView.setText(String.format(Constants.NAME_FORMAT, user.getFirstName(), user.getLastName()));
 
                         if (user.getCropPhoto() != null) {
                             userPhotoImageView.setTag(R.id.IMAGE_TAG_CROP, new Rect(user.getCropPhoto().getCropRectX(), user.getCropPhoto().getCropRectY(),

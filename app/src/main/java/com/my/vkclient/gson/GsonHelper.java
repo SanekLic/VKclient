@@ -3,16 +3,18 @@ package com.my.vkclient.gson;
 import com.google.gson.Gson;
 import com.my.vkclient.entities.CropPhoto;
 import com.my.vkclient.entities.Doc;
-import com.my.vkclient.entities.FriendResponse;
 import com.my.vkclient.entities.Group;
-import com.my.vkclient.entities.GroupResponse;
 import com.my.vkclient.entities.Link;
-import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.UserResponse;
 import com.my.vkclient.entities.Video;
+import com.my.vkclient.entities.response.FriendResponse;
+import com.my.vkclient.entities.response.GroupResponse;
+import com.my.vkclient.entities.response.LikesResponse;
+import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.gson.typeadapter.BooleanGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.CropPhotoGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.DocGsonTypeAdapter;
@@ -23,12 +25,12 @@ import com.my.vkclient.gson.typeadapter.VideoGsonTypeAdapter;
 
 import java.util.List;
 
-public class GsonAdapter {
-    private static GsonAdapter instance;
+public class GsonHelper {
+    private static GsonHelper instance;
     private Gson gson;
     private Gson gsonWithPhotoTypeAdapter;
 
-    private GsonAdapter() {
+    private GsonHelper() {
         gson = new Gson().newBuilder()
                 .registerTypeAdapter(Boolean.class, new BooleanGsonTypeAdapter())
                 .registerTypeAdapter(CropPhoto.class, new CropPhotoGsonTypeAdapter())
@@ -44,9 +46,9 @@ public class GsonAdapter {
                 .create();
     }
 
-    public static GsonAdapter getInstance() {
+    public static GsonHelper getInstance() {
         if (instance == null) {
-            instance = new GsonAdapter();
+            instance = new GsonHelper();
         }
 
         return instance;
@@ -93,6 +95,52 @@ public class GsonAdapter {
             return null;
         }
 
+        if (newsResponse.getResponse().getNewsList() != null) {
+            for (News news : newsResponse.getResponse().getNewsList()) {
+                setOwnerToNews(newsResponse, news);
+
+                if (news.getCopyHistory() != null) {
+                    setOwnerToNews(newsResponse, news.getCopyHistory().get(0));
+                }
+            }
+        }
+
         return newsResponse.getResponse();
+    }
+
+    public LikesResponse.Response getLikesResponseFromJson(String jsonNews) {
+        LikesResponse likesResponse = gson.fromJson(jsonNews, LikesResponse.class);
+
+        if (likesResponse == null || likesResponse.getResponse() == null) {
+            return null;
+        }
+
+        return likesResponse.getResponse();
+    }
+
+    private void setOwnerToNews(NewsResponse newsResponse, News news) {
+        int ownerId = news.getSourceId() == 0 ? news.getFromId() : news.getSourceId();
+        if (ownerId > 0) {
+            if (newsResponse.getResponse().getUserList() != null) {
+                for (User user : newsResponse.getResponse().getUserList()) {
+                    if (user.getId() == ownerId) {
+                        news.setUser(user);
+
+                        break;
+                    }
+                }
+            }
+        } else {
+            ownerId *= -1;
+            if (newsResponse.getResponse().getGroupList() != null) {
+                for (Group group : newsResponse.getResponse().getGroupList()) {
+                    if (group.getId() == ownerId) {
+                        news.setGroup(group);
+
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

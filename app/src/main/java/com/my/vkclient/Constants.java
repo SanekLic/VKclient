@@ -12,6 +12,7 @@ public interface Constants {
     String STRING_SPACE = " ";
     String STRING_SLASH = "/";
     String USER_ID_INTENT_KEY = "UserId";
+    String NAME_FORMAT = "%s %s";
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
@@ -26,7 +27,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 1;
+        int DATABASE_VERSION = 2;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -61,10 +62,17 @@ public interface Constants {
         String NEWS_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo";
         String NEWS_COUNT = "&count=";
         String API_VK_GET_GROUP_URL = API_VK_METHOD + "groups.getById?group_id=";
+        String LIKE_FIELDS = "?type=post&owner_id=%s&item_id=%s";
+        String API_VK_SET_LIKE_POST = API_VK_METHOD + "likes.add" + LIKE_FIELDS + ACCESS_TOKEN;
+        String API_VK_SET_DISLIKE_POST = API_VK_METHOD + "likes.delete" + LIKE_FIELDS + ACCESS_TOKEN;
     }
 
     interface ImageLoader {
         int PERCENTAGE = 100;
-        int IMAGE_COMPRESS_QUALITY = 100;
+    }
+
+    interface SharedPreferences {
+        String APP_SETTINGS = "AppSettings";
+        String ACCESS_TOKEN_SHARED_KEY = "accessTokenSharedKey";
     }
 }

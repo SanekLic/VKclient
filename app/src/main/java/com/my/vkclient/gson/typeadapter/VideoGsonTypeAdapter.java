@@ -5,7 +5,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.my.vkclient.entities.Video;
-import com.my.vkclient.gson.GsonAdapter;
+import com.my.vkclient.gson.GsonHelper;
 
 import java.lang.reflect.Type;
 
@@ -13,7 +13,7 @@ public class VideoGsonTypeAdapter implements JsonDeserializer<Video> {
 
     @Override
     public Video deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Video fromJson = GsonAdapter.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
+        Video fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             Video video = new Video();

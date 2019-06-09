@@ -8,15 +8,16 @@ import android.view.ViewGroup;
 
 import com.my.vkclient.R;
 import com.my.vkclient.entities.News;
-import com.my.vkclient.entities.NewsResponse;
+import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
 
 import static com.my.vkclient.Constants.STRING_EMPTY;
 
 public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<News> {
 
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 10;
     private String nextFrom = STRING_EMPTY;
+    private ResultCallback<News> onLikeClickListener;
 
     public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         super(linearLayoutManager);
@@ -27,7 +28,14 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_news, parent, false);
 
-        return new NewsViewHolder(parent.getContext(), view);
+        final NewsViewHolder holder = new NewsViewHolder(parent.getContext(), view);
+        holder.setOnLikeClickListener(onLikeClickListener);
+
+        return holder;
+    }
+
+    public void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
+        this.onLikeClickListener = onLikeClickListener;
     }
 
     @Override

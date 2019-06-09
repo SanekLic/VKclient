@@ -44,8 +44,8 @@ public class News implements Parcelable {
     @SerializedName("attachments")
     private List<Attachment> attachments;
 
-    public News() {
-    }
+    private Group group;
+    private User user;
 
     protected News(Parcel in) {
         id = in.readInt();
@@ -60,6 +60,11 @@ public class News implements Parcelable {
         reposts = in.readParcelable(Reposts.class.getClassLoader());
         views = in.readParcelable(Views.class.getClassLoader());
         attachments = in.createTypedArrayList(Attachment.CREATOR);
+        group = in.readParcelable(Group.class.getClassLoader());
+        user = in.readParcelable(User.class.getClassLoader());
+    }
+
+    public News() {
     }
 
     @Override
@@ -76,11 +81,29 @@ public class News implements Parcelable {
         dest.writeParcelable(reposts, flags);
         dest.writeParcelable(views, flags);
         dest.writeTypedList(attachments);
+        dest.writeParcelable(group, flags);
+        dest.writeParcelable(user, flags);
     }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public int getId() {
