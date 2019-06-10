@@ -1,8 +1,8 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +22,9 @@ import com.my.vkclient.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.my.vkclient.Constants.AUDIO_FORMAT;
+import static com.my.vkclient.Constants.STRING_EMPTY;
+
 class NewsViewHolder extends BaseViewHolder<News> {
     private TextView likesTextView;
     private TextView commentsTextView;
@@ -35,14 +38,20 @@ class NewsViewHolder extends BaseViewHolder<News> {
     private TextView fromNewsDateTextView;
     private TextView newsTextView;
     private ImageView newsPhotoImageView;
+    private TextView newsAttachmentInfoTextView;
+    private TextView newsAttachmentTypeTextView;
     private RecyclerView attachmentRecyclerView;
     private List<Attachment> attachments = new ArrayList<>();
     private Context context;
     private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
     private News news;
     private ResultCallback<News> onLikeClickListener;
+    private ResultCallback<String> onAttachmentClickListener;
+    private ResultCallback<String> onPhotoClickListener;
+    private String contentUrl;
+    private Attachment attachment;
 
-    public NewsViewHolder(Context context, View itemView) {
+    NewsViewHolder(Context context, View itemView) {
         super(itemView);
 
         this.context = context;
@@ -59,6 +68,18 @@ class NewsViewHolder extends BaseViewHolder<News> {
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
         newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
+        newsPhotoImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Attachment.Type.Photo.equals(attachment.getType())) {
+                    if (onPhotoClickListener != null) {
+                        onPhotoClickListener.onResult(attachment.getPhoto().getPhotoUrl());
+                    }
+                } else if (onAttachmentClickListener != null) {
+                    onAttachmentClickListener.onResult(contentUrl);
+                }
+            }
+        });
         attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
         likesTextView = itemView.findViewById(R.id.likesTextView);
         likesTextView.setOnClickListener(new View.OnClickListener() {
@@ -72,10 +93,20 @@ class NewsViewHolder extends BaseViewHolder<News> {
         commentsTextView = itemView.findViewById(R.id.commentsTextView);
         repostsTextView = itemView.findViewById(R.id.repostsTextView);
         viewsTextView = itemView.findViewById(R.id.viewsTextView);
+        newsAttachmentInfoTextView = itemView.findViewById(R.id.newsAttachmentInfoTextView);
+        newsAttachmentTypeTextView = itemView.findViewById(R.id.newsAttachmentTypeTextView);
     }
 
     void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
         this.onLikeClickListener = onLikeClickListener;
+    }
+
+    void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
+        this.onAttachmentClickListener = onAttachmentClickListener;
+    }
+
+    void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
+        this.onPhotoClickListener = onPhotoClickListener;
     }
 
     public void bind(News news) {
@@ -88,11 +119,11 @@ class NewsViewHolder extends BaseViewHolder<News> {
             News newsCopy = news.getCopyHistory().get(0);
             fromNewsDateTextView.setText(Utils.getInstance().getSimpleDate(newsCopy.getDate()));
             setNewsSourceInfo(newsCopy, fromNameTextView, fromIconImageView);
-            setNewsText(newsCopy.getText());
+            setTextAndVisibilityTextView(newsTextView, newsCopy.getText());
             setAttachments(newsCopy.getAttachments());
             setVisibilityCopyNews(View.VISIBLE);
         } else {
-            setNewsText(news.getText());
+            setTextAndVisibilityTextView(newsTextView, news.getText());
             setAttachments(news.getAttachments());
             setVisibilityCopyNews(View.GONE);
         }
@@ -126,15 +157,16 @@ class NewsViewHolder extends BaseViewHolder<News> {
         }
     }
 
-    private void setNewsText(String text) {
-        newsTextView.setText(text);
+    private void setTextAndVisibilityTextView(TextView textView, String text) {
         if (text == null || text.isEmpty()) {
-            if (newsTextView.getVisibility() != View.GONE) {
-                newsTextView.setVisibility(View.GONE);
+            if (textView.getVisibility() != View.GONE) {
+                textView.setVisibility(View.GONE);
             }
         } else {
-            if (newsTextView.getVisibility() != View.VISIBLE) {
-                newsTextView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+
+            if (textView.getVisibility() != View.VISIBLE) {
+                textView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -147,42 +179,58 @@ class NewsViewHolder extends BaseViewHolder<News> {
             attachments.addAll(newAttachments);
 
             for (int i = 0; i < attachments.size(); i++) {
-                Attachment attachment = attachments.get(i);
+                attachment = attachments.get(i);
 
                 if (Attachment.Type.Photo.equals(attachment.getType())) {
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, STRING_EMPTY);
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Фото");
+                    contentUrl = STRING_EMPTY;
                     setAttachmentImage(attachment.getPhoto());
-                    attachments.remove(i);
+                } else if (Attachment.Type.Doc.equals(attachment.getType())) {
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getDoc().getTitle());
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, attachment.getDoc().getExt());
+                    contentUrl = attachment.getDoc().getUrl();
 
-                    break;
-                }
-
-                if (Attachment.Type.Doc.equals(attachment.getType())) {
-                    setAttachmentImage(attachment.getDoc());
-                    attachments.remove(i);
-
-                    break;
-                }
-
-                if (Attachment.Type.Video.equals(attachment.getType())) {
+                    if (attachment.getDoc().getPhotoUrl() == null) {
+                        newsPhotoImageView.setImageResource(R.drawable.ic_attachment_doc);
+                    } else {
+                        setAttachmentImage(attachment.getDoc());
+                    }
+                } else if (Attachment.Type.Video.equals(attachment.getType())) {
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getVideo().getTitle());
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Видео");
+                    contentUrl = STRING_EMPTY;
                     setAttachmentImage(attachment.getVideo());
-                    attachments.remove(i);
+                } else if (Attachment.Type.Link.equals(attachment.getType())) {
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getLink().getTitle());
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Ссылка");
+                    contentUrl = attachment.getLink().getUrl();
 
-                    break;
-                }
-
-                if (Attachment.Type.Link.equals(attachment.getType())) {
-                    setAttachmentImage(attachment.getLink());
-                    attachments.remove(i);
-
-                    break;
-                }
-
-                if (Attachment.Type.Podcast.equals(attachment.getType())) {
+                    if (attachment.getLink().getPhotoUrl() == null) {
+                        newsPhotoImageView.setImageResource(R.drawable.ic_attachment_link);
+                    } else {
+                        setAttachmentImage(attachment.getLink());
+                    }
+                } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getPodcast().getTitle());
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Подкаст");
+                    contentUrl = attachment.getPodcast().getUrl();
                     setAttachmentImage(attachment.getPodcast());
-                    attachments.remove(i);
-
-                    break;
+                } else if (Attachment.Type.Audio.equals(attachment.getType())) {
+                    String info = attachment.getAudio().getArtist() != null ?
+                            String.format(AUDIO_FORMAT, attachment.getAudio().getArtist(), attachment.getAudio().getTitle()) :
+                            attachment.getAudio().getTitle();
+                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, info);
+                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Аудио");
+                    contentUrl = STRING_EMPTY;
+                    newsPhotoImageView.setImageResource(R.drawable.ic_attachment_audio);
+                } else {
+                    continue;
                 }
+
+                attachments.remove(i);
+
+                break;
             }
         }
 
@@ -190,7 +238,12 @@ class NewsViewHolder extends BaseViewHolder<News> {
     }
 
     private void setAttachmentImage(AttachmentPhoto attachmentPhoto) {
-        ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachmentPhoto.getPhotoUrl(), attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
+        if (attachmentPhoto != null) {
+            ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachmentPhoto.getPhotoUrl(),
+                    attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
+        } else {
+            newsPhotoImageView.setImageDrawable(null);
+        }
     }
 
     private void setVisibilityCopyNews(int visible) {
@@ -204,7 +257,31 @@ class NewsViewHolder extends BaseViewHolder<News> {
     private void setupAttachmentRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         attachmentRecyclerView.setLayoutManager(linearLayoutManager);
+        attachmentRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                if (parent.getChildAdapterPosition(view) != 0) {
+                    outRect.left = Constants.AttachmentRecyclerView.ATTACHMENT_MARGIN;
+                }
+            }
+        });
         attachmentRecyclerViewAdapter = new AttachmentRecyclerViewAdapter();
+        attachmentRecyclerViewAdapter.setOnAttachmentClickListener(new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                if (onAttachmentClickListener != null) {
+                    onAttachmentClickListener.onResult(result);
+                }
+            }
+        });
+        attachmentRecyclerViewAdapter.setOnPhotoClickListener(new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                if (onPhotoClickListener != null) {
+                    onPhotoClickListener.onResult(result);
+                }
+            }
+        });
         attachmentRecyclerView.setAdapter(attachmentRecyclerViewAdapter);
     }
 }

@@ -17,6 +17,7 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
 
     private List<Attachment> attachmentList = new ArrayList<>();
     private ResultCallback<String> onAttachmentClickListener;
+    private ResultCallback<String> onPhotoClickListener;
 
     @NonNull
     @Override
@@ -26,6 +27,7 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
 
         AttachmentViewHolder holder = new AttachmentViewHolder(view);
         holder.setOnAttachmentClickListener(onAttachmentClickListener);
+        holder.setOnPhotoClickListener(onPhotoClickListener);
 
         return holder;
     }
@@ -40,11 +42,15 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
         return attachmentList.size();
     }
 
-    public void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
+    void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
         this.onAttachmentClickListener = onAttachmentClickListener;
     }
 
-    public void setItems(List<Attachment> newAttachmentList) {
+    void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
+        this.onPhotoClickListener = onPhotoClickListener;
+    }
+
+    void setItems(List<Attachment> newAttachmentList) {
         attachmentList.clear();
         attachmentList.addAll(newAttachmentList);
         notifyDataSetChanged();

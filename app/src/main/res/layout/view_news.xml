@@ -110,6 +110,40 @@
         app:layout_constraintTop_toBottomOf="@+id/newsTextView"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
+    <TextView
+        android:id="@+id/newsAttachmentInfoTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_attachment_title"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="info"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/newsPhotoImageView"
+        app:layout_constraintWidth_max="wrap" />
+
+    <TextView
+        android:id="@+id/newsAttachmentTypeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_attachment_type"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="type"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/newsPhotoImageView"
+        app:layout_constraintStart_toStartOf="@+id/newsPhotoImageView" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/attachmentRecyclerView"
         android:layout_width="0dp"

@@ -33,7 +33,13 @@ public class AttachmentTable {
     public static final String VIDEO_TITLE = "VIDEO_TITLE";
 
     @dbString
+    public static final String DOC_TITLE = "DOC_TITLE";
+
+    @dbString
     public static final String DOC_URL = "DOC_URL";
+
+    @dbString
+    public static final String DOC_EXT = "DOC_EXT";
 
     @dbString
     public static final String AUDIO_TITLE = "AUDIO_TITLE";
@@ -43,6 +49,9 @@ public class AttachmentTable {
 
     @dbString
     public static final String AUDIO_URL = "AUDIO_URL";
+
+    @dbString
+    public static final String LINK_TITLE = "LINK_TITLE";
 
     @dbString
     public static final String LINK_URL = "LINK_URL";

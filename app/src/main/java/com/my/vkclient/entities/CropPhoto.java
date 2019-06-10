@@ -1,22 +1,8 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-public class CropPhoto implements Parcelable {
-    public static final Creator<CropPhoto> CREATOR = new Creator<CropPhoto>() {
-        @Override
-        public CropPhoto createFromParcel(Parcel in) {
-            return new CropPhoto(in);
-        }
-
-        @Override
-        public CropPhoto[] newArray(int size) {
-            return new CropPhoto[size];
-        }
-    };
+public class CropPhoto {
     @SerializedName("photo")
     private Photo photo;
     @SerializedName("rect")
@@ -33,33 +19,6 @@ public class CropPhoto implements Parcelable {
     private float cropRectY2;
 
     public CropPhoto() {
-    }
-
-    protected CropPhoto(Parcel in) {
-        photo = in.readParcelable(Photo.class.getClassLoader());
-        rect = in.readParcelable(Rect.class.getClassLoader());
-        crop = in.readParcelable(Rect.class.getClassLoader());
-        cropPhotoUrl = in.readString();
-        cropPhotoWidth = in.readInt();
-        cropPhotoHeight = in.readInt();
-        cropRectX = in.readFloat();
-        cropRectY = in.readFloat();
-        cropRectX2 = in.readFloat();
-        cropRectY2 = in.readFloat();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(photo, flags);
-        dest.writeParcelable(rect, flags);
-        dest.writeParcelable(crop, flags);
-        dest.writeString(cropPhotoUrl);
-        dest.writeInt(cropPhotoWidth);
-        dest.writeInt(cropPhotoHeight);
-        dest.writeFloat(cropRectX);
-        dest.writeFloat(cropRectY);
-        dest.writeFloat(cropRectX2);
-        dest.writeFloat(cropRectY2);
     }
 
     public int getCropPhotoWidth() {
@@ -116,11 +75,6 @@ public class CropPhoto implements Parcelable {
 
     public void setCropRectY2(float cropRectY2) {
         this.cropRectY2 = cropRectY2;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public Photo getPhoto() {

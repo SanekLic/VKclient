@@ -1,44 +1,24 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-public class Link extends AttachmentPhoto implements Parcelable {
-    public static final Creator<Link> CREATOR = new Creator<Link>() {
-        @Override
-        public Link createFromParcel(Parcel in) {
-            return new Link(in);
-        }
-
-        @Override
-        public Link[] newArray(int size) {
-            return new Link[size];
-        }
-    };
+public class Link extends AttachmentPhoto {
     @SerializedName("url")
     private String url;
+    @SerializedName("title")
+    private String title;
     @SerializedName("photo")
     private Photo photo;
 
     public Link() {
     }
 
-    protected Link(Parcel in) {
-        url = in.readString();
-        photo = in.readParcelable(Photo.class.getClassLoader());
+    public String getTitle() {
+        return title;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(url);
-        dest.writeParcelable(photo, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUrl() {

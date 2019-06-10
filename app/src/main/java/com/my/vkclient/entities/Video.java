@@ -1,22 +1,8 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-public class Video extends AttachmentPhoto implements Parcelable {
-    public static final Creator<Video> CREATOR = new Creator<Video>() {
-        @Override
-        public Video createFromParcel(Parcel in) {
-            return new Video(in);
-        }
-
-        @Override
-        public Video[] newArray(int size) {
-            return new Video[size];
-        }
-    };
+public class Video extends AttachmentPhoto {
     @SerializedName("id")
     private int id;
     @SerializedName("title")
@@ -31,32 +17,12 @@ public class Video extends AttachmentPhoto implements Parcelable {
     public Video() {
     }
 
-    protected Video(Parcel in) {
-        id = in.readInt();
-        photo320Url = in.readString();
-        photo640Url = in.readString();
-        photo800Url = in.readString();
-    }
-
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(photo320Url);
-        dest.writeString(photo640Url);
-        dest.writeString(photo800Url);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public int getId() {

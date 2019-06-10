@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.DatabaseHelper;
@@ -98,6 +99,9 @@ class DatabaseRepositoryHelper {
     private int columnIndexAttachmentPhotoUrl;
     private int columnIndexAttachmentPhotoHeight;
     private int columnIndexAttachmentPhotoWidth;
+    private int columnIndexAttachmentDocTitle;
+    private int columnIndexAttachmentDocExt;
+    private int columnIndexAttachmentLinkTitle;
 
     DatabaseRepositoryHelper(@NonNull final Context context) {
         databaseHelper = new DatabaseHelper(context);
@@ -106,6 +110,7 @@ class DatabaseRepositoryHelper {
     boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
         try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(userId)))) {
             if (userCursor.moveToFirst()) {
+                userColumnIndexesReady = false;
                 resultCallback.onResult(getUserFromCursor(userCursor));
 
                 return true;
@@ -182,6 +187,8 @@ class DatabaseRepositoryHelper {
         try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
             if (friendsCursor.getCount() > 0) {
                 List<User> friendList = new ArrayList<>();
+
+                userColumnIndexesReady = false;
 
                 while (friendsCursor.moveToNext()) {
                     friendList.add(getUserFromCursor(friendsCursor));
@@ -380,9 +387,8 @@ class DatabaseRepositoryHelper {
         user.setFirstName(userCursor.getString(columnIndexUserFirstName));
         user.setLastName(userCursor.getString(columnIndexUserLastName));
         user.setOnline(userCursor.getInt(columnIndexUserOnline) > 0);
-        //TODO fix getColumnIndex
-        user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
-        user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
+        user.setPhoto100Url(userCursor.getString(columnIndexUserPhoto100Url));
+        user.setPhotoMaxUrl(userCursor.getString(columnIndexUserPhotoMaxUrl));
         String cropPhotoUrl = userCursor.getString(columnIndexUserCropPhotoUrl);
 
         if (cropPhotoUrl != null) {
@@ -448,6 +454,8 @@ class DatabaseRepositoryHelper {
             try (Cursor userCursor = databaseHelper.query(
                     getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(ownerId)))) {
                 if (userCursor.moveToFirst()) {
+
+                    userColumnIndexesReady = false;
                     news.setUser(getUserFromCursor(userCursor));
                 }
             }
@@ -481,6 +489,8 @@ class DatabaseRepositoryHelper {
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
             Doc doc = new Doc();
             doc.setUrl(attachmentCursor.getString(columnIndexAttachmentDocUrl));
+            doc.setTitle(attachmentCursor.getString(columnIndexAttachmentDocTitle));
+            doc.setExt(attachmentCursor.getString(columnIndexAttachmentDocExt));
             getAttachmentPhotoFromCursor(attachmentCursor, doc);
             attachment.setDoc(doc);
         } else if (Attachment.Type.Audio.equals(attachment.getType())) {
@@ -492,6 +502,7 @@ class DatabaseRepositoryHelper {
         } else if (Attachment.Type.Link.equals(attachment.getType())) {
             Link link = new Link();
             link.setUrl(attachmentCursor.getString(columnIndexAttachmentLinkUrl));
+            link.setTitle(attachmentCursor.getString(columnIndexAttachmentLinkTitle));
             getAttachmentPhotoFromCursor(attachmentCursor, link);
             attachment.setLink(link);
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
@@ -531,6 +542,8 @@ class DatabaseRepositoryHelper {
             putAttachmentPhotoToContentValues(contentValues, attachment.getVideo());
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
             contentValues.put(AttachmentTable.DOC_URL, attachment.getDoc().getUrl());
+            contentValues.put(AttachmentTable.DOC_TITLE, attachment.getDoc().getTitle());
+            contentValues.put(AttachmentTable.DOC_EXT, attachment.getDoc().getExt());
             putAttachmentPhotoToContentValues(contentValues, attachment.getDoc());
         } else if (Attachment.Type.Audio.equals(attachment.getType())) {
             contentValues.put(AttachmentTable.AUDIO_TITLE, attachment.getAudio().getTitle());
@@ -538,6 +551,7 @@ class DatabaseRepositoryHelper {
             contentValues.put(AttachmentTable.AUDIO_URL, attachment.getAudio().getUrl());
         } else if (Attachment.Type.Link.equals(attachment.getType())) {
             contentValues.put(AttachmentTable.LINK_URL, attachment.getLink().getUrl());
+            contentValues.put(AttachmentTable.LINK_TITLE, attachment.getLink().getTitle());
             putAttachmentPhotoToContentValues(contentValues, attachment.getLink());
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
             contentValues.put(AttachmentTable.PODCAST_TITLE, attachment.getPodcast().getTitle());
@@ -623,10 +637,13 @@ class DatabaseRepositoryHelper {
             columnIndexAttachmentType = cursor.getColumnIndex(AttachmentTable.TYPE);
             columnIndexAttachmentVideoTitle = cursor.getColumnIndex(AttachmentTable.VIDEO_TITLE);
             columnIndexAttachmentDocUrl = cursor.getColumnIndex(AttachmentTable.DOC_URL);
+            columnIndexAttachmentDocTitle = cursor.getColumnIndex(AttachmentTable.DOC_TITLE);
+            columnIndexAttachmentDocExt = cursor.getColumnIndex(AttachmentTable.DOC_EXT);
             columnIndexAttachmentAudioArtist = cursor.getColumnIndex(AttachmentTable.AUDIO_ARTIST);
             columnIndexAttachmentAudioTitle = cursor.getColumnIndex(AttachmentTable.AUDIO_TITLE);
             columnIndexAttachmentAudioUrl = cursor.getColumnIndex(AttachmentTable.AUDIO_URL);
             columnIndexAttachmentLinkUrl = cursor.getColumnIndex(AttachmentTable.LINK_URL);
+            columnIndexAttachmentLinkTitle = cursor.getColumnIndex(AttachmentTable.LINK_TITLE);
             columnIndexAttachmentPodcastTitle = cursor.getColumnIndex(AttachmentTable.PODCAST_TITLE);
             columnIndexAttachmentPodcastUrl = cursor.getColumnIndex(AttachmentTable.PODCAST_URL);
             columnIndexAttachmentPhotoUrl = cursor.getColumnIndex(AttachmentTable.PHOTO_URL);

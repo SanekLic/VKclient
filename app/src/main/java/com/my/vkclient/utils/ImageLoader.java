@@ -77,10 +77,6 @@ public class ImageLoader {
     }
 
     public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
-        if (requestUrl == null) {
-            return;
-        }
-
         imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
 
         if (initialWidth == 0 || initialHeight == 0) {
@@ -96,6 +92,10 @@ public class ImageLoader {
         }
 
         imageView.setTag(R.id.IMAGE_TAG_SHOW_URL, null);
+
+        if (requestUrl == null) {
+            return;
+        }
 
         executor.execute(new Runnable() {
             @Override

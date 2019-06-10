@@ -16,17 +16,13 @@ public class DocGsonTypeAdapter implements JsonDeserializer<Doc> {
         Doc fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
-            Doc doc = new Doc();
-
-            doc.setUrl(fromJson.getUrl());
-
             if (fromJson.getPreview() != null && fromJson.getPreview().getPhoto() != null) {
-                doc.setPhotoUrl(fromJson.getPreview().getPhoto().getPhotoUrl());
-                doc.setPhotoHeight(fromJson.getPreview().getPhoto().getPhotoHeight());
-                doc.setPhotoWidth(fromJson.getPreview().getPhoto().getPhotoWidth());
+                fromJson.setPhotoUrl(fromJson.getPreview().getPhoto().getPhotoUrl());
+                fromJson.setPhotoHeight(fromJson.getPreview().getPhoto().getPhotoHeight());
+                fromJson.setPhotoWidth(fromJson.getPreview().getPhoto().getPhotoWidth());
             }
 
-            return doc;
+            return fromJson;
         }
 
         return null;

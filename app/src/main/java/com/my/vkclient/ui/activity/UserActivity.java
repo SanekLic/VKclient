@@ -16,7 +16,7 @@ import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
-import static com.my.vkclient.Constants.USER_ID_INTENT_KEY;
+import static com.my.vkclient.Constants.IntentKey.USER_ID_INTENT_KEY;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -25,7 +25,7 @@ public class UserActivity extends AppCompatActivity {
 
     public static void show(final Context context, final int userId) {
         Intent intent = new Intent(context, UserActivity.class);
-        intent.putExtra(Constants.USER_ID_INTENT_KEY, userId);
+        intent.putExtra(Constants.IntentKey.USER_ID_INTENT_KEY, userId);
         context.startActivity(intent);
     }
 

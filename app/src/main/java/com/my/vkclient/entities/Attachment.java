@@ -1,7 +1,5 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
@@ -9,18 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class Attachment implements Parcelable {
-    public static final Creator<Attachment> CREATOR = new Creator<Attachment>() {
-        @Override
-        public Attachment createFromParcel(Parcel in) {
-            return new Attachment(in);
-        }
-
-        @Override
-        public Attachment[] newArray(int size) {
-            return new Attachment[size];
-        }
-    };
+public class Attachment {
     @SerializedName("type")
     private String type;
     @SerializedName("photo")
@@ -39,36 +26,12 @@ public class Attachment implements Parcelable {
     public Attachment() {
     }
 
-    protected Attachment(Parcel in) {
-        type = in.readString();
-        photo = in.readParcelable(Photo.class.getClassLoader());
-        video = in.readParcelable(Video.class.getClassLoader());
-        doc = in.readParcelable(Doc.class.getClassLoader());
-        link = in.readParcelable(Link.class.getClassLoader());
-        podcast = in.readParcelable(Podcast.class.getClassLoader());
-    }
-
     public Audio getAudio() {
         return audio;
     }
 
     public void setAudio(Audio audio) {
         this.audio = audio;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(type);
-        dest.writeParcelable(photo, flags);
-        dest.writeParcelable(video, flags);
-        dest.writeParcelable(doc, flags);
-        dest.writeParcelable(link, flags);
-        dest.writeParcelable(podcast, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public String getType() {

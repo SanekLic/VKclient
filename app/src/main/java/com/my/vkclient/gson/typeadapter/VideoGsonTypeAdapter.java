@@ -16,8 +16,6 @@ public class VideoGsonTypeAdapter implements JsonDeserializer<Video> {
         Video fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
-            Video video = new Video();
-
             String photoUrl = fromJson.getPhoto320Url();
             int width = 320;
             int height = 240;
@@ -32,12 +30,11 @@ public class VideoGsonTypeAdapter implements JsonDeserializer<Video> {
                 height = 480;
             }
 
-            video.setTitle(fromJson.getTitle());
-            video.setPhotoUrl(photoUrl);
-            video.setPhotoHeight(height);
-            video.setPhotoWidth(width);
+            fromJson.setPhotoUrl(photoUrl);
+            fromJson.setPhotoHeight(height);
+            fromJson.setPhotoWidth(width);
 
-            return video;
+            return fromJson;
         }
 
         return null;

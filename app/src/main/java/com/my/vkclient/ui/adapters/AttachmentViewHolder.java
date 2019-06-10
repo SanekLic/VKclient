@@ -11,19 +11,85 @@ import com.my.vkclient.entities.AttachmentPhoto;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
+import static com.my.vkclient.Constants.AUDIO_FORMAT;
+import static com.my.vkclient.Constants.STRING_EMPTY;
+
 class AttachmentViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView attachmentTitleTextView;
+    private TextView attachmentInfoTextView;
+    private TextView attachmentTypeTextView;
     private ImageView attachImageView;
     private ResultCallback<String> onAttachmentClickListener;
+    private ResultCallback<String> onPhotoClickListener;
     private Attachment attachment;
     private String contentUrl;
-    private TextView attachmentTypeTextView;
 
-    public AttachmentViewHolder(View itemView) {
+    AttachmentViewHolder(View itemView) {
         super(itemView);
 
         setupView(itemView);
+    }
+
+    void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
+        this.onAttachmentClickListener = onAttachmentClickListener;
+    }
+
+    void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
+        this.onPhotoClickListener = onPhotoClickListener;
+    }
+
+    void bind(Attachment attachment) {
+        this.attachment = attachment;
+
+        if (Attachment.Type.Photo.equals(attachment.getType())) {
+            setTextAndVisibilityTextView(attachmentInfoTextView, STRING_EMPTY);
+            setTextAndVisibilityTextView(attachmentTypeTextView, "Фото");
+            contentUrl = STRING_EMPTY;
+            setAttachmentImage(attachment.getPhoto());
+        } else if (Attachment.Type.Doc.equals(attachment.getType())) {
+            setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getDoc().getTitle());
+            setTextAndVisibilityTextView(attachmentTypeTextView, attachment.getDoc().getExt());
+            contentUrl = attachment.getDoc().getUrl();
+
+            if (attachment.getDoc().getPhotoUrl() == null) {
+                attachImageView.setImageResource(R.drawable.ic_attachment_doc);
+            } else {
+                setAttachmentImage(attachment.getDoc());
+            }
+        } else if (Attachment.Type.Video.equals(attachment.getType())) {
+            setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getVideo().getTitle());
+            setTextAndVisibilityTextView(attachmentTypeTextView, "Видео");
+            contentUrl = STRING_EMPTY;
+            setAttachmentImage(attachment.getVideo());
+        } else if (Attachment.Type.Link.equals(attachment.getType())) {
+            setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getLink().getTitle());
+            setTextAndVisibilityTextView(attachmentTypeTextView, "Ссылка");
+            contentUrl = attachment.getLink().getUrl();
+
+            if (attachment.getLink().getPhotoUrl() == null) {
+                attachImageView.setImageResource(R.drawable.ic_attachment_link);
+            } else {
+                setAttachmentImage(attachment.getLink());
+            }
+        } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
+            setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getPodcast().getTitle());
+            setTextAndVisibilityTextView(attachmentTypeTextView, "Подкаст");
+            contentUrl = attachment.getPodcast().getUrl();
+            setAttachmentImage(attachment.getPodcast());
+        } else if (Attachment.Type.Audio.equals(attachment.getType())) {
+            String info = attachment.getAudio().getArtist() != null ?
+                    String.format(AUDIO_FORMAT, attachment.getAudio().getArtist(), attachment.getAudio().getTitle()) :
+                    attachment.getAudio().getTitle();
+            setTextAndVisibilityTextView(attachmentInfoTextView, info);
+            setTextAndVisibilityTextView(attachmentTypeTextView, "Аудио");
+            contentUrl = STRING_EMPTY;
+            attachImageView.setImageResource(R.drawable.ic_attachment_audio);
+        } else {
+            setTextAndVisibilityTextView(attachmentInfoTextView, STRING_EMPTY);
+            setTextAndVisibilityTextView(attachmentTypeTextView, STRING_EMPTY);
+            contentUrl = STRING_EMPTY;
+            setAttachmentImage(null);
+        }
     }
 
     private void setupView(View itemView) {
@@ -31,65 +97,38 @@ class AttachmentViewHolder extends RecyclerView.ViewHolder {
         attachImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onAttachmentClickListener != null) {
+                if (Attachment.Type.Photo.equals(attachment.getType())) {
+                    if (onPhotoClickListener != null) {
+                        onPhotoClickListener.onResult(attachment.getPhoto().getPhotoUrl());
+                    }
+                } else if (onAttachmentClickListener != null) {
                     onAttachmentClickListener.onResult(contentUrl);
                 }
             }
         });
-        attachmentTitleTextView = itemView.findViewById(R.id.attachmentTitleTextView);
+        attachmentInfoTextView = itemView.findViewById(R.id.attachmentInfoTextView);
         attachmentTypeTextView = itemView.findViewById(R.id.attachmentTypeTextView);
     }
 
-    public void bind(Attachment attachment) {
-        this.attachment = attachment;
-
-        if (Attachment.Type.Photo.equals(this.attachment.getType())) {
-            attachmentTitleTextView.setText("Photo");
-            attachmentTypeTextView.setText("Фото");
-            contentUrl = "";
-            setAttachmentImage(attachment.getPhoto());
-        } else if (Attachment.Type.Doc.equals(attachment.getType())) {
-            attachmentTitleTextView.setText("Doc");
-            attachmentTypeTextView.setText("Документ");
-            contentUrl = "";
-            setAttachmentImage(attachment.getDoc());
-        } else if (Attachment.Type.Video.equals(attachment.getType())) {
-            attachmentTitleTextView.setText(attachment.getVideo().getTitle());
-            attachmentTypeTextView.setText("Видео");
-            contentUrl = "";
-            setAttachmentImage(attachment.getVideo());
-        } else if (Attachment.Type.Link.equals(attachment.getType())) {
-            attachmentTitleTextView.setText("Link");
-            attachmentTypeTextView.setText("Ссылка");
-            contentUrl = attachment.getLink().getUrl();
-            setAttachmentImage(attachment.getLink());
-        } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
-            attachmentTitleTextView.setText(attachment.getPodcast().getTitle());
-            attachmentTypeTextView.setText("Подкаст");
-            contentUrl = attachment.getPodcast().getUrl();
-            setAttachmentImage(attachment.getPodcast());
-        } else if (Attachment.Type.Audio.equals(attachment.getType())) {
-            attachmentTitleTextView.setText(attachment.getAudio().getTitle());
-            attachmentTypeTextView.setText("Аудио");
-            contentUrl = attachment.getAudio().getUrl();
-            attachImageView.setImageResource(R.drawable.ic_music);
+    private void setTextAndVisibilityTextView(TextView textView, String text) {
+        if (text == null || text.isEmpty()) {
+            if (textView.getVisibility() != View.GONE) {
+                textView.setVisibility(View.GONE);
+            }
         } else {
-            attachmentTitleTextView.setText("");
-            attachmentTypeTextView.setText("");
-            contentUrl = "";
-            attachImageView.setImageDrawable(null);
+            textView.setText(text);
+
+            if (textView.getVisibility() != View.VISIBLE) {
+                textView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
-    public void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
-        this.onAttachmentClickListener = onAttachmentClickListener;
-    }
-
     private void setAttachmentImage(AttachmentPhoto attachmentPhoto) {
-        if (attachmentPhoto != null && attachmentPhoto.getPhotoUrl() != null) {
+        if (attachmentPhoto != null) {
             ImageLoader.getInstance().getImageFromUrl(attachImageView, attachmentPhoto.getPhotoUrl(),
                     attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
-        } else{
+        } else {
             attachImageView.setImageDrawable(null);
         }
     }

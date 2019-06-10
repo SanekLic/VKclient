@@ -1,24 +1,10 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class News implements Parcelable {
-    public static final Creator<News> CREATOR = new Creator<News>() {
-        @Override
-        public News createFromParcel(Parcel in) {
-            return new News(in);
-        }
-
-        @Override
-        public News[] newArray(int size) {
-            return new News[size];
-        }
-    };
+public class News {
     @SerializedName("post_id")
     private int id;
     @SerializedName("type")
@@ -47,47 +33,7 @@ public class News implements Parcelable {
     private Group group;
     private User user;
 
-    protected News(Parcel in) {
-        id = in.readInt();
-        type = in.readString();
-        sourceId = in.readInt();
-        fromId = in.readInt();
-        date = in.readLong();
-        text = in.readString();
-        copyHistory = in.createTypedArrayList(News.CREATOR);
-        comments = in.readParcelable(Comments.class.getClassLoader());
-        likes = in.readParcelable(Likes.class.getClassLoader());
-        reposts = in.readParcelable(Reposts.class.getClassLoader());
-        views = in.readParcelable(Views.class.getClassLoader());
-        attachments = in.createTypedArrayList(Attachment.CREATOR);
-        group = in.readParcelable(Group.class.getClassLoader());
-        user = in.readParcelable(User.class.getClassLoader());
-    }
-
     public News() {
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(type);
-        dest.writeInt(sourceId);
-        dest.writeInt(fromId);
-        dest.writeLong(date);
-        dest.writeString(text);
-        dest.writeTypedList(copyHistory);
-        dest.writeParcelable(comments, flags);
-        dest.writeParcelable(likes, flags);
-        dest.writeParcelable(reposts, flags);
-        dest.writeParcelable(views, flags);
-        dest.writeTypedList(attachments);
-        dest.writeParcelable(group, flags);
-        dest.writeParcelable(user, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public Group getGroup() {

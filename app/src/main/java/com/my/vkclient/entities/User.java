@@ -1,22 +1,8 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-public class User implements Parcelable {
-    public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
+public class User {
     @SerializedName("id")
     private int id;
     @SerializedName("online")
@@ -33,33 +19,6 @@ public class User implements Parcelable {
     private CropPhoto cropPhoto;
 
     public User() {
-    }
-
-    protected User(Parcel in) {
-        id = in.readInt();
-        byte tmpOnline = in.readByte();
-        online = tmpOnline == 0 ? null : tmpOnline == 1;
-        firstName = in.readString();
-        lastName = in.readString();
-        photoMaxUrl = in.readString();
-        photo100Url = in.readString();
-        cropPhoto = in.readParcelable(CropPhoto.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeByte((byte) (online == null ? 0 : online ? 1 : 2));
-        dest.writeString(firstName);
-        dest.writeString(lastName);
-        dest.writeString(photoMaxUrl);
-        dest.writeString(photo100Url);
-        dest.writeParcelable(cropPhoto, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public int getId() {

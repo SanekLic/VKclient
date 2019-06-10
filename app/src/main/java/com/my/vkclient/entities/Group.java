@@ -1,23 +1,8 @@
 package com.my.vkclient.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-public class Group implements Parcelable {
-
-    public static final Creator<Group> CREATOR = new Creator<Group>() {
-        @Override
-        public Group createFromParcel(Parcel in) {
-            return new Group(in);
-        }
-
-        @Override
-        public Group[] newArray(int size) {
-            return new Group[size];
-        }
-    };
+public class Group {
     @SerializedName("id")
     private int id;
     @SerializedName("name")
@@ -26,24 +11,6 @@ public class Group implements Parcelable {
     private String photo100Url;
 
     public Group() {
-    }
-
-    private Group(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        photo100Url = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(photo100Url);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public int getId() {

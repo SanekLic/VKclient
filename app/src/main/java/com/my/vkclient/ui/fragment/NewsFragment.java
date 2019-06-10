@@ -12,10 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.repository.VkRepository;
+import com.my.vkclient.ui.activity.ImageActivity;
 import com.my.vkclient.ui.adapters.NewsRecyclerViewAdapter;
 import com.my.vkclient.utils.ResultCallback;
 
@@ -55,6 +55,27 @@ public class NewsFragment extends Fragment {
                         });
                     }
                 });
+            }
+        });
+        newsRecyclerViewAdapter.setOnAttachmentClickListener(new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                if (!result.isEmpty()) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(result));
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        newsRecyclerViewAdapter.setOnPhotoClickListener(new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                if (!result.isEmpty()) {
+                    ImageActivity.show(NewsFragment.this.getContext(), result);
+                }
             }
         });
 

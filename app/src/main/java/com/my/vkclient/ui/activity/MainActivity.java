@@ -78,9 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 VkRepository.getInstance().logout();
-
                 clearCookies();
-
                 LoginActivity.show(MainActivity.this);
 
                 finish();

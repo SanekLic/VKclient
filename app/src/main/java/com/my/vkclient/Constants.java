@@ -11,11 +11,16 @@ public interface Constants {
     String STRING_EMPTY = "";
     String STRING_SPACE = " ";
     String STRING_SLASH = "/";
-    String USER_ID_INTENT_KEY = "UserId";
     String NAME_FORMAT = "%s %s";
+    String AUDIO_FORMAT = "%s\n%s";
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
+
+    interface IntentKey {
+        String USER_ID_INTENT_KEY = "UserId";
+        String IMAGE_URL_INTENT_KEY = "ImageUrl";
+    }
 
     interface Database {
         String USER_TABLE_NAME = "USER_TABLE";
@@ -27,7 +32,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 2;
+        int DATABASE_VERSION = 3;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -75,5 +80,9 @@ public interface Constants {
     interface SharedPreferences {
         String APP_SETTINGS = "AppSettings";
         String ACCESS_TOKEN_SHARED_KEY = "accessTokenSharedKey";
+    }
+
+    interface AttachmentRecyclerView {
+        int ATTACHMENT_MARGIN = 16;
     }
 }

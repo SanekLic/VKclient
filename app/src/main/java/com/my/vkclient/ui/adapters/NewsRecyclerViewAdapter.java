@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
-import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
@@ -19,6 +18,8 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
     private static final int PAGE_SIZE = 10;
     private String nextFrom = STRING_EMPTY;
     private ResultCallback<News> onLikeClickListener;
+    private ResultCallback<String> onAttachmentClickListener;
+    private ResultCallback<String> onPhotoClickListener;
 
     public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         super(linearLayoutManager);
@@ -31,6 +32,8 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
 
         final NewsViewHolder holder = new NewsViewHolder(parent.getContext(), view);
         holder.setOnLikeClickListener(onLikeClickListener);
+        holder.setOnAttachmentClickListener(onAttachmentClickListener);
+        holder.setOnPhotoClickListener(onPhotoClickListener);
 
         return holder;
     }
@@ -47,6 +50,14 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
 
     public void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
         this.onLikeClickListener = onLikeClickListener;
+    }
+
+    public void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
+        this.onAttachmentClickListener = onAttachmentClickListener;
+    }
+
+    public void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
+        this.onPhotoClickListener = onPhotoClickListener;
     }
 
     public void initialLoadItems() {

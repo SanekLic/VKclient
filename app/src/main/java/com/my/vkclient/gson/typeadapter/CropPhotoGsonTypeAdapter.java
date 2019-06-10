@@ -16,22 +16,20 @@ public class CropPhotoGsonTypeAdapter implements JsonDeserializer<CropPhoto> {
         CropPhoto fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
-            CropPhoto cropPhoto = new CropPhoto();
             if (fromJson.getPhoto() != null) {
-
-                cropPhoto.setCropPhotoUrl(fromJson.getPhoto().getPhotoUrl());
-                cropPhoto.setCropPhotoHeight(fromJson.getPhoto().getPhotoHeight());
-                cropPhoto.setCropPhotoWidth(fromJson.getPhoto().getPhotoWidth());
+                fromJson.setCropPhotoUrl(fromJson.getPhoto().getPhotoUrl());
+                fromJson.setCropPhotoHeight(fromJson.getPhoto().getPhotoHeight());
+                fromJson.setCropPhotoWidth(fromJson.getPhoto().getPhotoWidth());
             }
 
             if (fromJson.getCrop() != null) {
-                cropPhoto.setCropRectX(fromJson.getRect().getX());
-                cropPhoto.setCropRectX2(fromJson.getRect().getX2());
-                cropPhoto.setCropRectY(fromJson.getRect().getY());
-                cropPhoto.setCropRectY2(fromJson.getRect().getY2());
+                fromJson.setCropRectX(fromJson.getRect().getX());
+                fromJson.setCropRectX2(fromJson.getRect().getX2());
+                fromJson.setCropRectY(fromJson.getRect().getY());
+                fromJson.setCropRectY2(fromJson.getRect().getY2());
             }
 
-            return cropPhoto;
+            return fromJson;
         }
 
         return null;

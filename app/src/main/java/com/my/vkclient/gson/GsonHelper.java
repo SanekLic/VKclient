@@ -9,7 +9,7 @@ import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.entities.UserResponse;
+import com.my.vkclient.entities.response.UserResponse;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.response.FriendResponse;
 import com.my.vkclient.entities.response.GroupResponse;
