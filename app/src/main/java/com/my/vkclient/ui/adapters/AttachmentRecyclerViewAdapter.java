@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
+import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +16,18 @@ import java.util.List;
 public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<AttachmentViewHolder> {
 
     private List<Attachment> attachmentList = new ArrayList<>();
+    private ResultCallback<String> onAttachmentClickListener;
 
     @NonNull
     @Override
     public AttachmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_imageview, parent, false);
+                .inflate(R.layout.view_attachment, parent, false);
 
-        return new AttachmentViewHolder(view);
+        AttachmentViewHolder holder = new AttachmentViewHolder(view);
+        holder.setOnAttachmentClickListener(onAttachmentClickListener);
+
+        return holder;
     }
 
     @Override
@@ -33,6 +38,10 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
     @Override
     public int getItemCount() {
         return attachmentList.size();
+    }
+
+    public void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
+        this.onAttachmentClickListener = onAttachmentClickListener;
     }
 
     public void setItems(List<Attachment> newAttachmentList) {

@@ -289,6 +289,10 @@ class DatabaseRepositoryHelper {
         }
     }
 
+    void clearAllTables() {
+        databaseHelper.dropAllTable(null);
+    }
+
     private void putUserToContentValue(User user, ContentValues contentValues) {
         contentValues.put(UserTable.ID, user.getId());
         contentValues.put(UserTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
@@ -376,8 +380,9 @@ class DatabaseRepositoryHelper {
         user.setFirstName(userCursor.getString(columnIndexUserFirstName));
         user.setLastName(userCursor.getString(columnIndexUserLastName));
         user.setOnline(userCursor.getInt(columnIndexUserOnline) > 0);
-        user.setPhoto100Url(userCursor.getString(columnIndexUserPhoto100Url));
-        user.setPhotoMaxUrl(userCursor.getString(columnIndexUserPhotoMaxUrl));
+        //TODO fix getColumnIndex
+        user.setPhoto100Url(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_100_URL)));
+        user.setPhotoMaxUrl(userCursor.getString(userCursor.getColumnIndex(UserTable.PHOTO_MAX_URL)));
         String cropPhotoUrl = userCursor.getString(columnIndexUserCropPhotoUrl);
 
         if (cropPhotoUrl != null) {
@@ -438,6 +443,7 @@ class DatabaseRepositoryHelper {
         }
 
         int ownerId = news.getSourceId() == 0 ? news.getFromId() : news.getSourceId();
+
         if (ownerId > 0) {
             try (Cursor userCursor = databaseHelper.query(
                     getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(ownerId)))) {

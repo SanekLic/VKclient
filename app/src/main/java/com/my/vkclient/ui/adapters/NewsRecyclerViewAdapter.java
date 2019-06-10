@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
+import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
@@ -34,10 +35,6 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
         return holder;
     }
 
-    public void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
-        this.onLikeClickListener = onLikeClickListener;
-    }
-
     @Override
     public void onViewAttachedToWindow(@NonNull final BaseViewHolder<News> holder) {
         super.onViewAttachedToWindow(holder);
@@ -45,6 +42,11 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
         if (validateLoadMoreItems()) {
             loadMoreItems(nextFrom, PAGE_SIZE);
         }
+    }
+
+
+    public void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
+        this.onLikeClickListener = onLikeClickListener;
     }
 
     public void initialLoadItems() {
@@ -65,12 +67,14 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
                     mainLooperHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            if (resultList.getNewsList().size() < size) {
-                                setLoadComplete();
-                            }
+                            if (resultList.getNewsList() != null) {
+                                if (resultList.getNewsList().size() < size) {
+                                    setLoadComplete();
+                                }
 
-                            addItems(resultList.getNewsList());
-                            isLoading = false;
+                                addItems(resultList.getNewsList());
+                                isLoading = false;
+                            }
                         }
                     });
                 } else {

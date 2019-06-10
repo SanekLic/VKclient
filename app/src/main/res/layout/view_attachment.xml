@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/attachImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="192dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <TextView
+        android:id="@+id/attachmentTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_attachment_title"
+        android:text="Title"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/attachImageView"
+        app:layout_constraintStart_toStartOf="@+id/attachImageView"
+        app:layout_constraintTop_toTopOf="@+id/attachImageView" />
+
+    <TextView
+        android:id="@+id/attachmentTypeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_attachment_type"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="type"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/attachImageView"
+        app:layout_constraintStart_toStartOf="parent" />
+</android.support.constraint.ConstraintLayout>

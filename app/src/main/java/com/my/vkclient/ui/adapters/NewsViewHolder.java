@@ -1,6 +1,8 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -96,9 +98,11 @@ class NewsViewHolder extends BaseViewHolder<News> {
         }
 
         if (news.getLikes().getUserLikes()) {
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_fill_likes), null, null, null);
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    ContextCompat.getDrawable(context, R.drawable.ic_fill_likes), null, null, null);
         } else {
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_likes), null, null, null);
+            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    ContextCompat.getDrawable(context, R.drawable.ic_likes), null, null, null);
         }
 
         likesTextView.setText(Utils.getInstance().formatNumber(news.getLikes().getCount()));

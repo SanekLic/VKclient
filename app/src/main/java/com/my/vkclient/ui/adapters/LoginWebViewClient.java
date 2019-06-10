@@ -16,7 +16,9 @@ public class LoginWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
         if (url.startsWith(Constants.API_VK.API_VK_RESPONSE_ACCESS_DENIED_ERROR) && url.endsWith(Constants.API_VK.STATE_REQUEST_TOKEN)) {
-            url = Constants.API_VK.API_VK_GET_AUTHORIZE_URL;
+            loginWebViewCallback.onCancelLogin();
+
+            return true;
         }
 
         if (url.startsWith(Constants.API_VK.API_VK_RESPONSE_ACCESS_TOKEN)) {

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.fields.dbAutoincrement;
@@ -33,7 +34,7 @@ import static com.my.vkclient.Constants.STRING_COMMA;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.STRING_SPACE;
 
-public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperation {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(@NonNull final Context context) {
         super(context, Constants.Database.DATABASE_NAME, null, Constants.Database.DATABASE_VERSION);
@@ -98,9 +99,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
 
                     final String template =
                             fieldName + STRING_SPACE +
-                            type + STRING_SPACE +
-                            primaryKey + STRING_SPACE +
-                            autoincrement;
+                                    type + STRING_SPACE +
+                                    primaryKey + STRING_SPACE +
+                                    autoincrement;
 
                     builder.append(template);
                 }
@@ -137,53 +138,50 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseOperatio
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         dropAllTable(sqLiteDatabase);
+        onCreate(sqLiteDatabase);
     }
 
     @Override
     public void onDowngrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         dropAllTable(sqLiteDatabase);
-    }
-
-    private void dropAllTable(SQLiteDatabase sqLiteDatabase) {
-        for (final Class<?> table : getTables()) {
-            String format = String.format(DROP_TABLE_IF_EXISTS, getTableName(table));
-            sqLiteDatabase.execSQL(format);
-        }
-
         onCreate(sqLiteDatabase);
     }
 
-    @Override
     public Cursor query(final String sql, final String... selectionArgs) {
         final SQLiteDatabase readableDatabase = getReadableDatabase();
 
         return readableDatabase.rawQuery(sql, selectionArgs);
     }
 
-    @Override
-    public long insert(final String tableName, final ContentValues contentValues) {
+    public void insert(final String tableName, final ContentValues contentValues) {
         final SQLiteDatabase writableDatabase = getWritableDatabase();
 
         writableDatabase.beginTransaction();
 
-        final long insert;
-
         try {
-            insert = writableDatabase.insertWithOnConflict(tableName, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+            writableDatabase.insertWithOnConflict(tableName, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
             writableDatabase.setTransactionSuccessful();
         } finally {
             writableDatabase.endTransaction();
         }
-
-        return insert;
     }
 
-    @Override
-    public long insertWithoutTransaction(final SQLiteDatabase writableDatabase, String tableName, ContentValues contentValues) {
-        return writableDatabase.insertWithOnConflict(tableName, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+    public void insertWithoutTransaction(final SQLiteDatabase writableDatabase, String tableName, ContentValues contentValues) {
+        writableDatabase.insertWithOnConflict(tableName, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    @Override
+    public void dropAllTable(@Nullable SQLiteDatabase sqLiteDatabase) {
+
+        final SQLiteDatabase writableDatabase = sqLiteDatabase != null ? sqLiteDatabase : getWritableDatabase();
+
+        for (final Class<?> table : getTables()) {
+            String format = String.format(DROP_TABLE_IF_EXISTS, getTableName(table));
+            writableDatabase.execSQL(format);
+        }
+
+        onCreate(writableDatabase);
+    }
+
     public long delete(final String tableName, final String sql, final String... params) {
         final SQLiteDatabase writableDatabase = getWritableDatabase();
         writableDatabase.beginTransaction();

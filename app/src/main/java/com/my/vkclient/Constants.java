@@ -41,14 +41,15 @@ public interface Constants {
     }
 
     interface API_VK {
-        String ACCESS_TOKEN = "&v=5.92&access_token=";
+        String API_VERSION = "&v=5.95&";
+        String ACCESS_TOKEN = API_VERSION + "access_token=";
         String API_VK_OAUTH_VK_COM = "https://oauth.vk.com/";
         String API_VK_RESPONSE_ACCESS_DENIED_ERROR = API_VK_OAUTH_VK_COM + "blank.html#error=access_denied&error_reason=user_denied";
         String API_VK_RESPONSE_ACCESS_TOKEN = API_VK_OAUTH_VK_COM + "blank.html#access_token=";
-        String AUTHORIZE_SCOPE = "&scope=friends,photos,audio,video,status,wall,notifications";
+        String AUTHORIZE_SCOPE = "&scope=friends,photos,audio,video,status,wall,notifications,offline";
         String CLIENT_ID = "6870329";
         String STATE_REQUEST_TOKEN = "state=requestToken";
-        String API_VK_GET_AUTHORIZE_URL = API_VK_OAUTH_VK_COM + "authorize?client_id=" + CLIENT_ID + "&display=mobile&redirect_uri=" + API_VK_OAUTH_VK_COM + "blank.html" + AUTHORIZE_SCOPE + "&response_type=token&v=5.92&" + STATE_REQUEST_TOKEN;
+        String API_VK_GET_AUTHORIZE_URL = API_VK_OAUTH_VK_COM + "authorize?client_id=" + CLIENT_ID + "&display=mobile&redirect_uri=" + API_VK_OAUTH_VK_COM + "blank.html" + AUTHORIZE_SCOPE + "&response_type=token" + API_VERSION + STATE_REQUEST_TOKEN;
         String API_VK_METHOD = "https://api.vk.com/method/";
         String API_VK_GET_FRIENDS_URL = API_VK_METHOD + "friends.get?order=name";
         String FRIENDS_COUNT = "&count=";

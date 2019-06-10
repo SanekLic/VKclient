@@ -1,5 +1,7 @@
 package com.my.vkclient.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -20,18 +22,22 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        if (VkRepository.getInstance().isOfflineAccess()) {
-//            MainActivity.show(LoginActivity.this);
-//
-//            finish();
-//        } else {
+        if (VkRepository.getInstance().isOfflineAccess()) {
+            MainActivity.show(LoginActivity.this);
 
+            finish();
+        } else {
             setContentView(R.layout.activity_login);
             loginWebView = findViewById(R.id.loginWebView);
             loginProgressBar = findViewById(R.id.loginProgressBar);
 
             setupLoginWebView();
-//        }
+        }
+    }
+
+    public static void show(final Context context){
+        Intent intent = new Intent(context, LoginActivity.class);
+        context.startActivity(intent);
     }
 
     private void setupLoginWebView() {
@@ -48,6 +54,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onLoadingFinished() {
                 loginWebView.setVisibility(View.VISIBLE);
                 loginProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelLogin() {
+                finishAffinity();
             }
         });
 

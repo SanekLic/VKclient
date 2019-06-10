@@ -54,21 +54,32 @@ public class VkRepository {
     public void initialContext(@NonNull final Context context) {
         databaseRepositoryHelper = new DatabaseRepositoryHelper(context);
 
-//        sharedPreferences = context.getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
-//        String newAccessToken = sharedPreferences.getString(ACCESS_TOKEN_SHARED_KEY, null);
-//
-//        if (newAccessToken != null) {
-//            accessToken = newAccessToken;
-//            offlineAccess = true;
-//        }
+        sharedPreferences = context.getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
+        String newAccessToken = sharedPreferences.getString(ACCESS_TOKEN_SHARED_KEY, null);
+
+        if (newAccessToken != null) {
+            accessToken = newAccessToken;
+            offlineAccess = true;
+        }
     }
 
     public void setAccessToken(String newAccessToken) {
         accessToken = newAccessToken;
 
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString(ACCESS_TOKEN_SHARED_KEY,accessToken);
-//        editor.apply();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ACCESS_TOKEN_SHARED_KEY, accessToken);
+        editor.apply();
+    }
+
+    public void logout(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(ACCESS_TOKEN_SHARED_KEY);
+        editor.apply();
+
+        databaseRepositoryHelper.clearAllTables();
+
+        offlineAccess = false;
+        accessToken = null;
     }
 
     public void setLikeToNews(final News news, final boolean like, final ResultCallback<News> newsResultCallback) {
