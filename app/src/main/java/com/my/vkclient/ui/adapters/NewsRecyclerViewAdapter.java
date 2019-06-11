@@ -20,7 +20,6 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
     private ResultCallback<News> onLikeClickListener;
     private ResultCallback<String> onAttachmentClickListener;
     private ResultCallback<String> onPhotoClickListener;
-
     protected NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         super(linearLayoutManager);
     }
@@ -47,7 +46,6 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
         }
     }
 
-
     public void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
         this.onLikeClickListener = onLikeClickListener;
     }
@@ -58,6 +56,14 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
 
     public void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
         this.onPhotoClickListener = onPhotoClickListener;
+    }
+
+    public String getNextFrom() {
+        return nextFrom;
+    }
+
+    public void setNextFrom(String nextFrom) {
+        this.nextFrom = nextFrom;
     }
 
     public void initialLoadItems() {

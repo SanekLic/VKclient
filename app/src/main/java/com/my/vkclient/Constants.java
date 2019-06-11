@@ -18,8 +18,8 @@ public interface Constants {
     int INT_ONE_KB = 1024;
 
     interface IntentKey {
-        String USER_ID_INTENT_KEY = "UserId";
-        String IMAGE_URL_INTENT_KEY = "ImageUrl";
+        String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
+        String IMAGE_URL_INTENT_KEY = "IMAGE_URL_INTENT_KEY";
     }
 
     interface Database {
@@ -82,7 +82,10 @@ public interface Constants {
         String ACCESS_TOKEN_SHARED_KEY = "accessTokenSharedKey";
     }
 
-    interface AttachmentRecyclerView {
-        int ATTACHMENT_MARGIN = 16;
+    interface RecyclerView {
+        String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
+        String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
+        String NEXT_FROM_STATE_KEY = "NEXT_FROM_STATE_KEY";
+        int VIEW_MARGIN = 16;
     }
 }

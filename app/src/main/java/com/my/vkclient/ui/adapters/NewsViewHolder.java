@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,7 +39,7 @@ class NewsViewHolder extends BaseViewHolder<News> {
     private ImageView newsPhotoImageView;
     private TextView newsAttachmentInfoTextView;
     private TextView newsAttachmentTypeTextView;
-    private RecyclerView attachmentRecyclerView;
+    private android.support.v7.widget.RecyclerView attachmentRecyclerView;
     private List<Attachment> attachments = new ArrayList<>();
     private Context context;
     private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
@@ -67,14 +66,6 @@ class NewsViewHolder extends BaseViewHolder<News> {
         fromNameTextView = itemView.findViewById(R.id.fromNameTextView);
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
-        newsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int i = 0;
-                i++;
-                newsTextView.setMaxLines(64);
-            }
-        });
         newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
         newsPhotoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,11 +256,11 @@ class NewsViewHolder extends BaseViewHolder<News> {
     private void setupAttachmentRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         attachmentRecyclerView.setLayoutManager(linearLayoutManager);
-        attachmentRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+        attachmentRecyclerView.addItemDecoration(new android.support.v7.widget.RecyclerView.ItemDecoration() {
             @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull android.support.v7.widget.RecyclerView parent, @NonNull android.support.v7.widget.RecyclerView.State state) {
                 if (parent.getChildAdapterPosition(view) != 0) {
-                    outRect.left = Constants.AttachmentRecyclerView.ATTACHMENT_MARGIN;
+                    outRect.left = Constants.RecyclerView.VIEW_MARGIN;
                 }
             }
         });

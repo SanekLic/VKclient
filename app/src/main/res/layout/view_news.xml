@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_news_view">
 
     <TextView
         android:id="@+id/sourceNameTextView"
@@ -87,11 +88,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:text="TextView asfds sd fsd ds gdsg sd gd gd fdfh fdhsdfhshsre hser are e r ea r aerhyrea rghryeaye areyea a ret dsgdsgdsgd d dsg bjjhbvjvb j  jbhbj hjgbjhg h jsdg sdg dsgsd gd gdsygdf hd hf dh sdgfdsg"
+        android:autoLink="web"
+        android:text="Text"
         android:textColor="@android:color/black"
         android:textColorLink="@color/colorNewsLink"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fromIconImageView" />
@@ -161,11 +162,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:drawableStart="@drawable/ic_likes"
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
         tools:text=" 30" />

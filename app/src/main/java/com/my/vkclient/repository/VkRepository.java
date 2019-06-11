@@ -26,6 +26,7 @@ public class VkRepository {
     private DatabaseRepositoryHelper databaseRepositoryHelper;
     private SharedPreferences sharedPreferences;
     private HttpRepositoryHelper httpRepositoryHelper;
+    private List<News> newsList;
 
     private VkRepository() {
         executor = Executors.newCachedThreadPool();
@@ -38,6 +39,14 @@ public class VkRepository {
         }
 
         return instance;
+    }
+
+    public List<News> getNewsList() {
+        return newsList;
+    }
+
+    public void setNewsList(List<News> newsList) {
+        this.newsList = newsList;
     }
 
     public boolean isOfflineAccess() {
@@ -70,6 +79,7 @@ public class VkRepository {
         editor.apply();
 
         databaseRepositoryHelper.clearAllTables();
+        clearData();
 
         offlineAccess = false;
         httpRepositoryHelper.setAccessToken(null);
@@ -193,5 +203,9 @@ public class VkRepository {
                 });
             }
         });
+    }
+
+    private void clearData() {
+        newsList = null;
     }
 }

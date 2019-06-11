@@ -84,7 +84,11 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         return false;
     }
 
-    T getItem(int position) {
+    public List<T> getItemList() {
+        return itemList;
+    }
+
+    private T getItem(int position) {
         return itemList.get(position);
     }
 
@@ -97,19 +101,23 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         }
     }
 
-    void setLoadComplete() {
+    public void setLoadComplete() {
         isLoadComplete = true;
         notifyItemRemoved(itemList.size());
     }
 
-    void addItems(List<T> addFriendList) {
-        itemList.addAll(addFriendList);
-        int positionStart = itemList.size() - addFriendList.size();
+    public boolean isLoadComplete() {
+        return isLoadComplete;
+    }
 
-        if (positionStart == 0) {
+    public void addItems(List<T> newItemList) {
+        itemList.addAll(newItemList);
+        int positionInsert = itemList.size() <= newItemList.size() ? 0 : itemList.size() - newItemList.size();
+
+        if (positionInsert == 0) {
             notifyDataSetChanged();
         } else {
-            notifyItemRangeInserted(positionStart, addFriendList.size());
+            notifyItemRangeInserted(positionInsert, newItemList.size());
         }
     }
 
