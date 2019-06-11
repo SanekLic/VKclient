@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.DatabaseHelper;
@@ -107,7 +106,7 @@ class DatabaseRepositoryHelper {
         databaseHelper = new DatabaseHelper(context);
     }
 
-    boolean getUserFromDatabase(final int userId, final ResultCallback<User> resultCallback) {
+    boolean getUser(final int userId, final ResultCallback<User> resultCallback) {
         try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(userId)))) {
             if (userCursor.moveToFirst()) {
                 userColumnIndexesReady = false;
@@ -120,14 +119,14 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    void putUserInDatabase(final User user) {
+    void putUser(final User user) {
         ContentValues contentValues = new ContentValues();
         putUserToContentValue(user, contentValues);
 
         databaseHelper.insert(USER_TABLE_NAME, contentValues);
     }
 
-    void putUserListInDatabase(final List<User> userList) {
+    void putUserList(final List<User> userList) {
         SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
         writableDatabase.beginTransaction();
 
@@ -146,7 +145,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getGroupFromDatabase(final int groupId, final ResultCallback<Group> resultCallback) {
+    boolean getGroup(final int groupId, final ResultCallback<Group> resultCallback) {
         try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(groupId)))) {
             if (groupCursor.moveToFirst()) {
                 resultCallback.onResult(getGroupFromCursor(groupCursor));
@@ -158,13 +157,13 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    void putGroupInDatabase(final Group group) {
+    void putGroup(final Group group) {
         ContentValues contentValues = new ContentValues();
         putGroupToContentValue(group, contentValues);
         databaseHelper.insert(GROUP_TABLE_NAME, contentValues);
     }
 
-    void putGroupListInDatabase(final List<Group> groupList) {
+    void putGroupList(final List<Group> groupList) {
         SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
         writableDatabase.beginTransaction();
 
@@ -183,7 +182,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getFriendsFromDatabase(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
+    boolean getFriends(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
         try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
             if (friendsCursor.getCount() > 0) {
                 List<User> friendList = new ArrayList<>();
@@ -203,7 +202,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    void putFriendListInDatabase(final List<User> friendList) {
+    void putFriendList(final List<User> friendList) {
         SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
         writableDatabase.beginTransaction();
 
@@ -223,7 +222,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getNewsFromDatabase(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
+    boolean getNews(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
         int startPosition = 0;
 
         if (startFrom != null && !startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
@@ -264,13 +263,13 @@ class DatabaseRepositoryHelper {
         return false;
     }
 
-    void putNewsInDatabaseWithoutAttachments(final News news) {
+    void putNewsWithoutAttachments(final News news) {
         SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
         writableDatabase.beginTransaction();
 
         try {
             ContentValues contentValues = new ContentValues();
-            putNewsInDatabaseWithoutTransaction(writableDatabase, contentValues, news, false);
+            putNewsWithoutTransaction(writableDatabase, contentValues, news, false);
 
             writableDatabase.setTransactionSuccessful();
         } finally {
@@ -278,7 +277,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    void putNewsListInDatabase(final List<News> newsList) {
+    void putNewsList(final List<News> newsList) {
         SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
         writableDatabase.beginTransaction();
 
@@ -286,7 +285,7 @@ class DatabaseRepositoryHelper {
             ContentValues contentValues = new ContentValues();
 
             for (News news : newsList) {
-                putNewsInDatabaseWithoutTransaction(writableDatabase, contentValues, news, true);
+                putNewsWithoutTransaction(writableDatabase, contentValues, news, true);
                 contentValues.clear();
             }
 
@@ -327,7 +326,7 @@ class DatabaseRepositoryHelper {
         contentValues.put(GroupTable.PHOTO_100_URL, group.getPhoto100Url());
     }
 
-    private void putNewsInDatabaseWithoutTransaction(SQLiteDatabase writableDatabase, ContentValues contentValues, News news, boolean withAttachments) {
+    private void putNewsWithoutTransaction(SQLiteDatabase writableDatabase, ContentValues contentValues, News news, boolean withAttachments) {
         contentValues.put(NewsTable.ID, news.getId());
         contentValues.put(NewsTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(NewsTable.TYPE, news.getType());
@@ -340,7 +339,7 @@ class DatabaseRepositoryHelper {
             news.getCopyHistory().get(0).setId(news.getId() * -1);
             contentValues.put(NewsTable.COPY_NEWS_ID, news.getCopyHistory().get(0).getId());
             ContentValues contentValuesCopyNews = new ContentValues();
-            putNewsInDatabaseWithoutTransaction(writableDatabase, contentValuesCopyNews, news.getCopyHistory().get(0), withAttachments);
+            putNewsWithoutTransaction(writableDatabase, contentValuesCopyNews, news.getCopyHistory().get(0), withAttachments);
         }
 
         if (news.getComments() != null) {
@@ -362,7 +361,7 @@ class DatabaseRepositoryHelper {
         }
 
         if (withAttachments && news.getAttachments() != null) {
-            putAttachmentsInDatabaseWithoutTransaction(writableDatabase, news.getAttachments(), news.getId());
+            putAttachmentsWithoutTransaction(writableDatabase, news.getAttachments(), news.getId());
         }
 
         databaseHelper.insertWithoutTransaction(writableDatabase, NEWS_TABLE_NAME, contentValues);
@@ -521,7 +520,7 @@ class DatabaseRepositoryHelper {
         attachmentPhoto.setPhotoWidth(attachmentCursor.getInt(columnIndexAttachmentPhotoWidth));
     }
 
-    private void putAttachmentsInDatabaseWithoutTransaction(final SQLiteDatabase writableDatabase, List<Attachment> attachmentList, long newsId) {
+    private void putAttachmentsWithoutTransaction(final SQLiteDatabase writableDatabase, List<Attachment> attachmentList, long newsId) {
         ContentValues contentValues = new ContentValues();
         for (Attachment attachment : attachmentList) {
             putAttachmentToContentValues(newsId, contentValues, attachment);

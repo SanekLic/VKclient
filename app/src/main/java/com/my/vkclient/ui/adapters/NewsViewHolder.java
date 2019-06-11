@@ -67,6 +67,14 @@ class NewsViewHolder extends BaseViewHolder<News> {
         fromNameTextView = itemView.findViewById(R.id.fromNameTextView);
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
+        newsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = 0;
+                i++;
+                newsTextView.setMaxLines(64);
+            }
+        });
         newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
         newsPhotoImageView.setOnClickListener(new View.OnClickListener() {
             @Override

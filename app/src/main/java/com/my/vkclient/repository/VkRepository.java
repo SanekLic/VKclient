@@ -4,39 +4,32 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import com.my.vkclient.Constants;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
-import com.my.vkclient.gson.GsonHelper;
 import com.my.vkclient.utils.ResultCallback;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.my.vkclient.Constants.API_VK.API_VK_SET_DISLIKE_POST;
-import static com.my.vkclient.Constants.API_VK.API_VK_SET_LIKE_POST;
 import static com.my.vkclient.Constants.SharedPreferences.ACCESS_TOKEN_SHARED_KEY;
 import static com.my.vkclient.Constants.SharedPreferences.APP_SETTINGS;
 
 public class VkRepository {
     private static VkRepository instance;
     private Executor executor;
-    private String accessToken;
     private boolean offlineAccess;
     private DatabaseRepositoryHelper databaseRepositoryHelper;
     private SharedPreferences sharedPreferences;
+    private HttpRepositoryHelper httpRepositoryHelper;
 
     private VkRepository() {
         executor = Executors.newCachedThreadPool();
+        httpRepositoryHelper = new HttpRepositoryHelper();
     }
 
     public static VkRepository getInstance() {
@@ -58,20 +51,20 @@ public class VkRepository {
         String newAccessToken = sharedPreferences.getString(ACCESS_TOKEN_SHARED_KEY, null);
 
         if (newAccessToken != null) {
-            accessToken = newAccessToken;
+            httpRepositoryHelper.setAccessToken(newAccessToken);
             offlineAccess = true;
         }
     }
 
     public void setAccessToken(String newAccessToken) {
-        accessToken = newAccessToken;
+        httpRepositoryHelper.setAccessToken(newAccessToken);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(ACCESS_TOKEN_SHARED_KEY, accessToken);
+        editor.putString(ACCESS_TOKEN_SHARED_KEY, newAccessToken);
         editor.apply();
     }
 
-    public void logout(){
+    public void logout() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(ACCESS_TOKEN_SHARED_KEY);
         editor.apply();
@@ -79,25 +72,23 @@ public class VkRepository {
         databaseRepositoryHelper.clearAllTables();
 
         offlineAccess = false;
-        accessToken = null;
+        httpRepositoryHelper.setAccessToken(null);
     }
 
     public void setLikeToNews(final News news, final boolean like, final ResultCallback<News> newsResultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                getResultStringFromUrl(getLikeRequest(news.getSourceId(), news.getId(), like), new ResultCallback<String>() {
+                httpRepositoryHelper.setLikeNews(news.getSourceId(), news.getId(), like, new ResultCallback<LikesResponse.Response>() {
                     @Override
-                    public void onResult(String result) {
-                        LikesResponse.Response likesResponse = GsonHelper.getInstance().getLikesResponseFromJson(result);
-
+                    public void onResult(LikesResponse.Response likesResponse) {
                         if (likesResponse != null) {
                             news.getLikes().setUserLikes(like);
                             news.getLikes().setCount(likesResponse.getLikesCount());
 
                             newsResultCallback.onResult(news);
 
-                            databaseRepositoryHelper.putNewsInDatabaseWithoutAttachments(news);
+                            databaseRepositoryHelper.putNewsWithoutAttachments(news);
                         }
                     }
                 });
@@ -109,18 +100,17 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getUserFromDatabase(userId, resultCallback)) {
+                if (databaseRepositoryHelper.getUser(userId, resultCallback)) {
                     return;
                 }
 
-                getResultStringFromUrl(getUserRequest(userId), new ResultCallback<String>() {
+                httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
                     @Override
-                    public void onResult(String result) {
-                        User user = GsonHelper.getInstance().getUserFromJson(result);
+                    public void onResult(User user) {
                         resultCallback.onResult(user);
 
                         if (user != null) {
-                            databaseRepositoryHelper.putUserInDatabase(user);
+                            databaseRepositoryHelper.putUser(user);
                         }
                     }
                 });
@@ -132,18 +122,17 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getGroupFromDatabase(groupId, resultCallback)) {
+                if (databaseRepositoryHelper.getGroup(groupId, resultCallback)) {
                     return;
                 }
 
-                getResultStringFromUrl(getGroupRequest(groupId), new ResultCallback<String>() {
+                httpRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
                     @Override
-                    public void onResult(String result) {
-                        Group group = GsonHelper.getInstance().getGroupFromJson(result);
+                    public void onResult(Group group) {
                         resultCallback.onResult(group);
 
                         if (group != null) {
-                            databaseRepositoryHelper.putGroupInDatabase(group);
+                            databaseRepositoryHelper.putGroup(group);
                         }
                     }
                 });
@@ -155,19 +144,18 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getFriendsFromDatabase(startPosition, size, resultCallback)) {
+                if (databaseRepositoryHelper.getFriends(startPosition, size, resultCallback)) {
                     return;
                 }
 
-                getResultStringFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
+                httpRepositoryHelper.getFriends(startPosition, size, new ResultCallback<List<User>>() {
                     @Override
-                    public void onResult(String result) {
-                        List<User> friends = GsonHelper.getInstance().getFriendsFromJson(result);
+                    public void onResult(List<User> friends) {
                         resultCallback.onResult(friends);
 
                         if (friends != null) {
-                            databaseRepositoryHelper.putFriendListInDatabase(friends);
-                            databaseRepositoryHelper.putUserListInDatabase(friends);
+                            databaseRepositoryHelper.putFriendList(friends);
+                            databaseRepositoryHelper.putUserList(friends);
                         }
                     }
                 });
@@ -179,97 +167,31 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getNewsFromDatabase(startFrom, size, resultCallback)) {
+                if (databaseRepositoryHelper.getNews(startFrom, size, resultCallback)) {
                     return;
                 }
 
-                getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
+                httpRepositoryHelper.getNews(startFrom, size, new ResultCallback<NewsResponse.Response>() {
                     @Override
-                    public void onResult(String result) {
-                        NewsResponse.Response newsResponse = GsonHelper.getInstance().getNewsFromJson(result);
-
+                    public void onResult(NewsResponse.Response newsResponse) {
                         resultCallback.onResult(newsResponse);
 
                         if (newsResponse != null) {
                             if (newsResponse.getGroupList() != null) {
-                                databaseRepositoryHelper.putGroupListInDatabase(newsResponse.getGroupList());
+                                databaseRepositoryHelper.putGroupList(newsResponse.getGroupList());
                             }
 
                             if (newsResponse.getUserList() != null) {
-                                databaseRepositoryHelper.putUserListInDatabase(newsResponse.getUserList());
+                                databaseRepositoryHelper.putUserList(newsResponse.getUserList());
                             }
 
                             if (newsResponse.getNewsList() != null) {
-                                databaseRepositoryHelper.putNewsListInDatabase(newsResponse.getNewsList());
+                                databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
                             }
                         }
                     }
                 });
             }
         });
-    }
-
-    private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
-        try (InputStream inputStream = new URL(requestUrl).openStream();
-             ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream()) {
-
-            byte[] buffer = new byte[Constants.INT_ONE_KB];
-            int length;
-
-            while ((length = inputStream.read(buffer)) != -1) {
-                resultOutputStream.write(buffer, 0, length);
-            }
-
-            String result = resultOutputStream.toString();
-            resultCallback.onResult(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getFriendsRequest(int startPosition, int size) {
-        return Constants.API_VK.API_VK_GET_FRIENDS_URL +
-                Constants.API_VK.FRIENDS_COUNT +
-                size +
-                Constants.API_VK.FRIENDS_OFFSET +
-                startPosition +
-                Constants.API_VK.FRIENDS_FIELDS +
-                Constants.API_VK.ACCESS_TOKEN +
-                accessToken;
-    }
-
-    private String getUserRequest(int userId) {
-        return Constants.API_VK.API_VK_GET_USER_URL +
-                Constants.API_VK.USER_ID +
-                userId +
-                Constants.API_VK.USER_FIELDS +
-                Constants.API_VK.ACCESS_TOKEN +
-                accessToken;
-    }
-
-    private String getNewsRequest(String startFrom, int size) {
-        return Constants.API_VK.API_VK_GET_NEWS_URL +
-                Constants.API_VK.NEWS_START_FROM +
-                startFrom +
-                Constants.API_VK.NEWS_COUNT +
-                size +
-                Constants.API_VK.NEWS_FIELDS +
-                Constants.API_VK.ACCESS_TOKEN +
-                accessToken;
-    }
-
-    private String getGroupRequest(int userId) {
-        return Constants.API_VK.API_VK_GET_GROUP_URL +
-                userId +
-                Constants.API_VK.ACCESS_TOKEN +
-                accessToken;
-    }
-
-    private String getLikeRequest(int sourceId, int newsId, boolean like) {
-        if (like) {
-            return String.format(API_VK_SET_LIKE_POST + accessToken, sourceId, newsId);
-        } else {
-            return String.format(API_VK_SET_DISLIKE_POST + accessToken, sourceId, newsId);
-        }
     }
 }

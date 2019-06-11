@@ -21,7 +21,7 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
     private ResultCallback<String> onAttachmentClickListener;
     private ResultCallback<String> onPhotoClickListener;
 
-    public NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
+    protected NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         super(linearLayoutManager);
     }
 
