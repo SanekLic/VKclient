@@ -1,5 +1,6 @@
 package com.my.vkclient.ui.adapters;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IntDef;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import com.my.vkclient.R;
 import com.my.vkclient.utils.ResultCallback;
@@ -20,6 +22,8 @@ import java.util.List;
 
 public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
 
+    private final Context context;
+    private int previousPosition = 0;
     private int pageSize;
     private Handler mainLooperHandler;
     private boolean isLoading;
@@ -28,7 +32,8 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     private List<T> itemList = new ArrayList<>();
     private ResultCallback<T> itemClickListener;
 
-    BaseRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
+    BaseRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
+        this.context = context;
         this.linearLayoutManager = linearLayoutManager;
         mainLooperHandler = new Handler(Looper.getMainLooper());
         pageSize = getPageSize();
@@ -72,6 +77,13 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         if (validateLoadMoreItems()) {
             loadMoreItems(itemList.size(), pageSize);
         }
+        if (previousPosition < holder.getAdapterPosition()) {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_down_up_anim));
+        } else {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_up_down_anim));
+        }
+
+        previousPosition = holder.getAdapterPosition();
     }
 
     @Override
@@ -79,6 +91,13 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         if (getItemViewType(position) != ViewType.LOADING) {
             holder.bind(getItem(position));
         }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull BaseViewHolder<T> holder) {
+        super.onViewDetachedFromWindow(holder);
+
+        holder.itemView.clearAnimation();
     }
 
     @ViewType
@@ -136,6 +155,11 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         return isLoading;
     }
 
+    private void setLoading(boolean loading) {
+        isLoading = loading;
+        onLoadStateChanged(isLoading);
+    }
+
     public void refreshItems() {
         itemList.clear();
         isLoadComplete = false;
@@ -183,11 +207,6 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         }
 
         return false;
-    }
-
-    private void setLoading(boolean loading) {
-        isLoading = loading;
-        onLoadStateChanged(isLoading);
     }
 
     private T getItem(int position) {

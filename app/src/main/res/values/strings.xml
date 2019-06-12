@@ -5,4 +5,10 @@
     <string name="attachment_image_content_description">attachment image</string>
     <string name="friend_photo_content_description">friend photo</string>
     <string name="online_status_icon_content_description">online status icon</string>
+    <string name="audio_attachment_type_label">Аудио</string>
+    <string name="podcast_attachment_type_label">Подкаст</string>
+    <string name="link_attachment_type_label">Ссылка</string>
+    <string name="video_attachment_type_label">Видео</string>
+    <string name="photo_attachment_type_label">Фото</string>
+    <string name="image_content_description">image</string>
 </resources>

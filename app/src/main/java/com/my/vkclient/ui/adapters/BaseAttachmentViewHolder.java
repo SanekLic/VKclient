@@ -1,5 +1,7 @@
 package com.my.vkclient.ui.adapters;
 
+import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +14,7 @@ import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
 import static com.my.vkclient.Constants.AUDIO_FORMAT;
+import static com.my.vkclient.Constants.SEARCH_IN_GOOGLE_FORMAT;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 
 abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
@@ -22,9 +25,11 @@ abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
     private ResultCallback<String> onPhotoClickListener;
     private Attachment attachment;
     private String contentUrl;
+    private Context context;
 
-    BaseAttachmentViewHolder(@NonNull View itemView) {
+    BaseAttachmentViewHolder(Context context, @NonNull View itemView) {
         super(itemView);
+        this.context = context;
 
         setupView(itemView);
     }
@@ -44,7 +49,7 @@ abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
 
         if (Attachment.Type.Photo.equals(attachment.getType())) {
             setTextAndVisibilityTextView(attachmentInfoTextView, STRING_EMPTY);
-            setTextAndVisibilityTextView(attachmentTypeTextView, "Фото");
+            setTextAndVisibilityTextView(attachmentTypeTextView, context.getResources().getString(R.string.photo_attachment_type_label));
             contentUrl = STRING_EMPTY;
             setAttachmentImage(attachment.getPhoto());
         } else if (Attachment.Type.Doc.equals(attachment.getType())) {
@@ -53,38 +58,35 @@ abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
             contentUrl = attachment.getDoc().getUrl();
 
             if (attachment.getDoc().getPhotoUrl() == null) {
-                attachImageView.setImageResource(R.drawable.ic_attachment_doc);
+                setAttachmentImage(R.drawable.ic_attachment_doc);
             } else {
                 setAttachmentImage(attachment.getDoc());
             }
         } else if (Attachment.Type.Video.equals(attachment.getType())) {
             setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getVideo().getTitle());
-            setTextAndVisibilityTextView(attachmentTypeTextView, "Видео");
-            contentUrl = STRING_EMPTY;
+            setTextAndVisibilityTextView(attachmentTypeTextView, context.getResources().getString(R.string.video_attachment_type_label));
+            contentUrl = String.format(SEARCH_IN_GOOGLE_FORMAT, attachment.getVideo().getTitle(), STRING_EMPTY);
             setAttachmentImage(attachment.getVideo());
         } else if (Attachment.Type.Link.equals(attachment.getType())) {
             setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getLink().getTitle());
-            setTextAndVisibilityTextView(attachmentTypeTextView, "Ссылка");
+            setTextAndVisibilityTextView(attachmentTypeTextView, context.getResources().getString(R.string.link_attachment_type_label));
             contentUrl = attachment.getLink().getUrl();
 
             if (attachment.getLink().getPhotoUrl() == null) {
-                attachImageView.setImageResource(R.drawable.ic_attachment_link);
+                setAttachmentImage(R.drawable.ic_attachment_link);
             } else {
                 setAttachmentImage(attachment.getLink());
             }
         } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
             setTextAndVisibilityTextView(attachmentInfoTextView, attachment.getPodcast().getTitle());
-            setTextAndVisibilityTextView(attachmentTypeTextView, "Подкаст");
+            setTextAndVisibilityTextView(attachmentTypeTextView, context.getResources().getString(R.string.podcast_attachment_type_label));
             contentUrl = attachment.getPodcast().getUrl();
             setAttachmentImage(attachment.getPodcast());
         } else if (Attachment.Type.Audio.equals(attachment.getType())) {
-            String info = attachment.getAudio().getArtist() != null ?
-                    String.format(AUDIO_FORMAT, attachment.getAudio().getArtist(), attachment.getAudio().getTitle()) :
-                    attachment.getAudio().getTitle();
-            setTextAndVisibilityTextView(attachmentInfoTextView, info);
-            setTextAndVisibilityTextView(attachmentTypeTextView, "Аудио");
-            contentUrl = STRING_EMPTY;
-            attachImageView.setImageResource(R.drawable.ic_attachment_audio);
+            setTextAndVisibilityTextView(attachmentInfoTextView, String.format(AUDIO_FORMAT, attachment.getAudio().getTitle(), attachment.getAudio().getArtist()));
+            setTextAndVisibilityTextView(attachmentTypeTextView, context.getResources().getString(R.string.audio_attachment_type_label));
+            contentUrl = String.format(SEARCH_IN_GOOGLE_FORMAT, attachment.getAudio().getArtist(), attachment.getAudio().getTitle());
+            setAttachmentImage(R.drawable.ic_attachment_audio);
         } else {
             setTextAndVisibilityTextView(attachmentInfoTextView, STRING_EMPTY);
             setTextAndVisibilityTextView(attachmentTypeTextView, STRING_EMPTY);
@@ -131,10 +133,23 @@ abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
 
     private void setAttachmentImage(AttachmentPhoto attachmentPhoto) {
         if (attachmentPhoto != null) {
+            if (attachImageView.getVisibility() != View.VISIBLE) {
+                attachImageView.setVisibility(View.VISIBLE);
+            }
+
             ImageLoader.getInstance().getImageFromUrl(attachImageView, attachmentPhoto.getPhotoUrl(),
                     attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
         } else {
             attachImageView.setImageDrawable(null);
+
+            if (attachImageView.getVisibility() != View.GONE) {
+                attachImageView.setVisibility(View.GONE);
+            }
         }
+    }
+
+    private void setAttachmentImage(@DrawableRes int resId) {
+        attachImageView.setTag(R.id.IMAGE_TAG_URL, null);
+        attachImageView.setImageResource(resId);
     }
 }

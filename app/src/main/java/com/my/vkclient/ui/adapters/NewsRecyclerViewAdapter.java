@@ -1,5 +1,6 @@
 package com.my.vkclient.ui.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -16,8 +17,8 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
     private ResultCallback<String> onAttachmentClickListener;
     private ResultCallback<String> onPhotoClickListener;
 
-    protected NewsRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
-        super(linearLayoutManager);
+    protected NewsRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
+        super(context, linearLayoutManager);
     }
 
     @Override

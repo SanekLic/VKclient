@@ -42,7 +42,7 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private ResultCallback<String> onNewsPhotoClickListener;
 
     NewsViewHolder(Context context, View itemView) {
-        super(itemView);
+        super(context, itemView);
 
         this.context = context;
         setupView(itemView);

@@ -44,7 +44,7 @@ public class FriendsFragment extends BaseFragment<FriendRecyclerViewAdapter, Use
 
     @Override
     void createRecyclerViewAdapter() {
-        recyclerViewAdapter = new FriendRecyclerViewAdapter(linearLayoutManager) {
+        recyclerViewAdapter = new FriendRecyclerViewAdapter(this.getContext(), linearLayoutManager) {
             @Override
             public void load(int startPosition, int size, ResultCallback<List<User>> listResultCallback) {
                 VkRepository.getInstance().getFriends(startPosition, size, listResultCallback);

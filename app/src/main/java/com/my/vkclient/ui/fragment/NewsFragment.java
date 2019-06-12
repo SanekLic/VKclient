@@ -55,7 +55,7 @@ public class NewsFragment extends BaseFragment<NewsRecyclerViewAdapter, News> {
 
     @Override
     void createRecyclerViewAdapter() {
-        recyclerViewAdapter = new NewsRecyclerViewAdapter(linearLayoutManager) {
+        recyclerViewAdapter = new NewsRecyclerViewAdapter(this.getContext(), linearLayoutManager) {
             @Override
             public void load(int startPosition, int size, ResultCallback<List<News>> listResultCallback) {
                 VkRepository.getInstance().getNews(startPosition, size, listResultCallback);

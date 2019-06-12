@@ -16,6 +16,7 @@ public interface Constants {
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
+    String SEARCH_IN_GOOGLE_FORMAT = "https://www.google.com/search?q=%s %s";
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";

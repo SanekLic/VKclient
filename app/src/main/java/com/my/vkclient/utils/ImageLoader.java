@@ -1,7 +1,5 @@
 package com.my.vkclient.utils;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -12,6 +10,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.my.vkclient.Constants;
@@ -161,7 +160,7 @@ public class ImageLoader {
         }
     }
 
-    private Bitmap getFromNetwork( final File imageCacheFile, final ImageView imageView, final String requestUrl) {
+    private Bitmap getFromNetwork(final File imageCacheFile, final ImageView imageView, final String requestUrl) {
         try (InputStream urlInputStream = new URL(requestUrl).openStream();
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 
@@ -200,10 +199,7 @@ public class ImageLoader {
             @Override
             public void run() {
                 imageView.setImageBitmap(postProcessedBitmap);
-
-                Animator animator = AnimatorInflater.loadAnimator(imageView.getContext(), R.animator.image_change_visibility_animator);
-                animator.setTarget(imageView);
-                animator.start();
+                imageView.startAnimation(AnimationUtils.loadAnimation(imageView.getContext(), R.anim.item_fade_in_anim));
             }
         });
     }

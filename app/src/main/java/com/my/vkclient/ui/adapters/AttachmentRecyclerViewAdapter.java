@@ -25,7 +25,7 @@ public class AttachmentRecyclerViewAdapter extends RecyclerView.Adapter<Attachme
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_attachment, parent, false);
 
-        AttachmentViewHolder holder = new AttachmentViewHolder(view);
+        AttachmentViewHolder holder = new AttachmentViewHolder(parent.getContext(), view);
         holder.setOnAttachmentClickListener(onAttachmentClickListener);
         holder.setOnPhotoClickListener(onPhotoClickListener);
 
