@@ -20,10 +20,9 @@ import java.util.List;
 
 public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
 
-    static final int PAGE_SIZE = 20;
-    Handler mainLooperHandler;
-    boolean isLoading;
-    int totalItemCount;
+    private int pageSize;
+    private Handler mainLooperHandler;
+    private boolean isLoading;
     private boolean isLoadComplete;
     private LinearLayoutManager linearLayoutManager;
     private List<T> itemList = new ArrayList<>();
@@ -32,6 +31,7 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     BaseRecyclerViewAdapter(LinearLayoutManager linearLayoutManager) {
         this.linearLayoutManager = linearLayoutManager;
         mainLooperHandler = new Handler(Looper.getMainLooper());
+        pageSize = getPageSize();
     }
 
     @NonNull
@@ -65,31 +65,30 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         }
     }
 
-    abstract BaseViewHolder<T> getViewHolder(@NonNull ViewGroup parent, @ViewType int viewType);
+    @Override
+    public void onViewAttachedToWindow(@NonNull final BaseViewHolder<T> holder) {
+        super.onViewAttachedToWindow(holder);
 
-    public void setOnItemClickListener(ResultCallback<T> itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-
-    boolean validateLoadMoreItems() {
-        if (!isLoading && !isLoadComplete) {
-            totalItemCount = linearLayoutManager.getItemCount();
-            int visibleItemCount = linearLayoutManager.getChildCount();
-            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-
-            return (visibleItemCount + firstVisibleItemPosition + PAGE_SIZE) >= totalItemCount
-                    && firstVisibleItemPosition >= 0;
+        if (validateLoadMoreItems()) {
+            loadMoreItems(itemList.size(), pageSize);
         }
-
-        return false;
     }
 
-    public List<T> getItemList() {
-        return itemList;
+    @Override
+    public void onBindViewHolder(@NonNull BaseViewHolder<T> holder, int position) {
+        if (getItemViewType(position) != ViewType.LOADING) {
+            holder.bind(getItem(position));
+        }
     }
 
-    private T getItem(int position) {
-        return itemList.get(position);
+    @ViewType
+    @Override
+    public int getItemViewType(final int position) {
+        if (position < itemList.size()) {
+            return ViewType.ANY;
+        } else {
+            return ViewType.LOADING;
+        }
     }
 
     @Override
@@ -99,6 +98,18 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         } else {
             return itemList.size() + 1;
         }
+    }
+
+    public void setOnItemClickListener(ResultCallback<T> itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public abstract void load(final int startPosition, final int size, ResultCallback<List<T>> listResultCallback);
+
+    public abstract void onLoadStateChanged(boolean state);
+
+    public void initialLoadItems() {
+        loadMoreItems(0, pageSize * 2);
     }
 
     public void setLoadComplete() {
@@ -121,21 +132,66 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         }
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull BaseViewHolder<T> holder, int position) {
-        if (getItemViewType(position) != ViewType.LOADING) {
-            holder.bind(getItem(position));
-        }
+    public boolean isLoading() {
+        return isLoading;
     }
 
-    @ViewType
-    @Override
-    public int getItemViewType(final int position) {
-        if (position < itemList.size()) {
-            return ViewType.ANY;
-        } else {
-            return ViewType.LOADING;
+    public void refreshItems() {
+        itemList.clear();
+        isLoadComplete = false;
+        initialLoadItems();
+        notifyDataSetChanged();
+    }
+
+    protected abstract BaseViewHolder<T> getViewHolder(@NonNull ViewGroup parent, @ViewType int viewType);
+
+    abstract int getPageSize();
+
+    private void loadMoreItems(final int startPosition, final int size) {
+        setLoading(true);
+
+        load(startPosition, size, new ResultCallback<List<T>>() {
+            @Override
+            public void onResult(final List<T> resultList) {
+                if (resultList != null) {
+                    mainLooperHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (resultList.size() < size) {
+                                setLoadComplete();
+                            }
+
+                            addItems(resultList);
+                            setLoading(false);
+                        }
+                    });
+                } else {
+                    setLoading(false);
+                }
+            }
+        });
+    }
+
+    private boolean validateLoadMoreItems() {
+        if (!isLoading && !isLoadComplete) {
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+
+            return (visibleItemCount + firstVisibleItemPosition + pageSize) >= totalItemCount
+                    && firstVisibleItemPosition >= 0;
         }
+
+        return false;
+    }
+
+    private void setLoading(boolean loading) {
+        isLoading = loading;
+        onLoadStateChanged(isLoading);
+    }
+
+    private T getItem(int position) {
+        return itemList.get(position);
     }
 
     @IntDef({ViewType.LOADING, ViewType.ANY})

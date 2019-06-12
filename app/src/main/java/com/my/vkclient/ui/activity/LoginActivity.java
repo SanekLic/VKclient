@@ -11,8 +11,8 @@ import android.widget.ProgressBar;
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.repository.VkRepository;
-import com.my.vkclient.ui.adapters.LoginWebViewCallback;
-import com.my.vkclient.ui.adapters.LoginWebViewClient;
+import com.my.vkclient.ui.LoginWebViewCallback;
+import com.my.vkclient.ui.LoginWebViewClient;
 
 public class LoginActivity extends AppCompatActivity {
     private WebView loginWebView;
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLoadingFinished() {
+            public void onFinishLoading() {
                 loginWebView.setVisibility(View.VISIBLE);
                 loginProgressBar.setVisibility(View.GONE);
             }

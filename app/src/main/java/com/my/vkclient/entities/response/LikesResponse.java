@@ -14,9 +14,6 @@ public class LikesResponse {
         @SerializedName("likes")
         private Integer likesCount;
 
-        Response() {
-        }
-
         public Integer getLikesCount() {
             return likesCount;
         }

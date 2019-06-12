@@ -24,8 +24,4 @@ public class Photo extends AttachmentPhoto {
     public List<Size> getSizes() {
         return sizes;
     }
-
-    public void setSizes(List<Size> sizes) {
-        this.sizes = sizes;
-    }
 }

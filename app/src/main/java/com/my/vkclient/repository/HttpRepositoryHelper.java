@@ -60,7 +60,7 @@ class HttpRepositoryHelper {
         });
     }
 
-    public void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
+    void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
         getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {

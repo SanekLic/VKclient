@@ -89,15 +89,7 @@ public class CropPhoto {
         return rect;
     }
 
-    public void setRect(Rect rect) {
-        this.rect = rect;
-    }
-
     public Rect getCrop() {
         return crop;
-    }
-
-    public void setCrop(Rect crop) {
-        this.crop = crop;
     }
 }

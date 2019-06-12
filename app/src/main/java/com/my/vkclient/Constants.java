@@ -80,12 +80,12 @@ public interface Constants {
     interface SharedPreferences {
         String APP_SETTINGS = "AppSettings";
         String ACCESS_TOKEN_SHARED_KEY = "accessTokenSharedKey";
+        String NEWS_START_FROM_SHARED_KEY = "newsStartFromSharedKey";
     }
 
     interface RecyclerView {
         String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
         String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
-        String NEXT_FROM_STATE_KEY = "NEXT_FROM_STATE_KEY";
         int VIEW_MARGIN = 16;
     }
 }

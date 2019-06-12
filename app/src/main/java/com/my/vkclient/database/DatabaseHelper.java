@@ -182,19 +182,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(writableDatabase);
     }
 
-    public long delete(final String tableName, final String sql, final String... params) {
+    public void delete(final String tableName, final String sql, final String... params) {
         final SQLiteDatabase writableDatabase = getWritableDatabase();
         writableDatabase.beginTransaction();
 
-        final int delete;
-
         try {
-            delete = writableDatabase.delete(tableName, sql, params);
+            writableDatabase.delete(tableName, sql, params);
             writableDatabase.setTransactionSuccessful();
         } finally {
             writableDatabase.endTransaction();
         }
 
-        return delete;
+        onCreate(writableDatabase);
     }
 }

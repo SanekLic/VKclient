@@ -11,10 +11,11 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/friend_photo_content_description"
         android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -32,6 +33,7 @@
         android:id="@+id/onlineStatusImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/online_status_icon_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/friendPhotoImageView"
         app:layout_constraintEnd_toEndOf="@+id/friendPhotoImageView"
         app:srcCompat="@drawable/ic_online_status" />

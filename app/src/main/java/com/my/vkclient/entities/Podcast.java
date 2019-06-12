@@ -42,8 +42,4 @@ public class Podcast extends AttachmentPhoto {
     public PodcastInfo getPodcastInfo() {
         return podcastInfo;
     }
-
-    public void setPodcastInfo(PodcastInfo podcastInfo) {
-        this.podcastInfo = podcastInfo;
-    }
 }

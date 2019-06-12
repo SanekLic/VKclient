@@ -29,7 +29,6 @@ import com.my.vkclient.entities.Reposts;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.Views;
-import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
@@ -49,11 +48,11 @@ import static com.my.vkclient.Constants.Database.SELECT_FROM;
 import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
 import static com.my.vkclient.Constants.INT_ZERO;
 import static com.my.vkclient.Constants.STRING_EQUALS;
-import static com.my.vkclient.Constants.STRING_SLASH;
 
 class DatabaseRepositoryHelper {
-    private DatabaseHelper databaseHelper;
+    private final DatabaseHelper databaseHelper;
     private boolean userColumnIndexesReady;
+    private boolean friendColumnIndexesReady;
     private boolean groupColumnIndexesReady;
     private boolean newsColumnIndexesReady;
     private boolean attachmentColumnIndexesReady;
@@ -106,17 +105,16 @@ class DatabaseRepositoryHelper {
         databaseHelper = new DatabaseHelper(context);
     }
 
-    boolean getUser(final int userId, final ResultCallback<User> resultCallback) {
+    void getUser(final int userId, final ResultCallback<User> resultCallback) {
         try (Cursor userCursor = databaseHelper.query(getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(userId)))) {
             if (userCursor.moveToFirst()) {
-                userColumnIndexesReady = false;
-                resultCallback.onResult(getUserFromCursor(userCursor));
+                resultCallback.onResult(getUserFromCursor(userCursor, false));
 
-                return true;
+                return;
             }
-
-            return false;
         }
+
+        resultCallback.onResult(null);
     }
 
     void putUser(final User user) {
@@ -145,16 +143,16 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getGroup(final int groupId, final ResultCallback<Group> resultCallback) {
+    void getGroup(final int groupId, final ResultCallback<Group> resultCallback) {
         try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(groupId)))) {
             if (groupCursor.moveToFirst()) {
                 resultCallback.onResult(getGroupFromCursor(groupCursor));
 
-                return true;
+                return;
             }
-
-            return false;
         }
+
+        resultCallback.onResult(null);
     }
 
     void putGroup(final Group group) {
@@ -182,24 +180,22 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getFriends(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
+    void getFriends(int startPosition, int size, ResultCallback<List<User>> resultCallback) {
         try (Cursor friendsCursor = databaseHelper.query(getFriendsJoinUserDatabaseQuery(startPosition, size))) {
             if (friendsCursor.getCount() > 0) {
                 List<User> friendList = new ArrayList<>();
 
-                userColumnIndexesReady = false;
-
                 while (friendsCursor.moveToNext()) {
-                    friendList.add(getUserFromCursor(friendsCursor));
+                    friendList.add(getUserFromCursor(friendsCursor, true));
                 }
 
                 resultCallback.onResult(friendList);
 
-                return true;
+                return;
             }
-
-            return false;
         }
+
+        resultCallback.onResult(null);
     }
 
     void putFriendList(final List<User> friendList) {
@@ -222,13 +218,7 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    boolean getNews(String startFrom, int size, ResultCallback<NewsResponse.Response> resultCallback) {
-        int startPosition = 0;
-
-        if (startFrom != null && !startFrom.isEmpty() && startFrom.contains(STRING_SLASH)) {
-            startPosition = Integer.parseInt(startFrom.substring(0, startFrom.indexOf(STRING_SLASH)));
-        }
-
+    void getNews(int startPosition, int size, ResultCallback<List<News>> resultCallback) {
         try (Cursor newsCursor = databaseHelper.query(getNewsLimitDatabaseQuery(startPosition, size))) {
             if (newsCursor.getCount() > 0) {
                 List<News> newsList = new ArrayList<>();
@@ -249,18 +239,13 @@ class DatabaseRepositoryHelper {
                     newsList.add(news);
                 }
 
-                NewsResponse newsResponse = new NewsResponse();
+                resultCallback.onResult(newsList);
 
-                newsResponse.getResponse().setNewsList(newsList);
-                newsResponse.getResponse().setNextFrom((startPosition + newsList.size()) + STRING_SLASH);
-
-                resultCallback.onResult(newsResponse.getResponse());
-
-                return true;
+                return;
             }
         }
 
-        return false;
+        resultCallback.onResult(null);
     }
 
     void putNewsWithoutAttachments(final News news) {
@@ -297,6 +282,15 @@ class DatabaseRepositoryHelper {
 
     void clearAllTables() {
         databaseHelper.dropAllTable(null);
+    }
+
+    void clearNews() {
+        databaseHelper.delete(NEWS_TABLE_NAME, null);
+        databaseHelper.delete(ATTACHMENT_TABLE_NAME, null);
+    }
+
+    void clearFriends() {
+        databaseHelper.delete(FRIEND_TABLE_NAME, null);
     }
 
     private void putUserToContentValue(User user, ContentValues contentValues) {
@@ -378,27 +372,30 @@ class DatabaseRepositoryHelper {
         return group;
     }
 
-    private User getUserFromCursor(Cursor userCursor) {
+    private User getUserFromCursor(Cursor userCursor, boolean isFriendsTable) {
         User user = new User();
-        prepareIndexesUserColumns(userCursor);
 
-        user.setId(userCursor.getInt(columnIndexUserId));
-        user.setFirstName(userCursor.getString(columnIndexUserFirstName));
-        user.setLastName(userCursor.getString(columnIndexUserLastName));
-        user.setOnline(userCursor.getInt(columnIndexUserOnline) > 0);
-        user.setPhoto100Url(userCursor.getString(columnIndexUserPhoto100Url));
-        user.setPhotoMaxUrl(userCursor.getString(columnIndexUserPhotoMaxUrl));
-        String cropPhotoUrl = userCursor.getString(columnIndexUserCropPhotoUrl);
+        synchronized (databaseHelper) {
+            prepareIndexesUserColumns(userCursor, isFriendsTable);
 
-        if (cropPhotoUrl != null) {
-            user.setCropPhoto(new CropPhoto());
-            user.getCropPhoto().setCropPhotoUrl(cropPhotoUrl);
-            user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(columnIndexUserCropPhotoHeight));
-            user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(columnIndexUserCropPhotoWidth));
-            user.getCropPhoto().setCropRectX(userCursor.getFloat(columnIndexUserCropRectX));
-            user.getCropPhoto().setCropRectX2(userCursor.getFloat(columnIndexUserCropRectX2));
-            user.getCropPhoto().setCropRectY(userCursor.getFloat(columnIndexUserCropRectY));
-            user.getCropPhoto().setCropRectY2(userCursor.getFloat(columnIndexUserCropRectY2));
+            user.setId(userCursor.getInt(columnIndexUserId));
+            user.setFirstName(userCursor.getString(columnIndexUserFirstName));
+            user.setLastName(userCursor.getString(columnIndexUserLastName));
+            user.setOnline(userCursor.getInt(columnIndexUserOnline) > 0);
+            user.setPhoto100Url(userCursor.getString(columnIndexUserPhoto100Url));
+            user.setPhotoMaxUrl(userCursor.getString(columnIndexUserPhotoMaxUrl));
+            String cropPhotoUrl = userCursor.getString(columnIndexUserCropPhotoUrl);
+
+            if (cropPhotoUrl != null) {
+                user.setCropPhoto(new CropPhoto());
+                user.getCropPhoto().setCropPhotoUrl(cropPhotoUrl);
+                user.getCropPhoto().setCropPhotoHeight(userCursor.getInt(columnIndexUserCropPhotoHeight));
+                user.getCropPhoto().setCropPhotoWidth(userCursor.getInt(columnIndexUserCropPhotoWidth));
+                user.getCropPhoto().setCropRectX(userCursor.getFloat(columnIndexUserCropRectX));
+                user.getCropPhoto().setCropRectX2(userCursor.getFloat(columnIndexUserCropRectX2));
+                user.getCropPhoto().setCropRectY(userCursor.getFloat(columnIndexUserCropRectY));
+                user.getCropPhoto().setCropRectY2(userCursor.getFloat(columnIndexUserCropRectY2));
+            }
         }
 
         return user;
@@ -453,9 +450,7 @@ class DatabaseRepositoryHelper {
             try (Cursor userCursor = databaseHelper.query(
                     getSelectDatabaseQuery(USER_TABLE_NAME, UserTable.ID, String.valueOf(ownerId)))) {
                 if (userCursor.moveToFirst()) {
-
-                    userColumnIndexesReady = false;
-                    news.setUser(getUserFromCursor(userCursor));
+                    news.setUser(getUserFromCursor(userCursor, false));
                 }
             }
         } else {
@@ -581,8 +576,8 @@ class DatabaseRepositoryHelper {
         return SELECT_FROM + tableName + String.format(DATABASE_WHERE, columnName, Constants.STRING_EQUALS, value);
     }
 
-    private void prepareIndexesUserColumns(Cursor cursor) {
-        if (!userColumnIndexesReady) {
+    private void prepareIndexesUserColumns(Cursor cursor, boolean isFriendsTable) {
+        if ((!isFriendsTable && !userColumnIndexesReady) || (isFriendsTable && !friendColumnIndexesReady)) {
             columnIndexUserId = cursor.getColumnIndex(UserTable.ID);
             columnIndexUserFirstName = cursor.getColumnIndex(UserTable.FIRST_NAME);
             columnIndexUserLastName = cursor.getColumnIndex(UserTable.LAST_NAME);
@@ -597,7 +592,13 @@ class DatabaseRepositoryHelper {
             columnIndexUserCropRectY = cursor.getColumnIndex(UserTable.CROP_RECT_Y);
             columnIndexUserCropRectY2 = cursor.getColumnIndex(UserTable.CROP_RECT_Y_2);
 
-            userColumnIndexesReady = true;
+            if (isFriendsTable) {
+                userColumnIndexesReady = false;
+                friendColumnIndexesReady = true;
+            } else {
+                userColumnIndexesReady = true;
+                friendColumnIndexesReady = false;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.my.vkclient.ui.adapters;
+package com.my.vkclient.ui;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -37,6 +37,6 @@ public class LoginWebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
-        loginWebViewCallback.onLoadingFinished();
+        loginWebViewCallback.onFinishLoading();
     }
 }

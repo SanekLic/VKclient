@@ -11,22 +11,27 @@ import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.SharedPreferences.ACCESS_TOKEN_SHARED_KEY;
 import static com.my.vkclient.Constants.SharedPreferences.APP_SETTINGS;
+import static com.my.vkclient.Constants.SharedPreferences.NEWS_START_FROM_SHARED_KEY;
 
 public class VkRepository {
     private static VkRepository instance;
+    private String newsStartFrom = STRING_EMPTY;
     private Executor executor;
     private boolean offlineAccess;
     private DatabaseRepositoryHelper databaseRepositoryHelper;
     private SharedPreferences sharedPreferences;
     private HttpRepositoryHelper httpRepositoryHelper;
-    private List<News> newsList;
+    private List<News> newsList = new ArrayList<>();
+    private List<User> friendList = new ArrayList<>();
 
     private VkRepository() {
         executor = Executors.newCachedThreadPool();
@@ -45,8 +50,19 @@ public class VkRepository {
         return newsList;
     }
 
-    public void setNewsList(List<News> newsList) {
-        this.newsList = newsList;
+    public void refreshNews() {
+        newsList.clear();
+        setNewsStartFrom(STRING_EMPTY);
+        databaseRepositoryHelper.clearNews();
+    }
+
+    public List<User> getFriendList() {
+        return friendList;
+    }
+
+    public void refreshFriends() {
+        friendList.clear();
+        databaseRepositoryHelper.clearFriends();
     }
 
     public boolean isOfflineAccess() {
@@ -58,6 +74,7 @@ public class VkRepository {
 
         sharedPreferences = context.getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
         String newAccessToken = sharedPreferences.getString(ACCESS_TOKEN_SHARED_KEY, null);
+        newsStartFrom = sharedPreferences.getString(NEWS_START_FROM_SHARED_KEY, STRING_EMPTY);
 
         if (newAccessToken != null) {
             httpRepositoryHelper.setAccessToken(newAccessToken);
@@ -75,7 +92,7 @@ public class VkRepository {
 
     public void logout() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(ACCESS_TOKEN_SHARED_KEY);
+        editor.clear();
         editor.apply();
 
         databaseRepositoryHelper.clearAllTables();
@@ -110,20 +127,26 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getUser(userId, resultCallback)) {
-                    return;
-                }
-
-                httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
+                databaseRepositoryHelper.getUser(userId, new ResultCallback<User>() {
                     @Override
-                    public void onResult(User user) {
-                        resultCallback.onResult(user);
+                    public void onResult(User result) {
+                        if (result != null) {
+                            resultCallback.onResult(result);
+                        } else {
+                            httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
+                                @Override
+                                public void onResult(User user) {
+                                    resultCallback.onResult(user);
 
-                        if (user != null) {
-                            databaseRepositoryHelper.putUser(user);
+                                    if (user != null) {
+                                        databaseRepositoryHelper.putUser(user);
+                                    }
+                                }
+                            });
                         }
                     }
                 });
+
             }
         });
     }
@@ -132,17 +155,22 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getGroup(groupId, resultCallback)) {
-                    return;
-                }
-
-                httpRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                databaseRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
                     @Override
-                    public void onResult(Group group) {
-                        resultCallback.onResult(group);
+                    public void onResult(Group result) {
+                        if (result != null) {
+                            resultCallback.onResult(result);
+                        } else {
+                            httpRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                                @Override
+                                public void onResult(Group group) {
+                                    resultCallback.onResult(group);
 
-                        if (group != null) {
-                            databaseRepositoryHelper.putGroup(group);
+                                    if (group != null) {
+                                        databaseRepositoryHelper.putGroup(group);
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -154,18 +182,25 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getFriends(startPosition, size, resultCallback)) {
-                    return;
-                }
-
-                httpRepositoryHelper.getFriends(startPosition, size, new ResultCallback<List<User>>() {
+                databaseRepositoryHelper.getFriends(startPosition, size, new ResultCallback<List<User>>() {
                     @Override
-                    public void onResult(List<User> friends) {
-                        resultCallback.onResult(friends);
+                    public void onResult(List<User> result) {
+                        if (result != null && result.size() > 0) {
+                            friendList.addAll(result);
+                            resultCallback.onResult(result);
+                        } else {
+                            httpRepositoryHelper.getFriends(startPosition, size, new ResultCallback<List<User>>() {
+                                @Override
+                                public void onResult(List<User> result) {
+                                    resultCallback.onResult(result);
 
-                        if (friends != null) {
-                            databaseRepositoryHelper.putFriendList(friends);
-                            databaseRepositoryHelper.putUserList(friends);
+                                    if (result != null) {
+                                        friendList.addAll(result);
+                                        databaseRepositoryHelper.putFriendList(result);
+                                        databaseRepositoryHelper.putUserList(result);
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -173,31 +208,40 @@ public class VkRepository {
         });
     }
 
-    public void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
+    public void getNews(final int startPosition, final int size, final ResultCallback<List<News>> resultCallback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (databaseRepositoryHelper.getNews(startFrom, size, resultCallback)) {
-                    return;
-                }
-
-                httpRepositoryHelper.getNews(startFrom, size, new ResultCallback<NewsResponse.Response>() {
+                databaseRepositoryHelper.getNews(startPosition, size, new ResultCallback<List<News>>() {
                     @Override
-                    public void onResult(NewsResponse.Response newsResponse) {
-                        resultCallback.onResult(newsResponse);
+                    public void onResult(List<News> result) {
+                        if (result != null && result.size() > 0) {
+                            newsList.addAll(result);
+                            resultCallback.onResult(result);
+                        } else {
+                            httpRepositoryHelper.getNews(newsStartFrom, size, new ResultCallback<NewsResponse.Response>() {
+                                @Override
+                                public void onResult(NewsResponse.Response newsResponse) {
 
-                        if (newsResponse != null) {
-                            if (newsResponse.getGroupList() != null) {
-                                databaseRepositoryHelper.putGroupList(newsResponse.getGroupList());
-                            }
+                                    if (newsResponse != null) {
+                                        setNewsStartFrom(newsResponse.getNextFrom());
+                                        resultCallback.onResult(newsResponse.getNewsList());
 
-                            if (newsResponse.getUserList() != null) {
-                                databaseRepositoryHelper.putUserList(newsResponse.getUserList());
-                            }
+                                        if (newsResponse.getGroupList() != null) {
+                                            databaseRepositoryHelper.putGroupList(newsResponse.getGroupList());
+                                        }
 
-                            if (newsResponse.getNewsList() != null) {
-                                databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
-                            }
+                                        if (newsResponse.getUserList() != null) {
+                                            databaseRepositoryHelper.putUserList(newsResponse.getUserList());
+                                        }
+
+                                        if (newsResponse.getNewsList() != null) {
+                                            newsList.addAll(newsResponse.getNewsList());
+                                            databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
+                                        }
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -205,7 +249,18 @@ public class VkRepository {
         });
     }
 
+    private void setNewsStartFrom(String newsNextFrom) {
+        newsStartFrom = newsNextFrom;
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(NEWS_START_FROM_SHARED_KEY, newsStartFrom);
+        editor.apply();
+    }
+
     private void clearData() {
-        newsList = null;
+        newsList.clear();
+        friendList.clear();
+
+        newsStartFrom = STRING_EMPTY;
     }
 }

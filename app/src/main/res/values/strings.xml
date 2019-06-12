@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">vk client</string>
+    <string name="source_icon_content_description">source icon</string>
+    <string name="from_icon_content_description">from icon</string>
+    <string name="attachment_image_content_description">attachment image</string>
+    <string name="friend_photo_content_description">friend photo</string>
+    <string name="online_status_icon_content_description">online status icon</string>
 </resources>

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Attachment;
-import com.my.vkclient.entities.AttachmentPhoto;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
@@ -21,10 +20,7 @@ import com.my.vkclient.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.my.vkclient.Constants.AUDIO_FORMAT;
-import static com.my.vkclient.Constants.STRING_EMPTY;
-
-class NewsViewHolder extends BaseViewHolder<News> {
+class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private TextView likesTextView;
     private TextView commentsTextView;
     private TextView repostsTextView;
@@ -36,19 +32,14 @@ class NewsViewHolder extends BaseViewHolder<News> {
     private TextView fromNameTextView;
     private TextView fromNewsDateTextView;
     private TextView newsTextView;
-    private ImageView newsPhotoImageView;
-    private TextView newsAttachmentInfoTextView;
-    private TextView newsAttachmentTypeTextView;
     private android.support.v7.widget.RecyclerView attachmentRecyclerView;
     private List<Attachment> attachments = new ArrayList<>();
     private Context context;
     private AttachmentRecyclerViewAdapter attachmentRecyclerViewAdapter;
     private News news;
     private ResultCallback<News> onLikeClickListener;
-    private ResultCallback<String> onAttachmentClickListener;
-    private ResultCallback<String> onPhotoClickListener;
-    private String contentUrl;
-    private Attachment attachment;
+    private ResultCallback<String> onNewsAttachmentClickListener;
+    private ResultCallback<String> onNewsPhotoClickListener;
 
     NewsViewHolder(Context context, View itemView) {
         super(itemView);
@@ -66,19 +57,7 @@ class NewsViewHolder extends BaseViewHolder<News> {
         fromNameTextView = itemView.findViewById(R.id.fromNameTextView);
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
-        newsPhotoImageView = itemView.findViewById(R.id.newsPhotoImageView);
-        newsPhotoImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Attachment.Type.Photo.equals(attachment.getType())) {
-                    if (onPhotoClickListener != null) {
-                        onPhotoClickListener.onResult(attachment.getPhoto().getPhotoUrl());
-                    }
-                } else if (onAttachmentClickListener != null) {
-                    onAttachmentClickListener.onResult(contentUrl);
-                }
-            }
-        });
+
         attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
         likesTextView = itemView.findViewById(R.id.likesTextView);
         likesTextView.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +71,7 @@ class NewsViewHolder extends BaseViewHolder<News> {
         commentsTextView = itemView.findViewById(R.id.commentsTextView);
         repostsTextView = itemView.findViewById(R.id.repostsTextView);
         viewsTextView = itemView.findViewById(R.id.viewsTextView);
-        newsAttachmentInfoTextView = itemView.findViewById(R.id.newsAttachmentInfoTextView);
-        newsAttachmentTypeTextView = itemView.findViewById(R.id.newsAttachmentTypeTextView);
+
     }
 
     void setOnLikeClickListener(ResultCallback<News> onLikeClickListener) {
@@ -101,11 +79,16 @@ class NewsViewHolder extends BaseViewHolder<News> {
     }
 
     void setOnAttachmentClickListener(ResultCallback<String> onAttachmentClickListener) {
-        this.onAttachmentClickListener = onAttachmentClickListener;
+        super.setOnAttachmentClickListener(onAttachmentClickListener);
+
+        this.onNewsAttachmentClickListener = onAttachmentClickListener;
+
     }
 
     void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
-        this.onPhotoClickListener = onPhotoClickListener;
+        super.setOnPhotoClickListener(onPhotoClickListener);
+
+        this.onNewsPhotoClickListener = onPhotoClickListener;
     }
 
     public void bind(News news) {
@@ -156,93 +139,25 @@ class NewsViewHolder extends BaseViewHolder<News> {
         }
     }
 
-    private void setTextAndVisibilityTextView(TextView textView, String text) {
-        if (text == null || text.isEmpty()) {
-            if (textView.getVisibility() != View.GONE) {
-                textView.setVisibility(View.GONE);
-            }
-        } else {
-            textView.setText(text);
-
-            if (textView.getVisibility() != View.VISIBLE) {
-                textView.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     private void setAttachments(List<Attachment> newAttachments) {
-        newsPhotoImageView.setImageDrawable(null);
+        attachImageView.setImageDrawable(null);
         attachments.clear();
 
         if (newAttachments != null) {
             attachments.addAll(newAttachments);
 
             for (int i = 0; i < attachments.size(); i++) {
-                attachment = attachments.get(i);
+                Attachment attachment = attachments.get(i);
 
-                if (Attachment.Type.Photo.equals(attachment.getType())) {
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, STRING_EMPTY);
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Фото");
-                    contentUrl = STRING_EMPTY;
-                    setAttachmentImage(attachment.getPhoto());
-                } else if (Attachment.Type.Doc.equals(attachment.getType())) {
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getDoc().getTitle());
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, attachment.getDoc().getExt());
-                    contentUrl = attachment.getDoc().getUrl();
+                if (bindAttachment(attachment)) {
+                    attachments.remove(i);
 
-                    if (attachment.getDoc().getPhotoUrl() == null) {
-                        newsPhotoImageView.setImageResource(R.drawable.ic_attachment_doc);
-                    } else {
-                        setAttachmentImage(attachment.getDoc());
-                    }
-                } else if (Attachment.Type.Video.equals(attachment.getType())) {
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getVideo().getTitle());
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Видео");
-                    contentUrl = STRING_EMPTY;
-                    setAttachmentImage(attachment.getVideo());
-                } else if (Attachment.Type.Link.equals(attachment.getType())) {
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getLink().getTitle());
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Ссылка");
-                    contentUrl = attachment.getLink().getUrl();
-
-                    if (attachment.getLink().getPhotoUrl() == null) {
-                        newsPhotoImageView.setImageResource(R.drawable.ic_attachment_link);
-                    } else {
-                        setAttachmentImage(attachment.getLink());
-                    }
-                } else if (Attachment.Type.Podcast.equals(attachment.getType())) {
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, attachment.getPodcast().getTitle());
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Подкаст");
-                    contentUrl = attachment.getPodcast().getUrl();
-                    setAttachmentImage(attachment.getPodcast());
-                } else if (Attachment.Type.Audio.equals(attachment.getType())) {
-                    String info = attachment.getAudio().getArtist() != null ?
-                            String.format(AUDIO_FORMAT, attachment.getAudio().getArtist(), attachment.getAudio().getTitle()) :
-                            attachment.getAudio().getTitle();
-                    setTextAndVisibilityTextView(newsAttachmentInfoTextView, info);
-                    setTextAndVisibilityTextView(newsAttachmentTypeTextView, "Аудио");
-                    contentUrl = STRING_EMPTY;
-                    newsPhotoImageView.setImageResource(R.drawable.ic_attachment_audio);
-                } else {
-                    continue;
+                    break;
                 }
-
-                attachments.remove(i);
-
-                break;
             }
         }
 
         attachmentRecyclerViewAdapter.setItems(attachments);
-    }
-
-    private void setAttachmentImage(AttachmentPhoto attachmentPhoto) {
-        if (attachmentPhoto != null) {
-            ImageLoader.getInstance().getImageFromUrl(newsPhotoImageView, attachmentPhoto.getPhotoUrl(),
-                    attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
-        } else {
-            newsPhotoImageView.setImageDrawable(null);
-        }
     }
 
     private void setVisibilityCopyNews(int visible) {
@@ -268,16 +183,16 @@ class NewsViewHolder extends BaseViewHolder<News> {
         attachmentRecyclerViewAdapter.setOnAttachmentClickListener(new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                if (onAttachmentClickListener != null) {
-                    onAttachmentClickListener.onResult(result);
+                if (onNewsAttachmentClickListener != null) {
+                    onNewsAttachmentClickListener.onResult(result);
                 }
             }
         });
         attachmentRecyclerViewAdapter.setOnPhotoClickListener(new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
-                if (onPhotoClickListener != null) {
-                    onPhotoClickListener.onResult(result);
+                if (onNewsPhotoClickListener != null) {
+                    onNewsPhotoClickListener.onResult(result);
                 }
             }
         });

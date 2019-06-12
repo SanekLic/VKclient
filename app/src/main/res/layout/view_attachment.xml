@@ -6,10 +6,11 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/attachImageView"
+        android:id="@+id/attachmentImageView"
         android:layout_width="wrap_content"
         android:layout_height="192dp"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/attachment_image_content_description"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,13 +30,13 @@
         android:maxLines="2"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:text="info"
         android:textAlignment="center"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/attachImageView"
-        app:layout_constraintStart_toStartOf="@+id/attachImageView"
-        app:layout_constraintTop_toTopOf="@+id/attachImageView"
-        app:layout_constraintWidth_max="wrap" />
+        app:layout_constraintEnd_toEndOf="@+id/attachmentImageView"
+        app:layout_constraintStart_toStartOf="@+id/attachmentImageView"
+        app:layout_constraintTop_toTopOf="@+id/attachmentImageView"
+        app:layout_constraintWidth_max="wrap"
+        tools:text="info" />
 
     <TextView
         android:id="@+id/attachmentTypeTextView"
@@ -46,8 +47,8 @@
         android:background="@drawable/bg_attachment_type"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:text="type"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/attachImageView"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/attachmentImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="type" />
 </android.support.constraint.ConstraintLayout>

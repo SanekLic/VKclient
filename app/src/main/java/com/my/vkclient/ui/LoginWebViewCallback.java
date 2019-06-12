@@ -1,7 +1,7 @@
-package com.my.vkclient.ui.adapters;
+package com.my.vkclient.ui;
 
 public interface LoginWebViewCallback {
     void onAccessGranted(String receivedAccessToken);
-    void onLoadingFinished();
+    void onFinishLoading();
     void onCancelLogin();
 }

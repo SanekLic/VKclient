@@ -9,8 +9,6 @@ public class Likes {
     private Boolean userLikes;
     @SerializedName("can_like")
     private Boolean canLike;
-    @SerializedName("can_publish")
-    private Boolean canPublish;
 
     public Likes() {
     }
@@ -37,13 +35,5 @@ public class Likes {
 
     public void setCanLike(Boolean canLike) {
         this.canLike = canLike;
-    }
-
-    public Boolean getCanPublish() {
-        return canPublish;
-    }
-
-    public void setCanPublish(Boolean canPublish) {
-        this.canPublish = canPublish;
     }
 }

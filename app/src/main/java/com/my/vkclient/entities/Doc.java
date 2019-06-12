@@ -52,8 +52,4 @@ public class Doc extends AttachmentPhoto {
     public Preview getPreview() {
         return preview;
     }
-
-    public void setPreview(Preview preview) {
-        this.preview = preview;
-    }
 }

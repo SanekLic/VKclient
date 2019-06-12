@@ -37,23 +37,11 @@ public class Video extends AttachmentPhoto {
         return photo320Url;
     }
 
-    public void setPhoto320Url(String photo320Url) {
-        this.photo320Url = photo320Url;
-    }
-
     public String getPhoto640Url() {
         return photo640Url;
     }
 
-    public void setPhoto640Url(String photo640Url) {
-        this.photo640Url = photo640Url;
-    }
-
     public String getPhoto800Url() {
         return photo800Url;
-    }
-
-    public void setPhoto800Url(String photo800Url) {
-        this.photo800Url = photo800Url;
     }
 }

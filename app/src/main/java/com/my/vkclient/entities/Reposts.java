@@ -5,8 +5,6 @@ import com.google.gson.annotations.SerializedName;
 public class Reposts {
     @SerializedName("count")
     private int count;
-    @SerializedName("user_reposted")
-    private Boolean userReposted;
 
     public Reposts() {
     }
@@ -17,13 +15,5 @@ public class Reposts {
 
     public void setCount(int count) {
         this.count = count;
-    }
-
-    public Boolean getUserReposted() {
-        return userReposted;
-    }
-
-    public void setUserReposted(Boolean userReposted) {
-        this.userReposted = userReposted;
     }
 }

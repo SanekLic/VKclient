@@ -14,14 +14,8 @@ public class FriendResponse {
     }
 
     public class Response {
-        @SerializedName("count")
-        private int count;
         @SerializedName("items")
         private List<User> userList;
-
-        public int getCount() {
-            return count;
-        }
 
         public List<User> getUserList() {
             return userList;
