@@ -7,12 +7,16 @@ import com.google.gson.annotations.SerializedName;
 public class Size {
     @SerializedName("type")
     private String type;
+
     @SerializedName("url")
     private String url;
+
     @SerializedName("src")
     private String src;
+
     @SerializedName("width")
     private int width;
+
     @SerializedName("height")
     private int height;
 

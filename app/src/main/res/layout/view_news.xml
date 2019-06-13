@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -44,21 +44,30 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <ImageView
+        android:id="@+id/fromNameImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/fromIconImageView"
+        app:layout_constraintTop_toTopOf="@+id/fromIconImageView"
+        app:srcCompat="@drawable/ic_copy_news"
+        android:contentDescription="@string/empty_content_description" />
+
     <TextView
         android:id="@+id/fromNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:drawableStart="@drawable/ic_copy_news"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fromIconImageView"
+        app:layout_constraintStart_toEndOf="@+id/fromNameImageView"
         app:layout_constraintTop_toTopOf="@+id/fromIconImageView"
         tools:text="Name" />
 
@@ -112,6 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newsTextView"
+        tools:layout_height="128dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
@@ -159,51 +169,78 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentImageView" />
 
-    <TextView
-        android:id="@+id/likesTextView"
-        android:layout_width="72dp"
+    <ImageView
+        android:id="@+id/likesImageView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:drawableStart="@drawable/ic_likes"
-        android:drawablePadding="4dp"
-        android:gravity="center_vertical"
-        android:textColor="@color/colorNewsIcon"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
-        tools:text=" 30" />
+        app:srcCompat="@drawable/ic_likes"
+        android:contentDescription="@string/likes_icon_content_description" />
+
+    <TextView
+        android:id="@+id/likesTextView"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorNewsIcon"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/likesImageView"
+        app:layout_constraintStart_toEndOf="@+id/likesImageView"
+        app:layout_constraintTop_toTopOf="@+id/likesImageView"
+        tools:text="30" />
+
+    <ImageView
+        android:id="@+id/commentsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/likesTextView"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        app:srcCompat="@drawable/ic_comments"
+        android:contentDescription="@string/comments_icon_content_description"  />
 
     <TextView
         android:id="@+id/commentsTextView"
-        android:layout_width="72dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/ic_comments"
-        android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/likesTextView"
-        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/commentsImageView"
+        app:layout_constraintStart_toEndOf="@+id/commentsImageView"
+        app:layout_constraintTop_toTopOf="@+id/commentsImageView"
         tools:text="5" />
+
+    <ImageView
+        android:id="@+id/repostsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/commentsTextView"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        app:srcCompat="@drawable/ic_reposts"
+        android:contentDescription="@string/reposts_icon_content_description" />
 
     <TextView
         android:id="@+id/repostsTextView"
-        android:layout_width="72dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/ic_reposts"
-        android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/commentsTextView"
-        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/repostsImageView"
+        app:layout_constraintStart_toEndOf="@+id/repostsImageView"
+        app:layout_constraintTop_toTopOf="@+id/repostsImageView"
         tools:text="5" />
 
     <TextView
@@ -212,11 +249,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:drawableStart="@drawable/ic_views"
-        android:drawablePadding="4dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center_vertical"
         android:textColor="@color/colorNewsIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
         tools:text="5" />
+
+    <ImageView
+        android:id="@+id/viewsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/viewsTextView"
+        app:layout_constraintEnd_toStartOf="@+id/viewsTextView"
+        app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
+        app:layout_constraintTop_toTopOf="@+id/viewsTextView"
+        app:srcCompat="@drawable/ic_views"
+        android:contentDescription="@string/views_icon_content_description"  />
+
 </android.support.constraint.ConstraintLayout>

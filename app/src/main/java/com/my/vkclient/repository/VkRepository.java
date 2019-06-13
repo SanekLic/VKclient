@@ -132,7 +132,7 @@ public class VkRepository {
                     public void onResult(User result) {
                         if (result != null) {
                             resultCallback.onResult(result);
-                        } else {
+                        }
                             httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
                                 @Override
                                 public void onResult(User user) {
@@ -143,7 +143,7 @@ public class VkRepository {
                                     }
                                 }
                             });
-                        }
+
                     }
                 });
 

@@ -5,10 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class Rect {
     @SerializedName("x")
     private float x;
+
     @SerializedName("y")
     private float y;
+
     @SerializedName("x2")
     private float x2;
+
     @SerializedName("y2")
     private float y2;
 

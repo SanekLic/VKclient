@@ -5,12 +5,16 @@ import com.google.gson.annotations.SerializedName;
 public class Doc extends AttachmentPhoto {
     @SerializedName("id")
     private int id;
+
     @SerializedName("url")
     private String url;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("ext")
     private String ext;
+
     @SerializedName("preview")
     private Preview preview;
 

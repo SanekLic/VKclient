@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 public class Link extends AttachmentPhoto {
     @SerializedName("url")
     private String url;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("photo")
     private Photo photo;
 

@@ -77,6 +77,7 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         if (validateLoadMoreItems()) {
             loadMoreItems(itemList.size(), pageSize);
         }
+
         if (previousPosition < holder.getAdapterPosition()) {
             holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_down_up_anim));
         } else {

@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 public class Likes {
     @SerializedName("count")
     private int count;
+
     @SerializedName("user_likes")
     private Boolean userLikes;
+
     @SerializedName("can_like")
     private Boolean canLike;
 

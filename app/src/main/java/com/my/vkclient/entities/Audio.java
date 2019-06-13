@@ -5,10 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class Audio {
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("artist")
     private String artist;
+
     @SerializedName("url")
     private String url;
 

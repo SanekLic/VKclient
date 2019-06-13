@@ -10,16 +10,22 @@ import java.lang.annotation.RetentionPolicy;
 public class Attachment {
     @SerializedName("type")
     private String type;
+
     @SerializedName("photo")
     private Photo photo;
+
     @SerializedName("video")
     private Video video;
+
     @SerializedName("doc")
     private Doc doc;
+
     @SerializedName("audio")
     private Audio audio;
+
     @SerializedName("link")
     private Link link;
+
     @SerializedName("podcast")
     private Podcast podcast;
 

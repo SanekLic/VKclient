@@ -10,7 +10,7 @@ public class Utils {
     private SimpleDateFormat simpleDateFormat;
 
     private Utils() {
-        simpleDateFormat = new SimpleDateFormat("dd MMMM HH:mm", Locale.getDefault());
+        simpleDateFormat = new SimpleDateFormat("dd MMMM HH:mm", Locale.US);
     }
 
     public static Utils getInstance() {
@@ -21,8 +21,8 @@ public class Utils {
         return instance;
     }
 
-    public String getSimpleDate(long date) {
-        return simpleDateFormat.format(new java.util.Date(date * 1000));
+    public String getSimpleDate(long unixTime) {
+        return simpleDateFormat.format(new java.util.Date(unixTime * 1000));
     }
 
     public String formatNumber(int number) {

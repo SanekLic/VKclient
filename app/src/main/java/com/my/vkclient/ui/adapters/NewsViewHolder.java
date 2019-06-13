@@ -1,6 +1,7 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,7 @@ import java.util.List;
 
 class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private TextView likesTextView;
+    private ImageView likesImageView;
     private TextView commentsTextView;
     private TextView repostsTextView;
     private TextView viewsTextView;
@@ -30,6 +32,7 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private TextView sourceNewsDateTextView;
     private ImageView fromIconImageView;
     private TextView fromNameTextView;
+    private ImageView fromNameImageView;
     private TextView fromNewsDateTextView;
     private TextView newsTextView;
     private android.support.v7.widget.RecyclerView attachmentRecyclerView;
@@ -55,12 +58,13 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
         sourceNewsDateTextView = itemView.findViewById(R.id.sourceNewsDateTextView);
         fromIconImageView = itemView.findViewById(R.id.fromIconImageView);
         fromNameTextView = itemView.findViewById(R.id.fromNameTextView);
+        fromNameImageView = itemView.findViewById(R.id.fromNameImageView);
         fromNewsDateTextView = itemView.findViewById(R.id.fromNewsDateTextView);
         newsTextView = itemView.findViewById(R.id.newsTextView);
-
         attachmentRecyclerView = itemView.findViewById(R.id.attachmentRecyclerView);
         likesTextView = itemView.findViewById(R.id.likesTextView);
-        likesTextView.setOnClickListener(new View.OnClickListener() {
+        likesImageView = itemView.findViewById(R.id.likesImageView);
+        likesImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onLikeClickListener != null && news != null) {
@@ -111,11 +115,9 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
         }
 
         if (news.getLikes().getUserLikes()) {
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    ContextCompat.getDrawable(context, R.drawable.ic_fill_likes), null, null, null);
+            likesImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorActionCheckIcon));
         } else {
-            likesTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    ContextCompat.getDrawable(context, R.drawable.ic_likes), null, null, null);
+            likesImageView.clearColorFilter();
         }
 
         likesTextView.setText(Utils.getInstance().formatNumber(news.getLikes().getCount()));
@@ -165,6 +167,7 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
             fromIconImageView.setVisibility(visible);
             fromNameTextView.setVisibility(visible);
             fromNewsDateTextView.setVisibility(visible);
+            fromNameImageView.setVisibility(visible);
         }
     }
 

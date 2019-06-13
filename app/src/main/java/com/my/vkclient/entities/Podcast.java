@@ -5,10 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class Podcast extends AttachmentPhoto {
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("url")
     private String url;
+
     @SerializedName("podcast_info")
     private PodcastInfo podcastInfo;
 

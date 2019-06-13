@@ -13,6 +13,9 @@ public interface Constants {
     String STRING_SLASH = "/";
     String NAME_FORMAT = "%s %s";
     String AUDIO_FORMAT = "%s\n%s";
+    String FRIENDS_COUNT_FORMAT = "%s друзей • %s общих";
+    String FRIENDS_COMMON_COUNT_FORMAT = "%s общих друзей";
+    String EDUCATION_FORMAT = "%s\n%s";
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
@@ -33,7 +36,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 3;
+        int DATABASE_VERSION = 4;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -57,16 +60,16 @@ public interface Constants {
         String STATE_REQUEST_TOKEN = "state=requestToken";
         String API_VK_GET_AUTHORIZE_URL = API_VK_OAUTH_VK_COM + "authorize?client_id=" + CLIENT_ID + "&display=mobile&redirect_uri=" + API_VK_OAUTH_VK_COM + "blank.html" + AUTHORIZE_SCOPE + "&response_type=token" + API_VERSION + STATE_REQUEST_TOKEN;
         String API_VK_METHOD = "https://api.vk.com/method/";
+        String API_VK_GET_USER_URL = API_VK_METHOD + "users.get?name_case=nom";
+        String USER_ID = "&user_ids=";
+        String USER_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo,about,common_count,counters,education,followers_count,games,home_town,interests,last_seen,movies,music,status,verified";
         String API_VK_GET_FRIENDS_URL = API_VK_METHOD + "friends.get?order=name";
         String FRIENDS_COUNT = "&count=";
         String FRIENDS_OFFSET = "&offset=";
-        String FRIENDS_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo";
-        String API_VK_GET_USER_URL = API_VK_METHOD + "users.get?name_case=nom";
-        String USER_ID = "&user_ids=";
-        String USER_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo";
+        String FRIENDS_FIELDS = USER_FIELDS;
         String API_VK_GET_NEWS_URL = API_VK_METHOD + "newsfeed.get?filters=post";
         String NEWS_START_FROM = "&start_from=";
-        String NEWS_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo";
+        String NEWS_FIELDS = USER_FIELDS;
         String NEWS_COUNT = "&count=";
         String API_VK_GET_GROUP_URL = API_VK_METHOD + "groups.getById?group_id=";
         String LIKE_FIELDS = "?type=post&owner_id=%s&item_id=%s";

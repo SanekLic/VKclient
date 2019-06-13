@@ -1,49 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <android.support.constraint.ConstraintLayout
+        <ImageView
+            android:id="@+id/userPhotoImageView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/user_photo_content_description"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
 
-            <ImageView
-                android:id="@+id/userPhotoImageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+        <TextView
+            android:id="@+id/userNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/lastSeenTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="name" />
 
-            <TextView
-                android:id="@+id/userNameTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:lines="1"
-                android:text="name"
-                android:textColor="@android:color/white"
-                android:textSize="24sp"
-                app:autoSizeTextType="uniform"
-                app:layout_constraintBottom_toBottomOf="@+id/userPhotoImageView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+        <TextView
+            android:id="@+id/lastSeenTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/userPhotoImageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="last seen" />
 
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:id="@+id/userStatusImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/user_status_icon_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/userStatusTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userStatusTextView"
+            app:srcCompat="@drawable/ic_user_status" />
+
+        <TextView
+            android:id="@+id/userStatusTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@color/colorUserInfoIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/userStatusImageView"
+            app:layout_constraintTop_toBottomOf="@+id/userPhotoImageView"
+            tools:text="status" />
+
+        <ImageView
+            android:id="@+id/userFriendsImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/user_friends_icon_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/userFriendsTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userFriendsTextView"
+            app:srcCompat="@drawable/ic_user_friends" />
+
+        <TextView
+            android:id="@+id/userFriendsTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@color/colorUserInfoIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/userFriendsImageView"
+            app:layout_constraintTop_toBottomOf="@+id/userStatusTextView"
+            tools:text="15 friends" />
+
+        <ImageView
+            android:id="@+id/userFollowersImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/user_followers_icon_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/userFollowersTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userFollowersTextView"
+            app:srcCompat="@drawable/ic_user_followers" />
+
+        <TextView
+            android:id="@+id/userFollowersTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@color/colorUserInfoIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/userFollowersImageView"
+            app:layout_constraintTop_toBottomOf="@+id/userFriendsTextView"
+            tools:text="15 followers" />
+
+        <ImageView
+            android:id="@+id/userCityImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/user_city_icon_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/userCityTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userCityTextView"
+            app:srcCompat="@drawable/ic_user_city" />
+
+        <TextView
+            android:id="@+id/userCityTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@color/colorUserInfoIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/userCityImageView"
+            app:layout_constraintTop_toBottomOf="@+id/userFollowersTextView"
+            tools:text="city" />
+
+        <ImageView
+            android:id="@+id/userEducationImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/user_education_icon_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/userEducationTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userEducationTextView"
+            app:srcCompat="@drawable/ic_user_education" />
+
+        <TextView
+            android:id="@+id/userEducationTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@color/colorUserInfoIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/userEducationImageView"
+            app:layout_constraintTop_toBottomOf="@+id/userCityTextView"
+            tools:text="education" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

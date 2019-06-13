@@ -53,4 +53,52 @@ public class UserTable {
 
     @dbFloat
     public static final String CROP_RECT_Y_2 = "CROP_RECT_Y_2";
+
+    @dbLong
+    public static final String BIRTH_DATE = "BIRTH_DATE";
+
+    @dbString
+    public static final String ABOUT = "ABOUT";
+
+    @dbInt
+    public static final String COMMON_FRIENDS_COUNT = "COMMON_FRIENDS_COUNT";
+
+    @dbInt
+    public static final String FRIENDS_COUNT = "FRIENDS_COUNT";
+
+    @dbInt
+    public static final String PHOTO_COUNT = "PHOTO_COUNT";
+
+    @dbString
+    public static final String UNIVERSITY_NAME = "UNIVERSITY_NAME";
+
+    @dbString
+    public static final String FACULTY_NAME = "FACULTY_NAME";
+
+    @dbInt
+    public static final String FOLLOWERS_COUNT = "FOLLOWERS_COUNT";
+
+    @dbString
+    public static final String GAMES = "GAMES";
+
+    @dbString
+    public static final String HOME_TOWN = "HOME_TOWN";
+
+    @dbString
+    public static final String INTERESTS = "INTERESTS";
+
+    @dbLong
+    public static final String LAST_SEEN = "LAST_SEEN";
+
+    @dbString
+    public static final String MOVIES = "MOVIES";
+
+    @dbString
+    public static final String MUSIC = "MUSIC";
+
+    @dbString
+    public static final String STATUS = "STATUS";
+
+    @dbBoolean
+    public static final String VERIFIED = "VERIFIED";
 }

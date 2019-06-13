@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 public class Group {
     @SerializedName("id")
     private int id;
+
     @SerializedName("name")
     private String name;
+
     @SerializedName("photo_100")
     private String photo100Url;
 

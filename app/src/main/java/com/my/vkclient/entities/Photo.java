@@ -7,6 +7,7 @@ import java.util.List;
 public class Photo extends AttachmentPhoto {
     @SerializedName("id")
     private int id;
+
     @SerializedName("sizes")
     private List<Size> sizes;
 

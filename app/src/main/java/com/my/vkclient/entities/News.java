@@ -7,26 +7,37 @@ import java.util.List;
 public class News {
     @SerializedName("post_id")
     private int id;
+
     @SerializedName("type")
     private String type;
+
     @SerializedName("source_id")
     private int sourceId;
+
     @SerializedName("from_id")
     private int fromId;
+
     @SerializedName("date")
     private long date;
+
     @SerializedName("text")
     private String text;
+
     @SerializedName("copy_history")
     private List<News> copyHistory;
+
     @SerializedName("comments")
     private Comments comments;
+
     @SerializedName("likes")
     private Likes likes;
+
     @SerializedName("reposts")
     private Reposts reposts;
+
     @SerializedName("views")
     private Views views;
+
     @SerializedName("attachments")
     private List<Attachment> attachments;
 

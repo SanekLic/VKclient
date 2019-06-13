@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#E64646</color>
+    <color name="colorLauncherBackground">#EEEEEE</color>
     <color name="colorNewsTitle">#45678F</color>
     <color name="colorNewsLink">#2975CC</color>
     <color name="colorCopyNewsIcon">#74A2D6</color>
@@ -10,6 +11,7 @@
     <color name="colorActionCheckIcon">#2975CC</color>
     <color name="colorActionUncheckIcon">#99A2AD</color>
     <color name="colorNewsIcon">#99A2AD</color>
+    <color name="colorUserInfoIcon">#99A2AD</color>
     <color name="colorBottomNavigation">#F9F9F9</color>
     <color name="colorActivityBackground">#EBEDF0</color>
 </resources>

@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 public class CropPhoto {
     @SerializedName("photo")
     private Photo photo;
+
     @SerializedName("rect")
     private Rect rect;
+
     @SerializedName("crop")
     private Rect crop;
 

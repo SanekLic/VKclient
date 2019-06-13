@@ -27,6 +27,8 @@ import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.Reposts;
 import com.my.vkclient.entities.User;
+import com.my.vkclient.entities.UserCounters;
+import com.my.vkclient.entities.UserLastSeen;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.Views;
 import com.my.vkclient.utils.ResultCallback;
@@ -69,6 +71,22 @@ class DatabaseRepositoryHelper {
     private int columnIndexUserCropRectX2;
     private int columnIndexUserCropRectY;
     private int columnIndexUserCropRectY2;
+    private int columnIndexUserBIRTH_DATE;
+    private int columnIndexUserABOUT;
+    private int columnIndexUserCOMMON_FRIENDS_COUNT;
+    private int columnIndexUserFRIENDS_COUNT;
+    private int columnIndexUserPHOTO_COUNT;
+    private int columnIndexUserUNIVERSITY_NAME;
+    private int columnIndexUserFACULTY_NAME;
+    private int columnIndexUserFOLLOWERS_COUNT;
+    private int columnIndexUserGAMES;
+    private int columnIndexUserHOME_TOWN;
+    private int columnIndexUserINTERESTS;
+    private int columnIndexUserLAST_SEEN;
+    private int columnIndexUserMOVIES;
+    private int columnIndexUserMUSIC;
+    private int columnIndexUserSTATUS;
+    private int columnIndexUserVERIFIED;
     private int columnIndexGroupId;
     private int columnIndexGroupName;
     private int columnIndexGroupPhoto100Url;
@@ -311,6 +329,31 @@ class DatabaseRepositoryHelper {
             contentValues.put(UserTable.CROP_RECT_Y, user.getCropPhoto().getCropRectY());
             contentValues.put(UserTable.CROP_RECT_Y_2, user.getCropPhoto().getCropRectY2());
         }
+
+        contentValues.put(UserTable.BIRTH_DATE, user.getBirthDate());
+        contentValues.put(UserTable.ABOUT, user.getAbout());
+        contentValues.put(UserTable.COMMON_FRIENDS_COUNT, user.getCommonFriendsCount());
+
+        if (user.getCounters() != null) {
+            contentValues.put(UserTable.FRIENDS_COUNT, user.getCounters().getFriends());
+            contentValues.put(UserTable.PHOTO_COUNT, user.getCounters().getPhotos());
+        }
+
+        contentValues.put(UserTable.UNIVERSITY_NAME, user.getUniversityName());
+        contentValues.put(UserTable.FACULTY_NAME, user.getFacultyName());
+        contentValues.put(UserTable.FOLLOWERS_COUNT, user.getFollowersCount());
+        contentValues.put(UserTable.GAMES, user.getGames());
+        contentValues.put(UserTable.HOME_TOWN, user.getHomeTown());
+        contentValues.put(UserTable.INTERESTS, user.getInterests());
+
+        if (user.getLastSeen() != null) {
+            contentValues.put(UserTable.LAST_SEEN, user.getLastSeen().getTime());
+            contentValues.put(UserTable.MOVIES, user.getMovies());
+        }
+
+        contentValues.put(UserTable.MUSIC, user.getMusic());
+        contentValues.put(UserTable.STATUS, user.getStatus());
+        contentValues.put(UserTable.VERIFIED, user.getVerified());
     }
 
     private void putGroupToContentValue(Group group, ContentValues contentValues) {
@@ -396,6 +439,30 @@ class DatabaseRepositoryHelper {
                 user.getCropPhoto().setCropRectY(userCursor.getFloat(columnIndexUserCropRectY));
                 user.getCropPhoto().setCropRectY2(userCursor.getFloat(columnIndexUserCropRectY2));
             }
+
+            user.setBirthDate(userCursor.getLong(columnIndexUserBIRTH_DATE));
+            user.setAbout(userCursor.getString(columnIndexUserABOUT));
+            user.setCommonFriendsCount(userCursor.getInt(columnIndexUserCOMMON_FRIENDS_COUNT));
+
+            UserCounters userCounters = new UserCounters();
+            userCounters.setFriends(userCursor.getInt(columnIndexUserFRIENDS_COUNT));
+            userCounters.setPhotos(userCursor.getInt(columnIndexUserPHOTO_COUNT));
+            user.setCounters(userCounters);
+
+            user.setUniversityName(userCursor.getString(columnIndexUserUNIVERSITY_NAME));
+            user.setFacultyName(userCursor.getString(columnIndexUserFACULTY_NAME));
+            user.setFollowersCount(userCursor.getInt(columnIndexUserFOLLOWERS_COUNT));
+            user.setGames(userCursor.getString(columnIndexUserGAMES));
+            user.setHomeTown(userCursor.getString(columnIndexUserHOME_TOWN));
+            user.setInterests(userCursor.getString(columnIndexUserINTERESTS));
+
+            UserLastSeen userLastSeen = new UserLastSeen(userCursor.getLong(columnIndexUserLAST_SEEN));
+            user.setLastSeen(userLastSeen);
+
+            user.setMovies(userCursor.getString(columnIndexUserMOVIES));
+            user.setMusic(userCursor.getString(columnIndexUserMUSIC));
+            user.setStatus(userCursor.getString(columnIndexUserSTATUS));
+            user.setVerified(userCursor.getInt(columnIndexUserVERIFIED) > 0);
         }
 
         return user;
@@ -591,6 +658,22 @@ class DatabaseRepositoryHelper {
             columnIndexUserCropRectX2 = cursor.getColumnIndex(UserTable.CROP_RECT_X_2);
             columnIndexUserCropRectY = cursor.getColumnIndex(UserTable.CROP_RECT_Y);
             columnIndexUserCropRectY2 = cursor.getColumnIndex(UserTable.CROP_RECT_Y_2);
+            columnIndexUserBIRTH_DATE = cursor.getColumnIndex(UserTable.BIRTH_DATE);
+            columnIndexUserABOUT = cursor.getColumnIndex(UserTable.ABOUT);
+            columnIndexUserCOMMON_FRIENDS_COUNT = cursor.getColumnIndex(UserTable.COMMON_FRIENDS_COUNT);
+            columnIndexUserFRIENDS_COUNT = cursor.getColumnIndex(UserTable.FRIENDS_COUNT);
+            columnIndexUserPHOTO_COUNT = cursor.getColumnIndex(UserTable.PHOTO_COUNT);
+            columnIndexUserUNIVERSITY_NAME = cursor.getColumnIndex(UserTable.UNIVERSITY_NAME);
+            columnIndexUserFACULTY_NAME = cursor.getColumnIndex(UserTable.FACULTY_NAME);
+            columnIndexUserFOLLOWERS_COUNT = cursor.getColumnIndex(UserTable.FOLLOWERS_COUNT);
+            columnIndexUserGAMES = cursor.getColumnIndex(UserTable.GAMES);
+            columnIndexUserHOME_TOWN = cursor.getColumnIndex(UserTable.HOME_TOWN);
+            columnIndexUserINTERESTS = cursor.getColumnIndex(UserTable.INTERESTS);
+            columnIndexUserLAST_SEEN = cursor.getColumnIndex(UserTable.LAST_SEEN);
+            columnIndexUserMOVIES = cursor.getColumnIndex(UserTable.MOVIES);
+            columnIndexUserMUSIC = cursor.getColumnIndex(UserTable.MUSIC);
+            columnIndexUserSTATUS = cursor.getColumnIndex(UserTable.STATUS);
+            columnIndexUserVERIFIED = cursor.getColumnIndex(UserTable.VERIFIED);
 
             if (isFriendsTable) {
                 userColumnIndexesReady = false;

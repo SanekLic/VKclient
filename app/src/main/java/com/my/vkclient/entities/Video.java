@@ -5,12 +5,16 @@ import com.google.gson.annotations.SerializedName;
 public class Video extends AttachmentPhoto {
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("photo_320")
     private String photo320Url;
+
     @SerializedName("photo_640")
     private String photo640Url;
+
     @SerializedName("photo_800")
     private String photo800Url;
 

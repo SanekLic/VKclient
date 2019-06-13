@@ -6,13 +6,37 @@
     android:layout_height="match_parent"
     android:background="@color/colorActivityBackground">
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Switch
+        android:id="@+id/animationSwitch"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Сменить профиль"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_setting_item"
+        android:paddingStart="16dp"
+        android:text="@string/animation_setting_label"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_setting_item"
+        android:paddingStart="16dp"
+        android:text="@string/logout_label"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 </android.support.constraint.ConstraintLayout>

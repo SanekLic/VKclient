@@ -18,10 +18,13 @@ public class NewsResponse {
     public class Response {
         @SerializedName("items")
         private List<News> newsList;
+
         @SerializedName("profiles")
         private List<User> userList;
+
         @SerializedName("groups")
         private List<Group> groupList;
+
         @SerializedName("next_from")
         private String nextFrom;
 
