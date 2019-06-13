@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
+import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
@@ -133,20 +134,48 @@ public class VkRepository {
                         if (result != null) {
                             resultCallback.onResult(result);
                         }
-                            httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
-                                @Override
-                                public void onResult(User user) {
-                                    resultCallback.onResult(user);
 
-                                    if (user != null) {
-                                        databaseRepositoryHelper.putUser(user);
-                                    }
+                        httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
+                            @Override
+                            public void onResult(User user) {
+                                resultCallback.onResult(user);
+
+                                if (user != null) {
+                                    databaseRepositoryHelper.putUser(user);
                                 }
-                            });
+                            }
+                        });
 
                     }
                 });
 
+            }
+        });
+    }
+
+    public void getUserPhotos(final int userId, final int startPosition, final int size, final ResultCallback<List<Photo>> resultCallback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                databaseRepositoryHelper.getUserPhotos(userId, startPosition, size, new ResultCallback<List<Photo>>() {
+                    @Override
+                    public void onResult(List<Photo> result) {
+                        if (result != null && result.size() > 0) {
+                            resultCallback.onResult(result);
+                        } else {
+                            httpRepositoryHelper.getUserPhotos(userId, startPosition, size, new ResultCallback<List<Photo>>() {
+                                @Override
+                                public void onResult(List<Photo> result) {
+                                    resultCallback.onResult(result);
+
+                                    if (result != null) {
+                                        databaseRepositoryHelper.putUserPhotos(userId, result);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     }

@@ -4,17 +4,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.my.vkclient.Constants;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
+
+import static com.my.vkclient.Constants.NAME_FORMAT;
 
 class FriendViewHolder extends BaseViewHolder<User> {
     private ImageView friendPhotoView;
     private TextView friendNameView;
     private ImageView onlineStatusImageView;
 
-    public FriendViewHolder(View itemView) {
+    FriendViewHolder(View itemView) {
         super(itemView);
 
         friendPhotoView = itemView.findViewById(R.id.friendPhotoImageView);
@@ -23,10 +24,7 @@ class FriendViewHolder extends BaseViewHolder<User> {
     }
 
     public void bind(User user) {
-        friendNameView.setText(new StringBuilder()
-                .append(user.getFirstName())
-                .append(Constants.STRING_SPACE)
-                .append(user.getLastName()).toString());
+        friendNameView.setText(String.format(NAME_FORMAT, user.getFirstName(), user.getLastName()));
 
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
         ImageLoader.getInstance().getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0);

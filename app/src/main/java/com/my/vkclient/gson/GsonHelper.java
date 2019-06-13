@@ -9,12 +9,13 @@ import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.Podcast;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.entities.response.UserResponse;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.response.FriendResponse;
 import com.my.vkclient.entities.response.GroupResponse;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.entities.response.UserPhotoResponse;
+import com.my.vkclient.entities.response.UserResponse;
 import com.my.vkclient.gson.typeadapter.BooleanGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.CropPhotoGsonTypeAdapter;
 import com.my.vkclient.gson.typeadapter.DocGsonTypeAdapter;
@@ -28,7 +29,7 @@ import java.util.List;
 public class GsonHelper {
     private static GsonHelper instance;
     private Gson gson;
-    private Gson gsonWithPhotoTypeAdapter;
+    private Gson gsonWithOnlyPhotoTypeAdapter;
 
     private GsonHelper() {
         gson = new Gson().newBuilder()
@@ -41,7 +42,7 @@ public class GsonHelper {
                 .registerTypeAdapter(Podcast.class, new PodcastGsonTypeAdapter())
                 .create();
 
-        gsonWithPhotoTypeAdapter = new Gson().newBuilder()
+        gsonWithOnlyPhotoTypeAdapter = new Gson().newBuilder()
                 .registerTypeAdapter(Photo.class, new PhotoGsonTypeAdapter())
                 .create();
     }
@@ -54,8 +55,8 @@ public class GsonHelper {
         return instance;
     }
 
-    public Gson getGsonWithPhotoTypeAdapter() {
-        return gsonWithPhotoTypeAdapter;
+    public Gson getGsonWithOnlyPhotoTypeAdapter() {
+        return gsonWithOnlyPhotoTypeAdapter;
     }
 
     public List<User> getFriendsFromJson(String jsonFriends) {
@@ -66,6 +67,16 @@ public class GsonHelper {
         }
 
         return friendResponse.getResponse().getUserList();
+    }
+
+    public List<Photo> getUserPhotosFromJson(String jsonPhotos) {
+        UserPhotoResponse userPhotoResponse = gsonWithOnlyPhotoTypeAdapter.fromJson(jsonPhotos, UserPhotoResponse.class);
+
+        if (userPhotoResponse == null || userPhotoResponse.getResponse() == null) {
+            return null;
+        }
+
+        return userPhotoResponse.getResponse().getUserPhotos();
     }
 
     public User getUserFromJson(String jsonUser) {

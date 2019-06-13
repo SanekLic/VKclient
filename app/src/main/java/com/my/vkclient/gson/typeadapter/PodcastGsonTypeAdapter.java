@@ -13,7 +13,7 @@ public class PodcastGsonTypeAdapter implements JsonDeserializer<Podcast> {
 
     @Override
     public Podcast deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Podcast fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
+        Podcast fromJson = GsonHelper.getInstance().getGsonWithOnlyPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             if (fromJson.getPodcastInfo() != null && fromJson.getPodcastInfo().getCover() != null) {

@@ -7,7 +7,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorActivityBackground">
 
         <ImageView
             android:id="@+id/userPhotoImageView"
@@ -35,6 +36,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="name" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_setting_item"
+            app:layout_constraintBottom_toTopOf="@+id/countPhotoTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userPhotoImageView" />
 
         <TextView
             android:id="@+id/lastSeenTextView"
@@ -173,6 +187,33 @@
             app:layout_constraintStart_toEndOf="@+id/userEducationImageView"
             app:layout_constraintTop_toBottomOf="@+id/userCityTextView"
             tools:text="education" />
+
+        <TextView
+            android:id="@+id/countPhotoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userEducationTextView"
+            tools:text="Photo" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/userPhotoRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/countPhotoTextView" />
 
     </android.support.constraint.ConstraintLayout>
 

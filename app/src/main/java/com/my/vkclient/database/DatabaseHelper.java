@@ -20,6 +20,7 @@ import com.my.vkclient.database.model.AttachmentTable;
 import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
+import com.my.vkclient.database.model.UserPhotoTable;
 import com.my.vkclient.database.model.UserTable;
 
 import java.lang.annotation.Annotation;
@@ -42,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static List<Class<?>> getTables() {
         return Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class,
-                NewsTable.class, AttachmentTable.class);
+                NewsTable.class, AttachmentTable.class, UserPhotoTable.class);
     }
 
     private String getCreateTableString(final Class<?> tableClass) {

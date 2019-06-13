@@ -12,6 +12,7 @@ import com.my.vkclient.database.model.AttachmentTable;
 import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
+import com.my.vkclient.database.model.UserPhotoTable;
 import com.my.vkclient.database.model.UserTable;
 import com.my.vkclient.entities.Attachment;
 import com.my.vkclient.entities.AttachmentPhoto;
@@ -47,6 +48,7 @@ import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.GROUP_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.NEWS_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.SELECT_FROM;
+import static com.my.vkclient.Constants.Database.USER_PHOTO_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
 import static com.my.vkclient.Constants.INT_ZERO;
 import static com.my.vkclient.Constants.STRING_EQUALS;
@@ -58,6 +60,7 @@ class DatabaseRepositoryHelper {
     private boolean groupColumnIndexesReady;
     private boolean newsColumnIndexesReady;
     private boolean attachmentColumnIndexesReady;
+    private boolean userPhotosColumnIndexesReady;
     private int columnIndexUserId;
     private int columnIndexUserFirstName;
     private int columnIndexUserLastName;
@@ -118,6 +121,9 @@ class DatabaseRepositoryHelper {
     private int columnIndexAttachmentDocTitle;
     private int columnIndexAttachmentDocExt;
     private int columnIndexAttachmentLinkTitle;
+    private int columnIndexPhotoUrl;
+    private int columnIndexPhotoHeight;
+    private int columnIndexPhotoWidth;
 
     DatabaseRepositoryHelper(@NonNull final Context context) {
         databaseHelper = new DatabaseHelper(context);
@@ -189,6 +195,54 @@ class DatabaseRepositoryHelper {
                 putGroupToContentValue(group, contentValues);
 
                 databaseHelper.insertWithoutTransaction(writableDatabase, GROUP_TABLE_NAME, contentValues);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    void getUserPhotos(final int userId, int startPosition, int size, ResultCallback<List<Photo>> resultCallback) {
+        try (Cursor userPhotosCursor = databaseHelper.query(getUserPhotoLimitDatabaseQuery(userId, startPosition, size))) {
+            if (userPhotosCursor.getCount() > 0) {
+                List<Photo> photoList = new ArrayList<>();
+                prepareIndexesUserhotoColumns(userPhotosCursor);
+
+                while (userPhotosCursor.moveToNext()) {
+                    Photo photo = new Photo();
+
+                    photo.setPhotoUrl(userPhotosCursor.getString(columnIndexPhotoUrl));
+                    photo.setPhotoHeight(userPhotosCursor.getInt(columnIndexPhotoHeight));
+                    photo.setPhotoWidth(userPhotosCursor.getInt(columnIndexPhotoWidth));
+
+                    photoList.add(photo);
+                }
+
+                resultCallback.onResult(photoList);
+
+                return;
+            }
+        }
+
+        resultCallback.onResult(null);
+    }
+
+    void putUserPhotos(final int userId, final List<Photo> photoList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (Photo photo : photoList) {
+                contentValues.put(UserPhotoTable.ID, photo.getId());
+                contentValues.put(UserPhotoTable.USER_ID, userId);
+                contentValues.put(UserPhotoTable.PHOTO_URL, photo.getPhotoUrl());
+                contentValues.put(UserPhotoTable.PHOTO_HEIGHT, photo.getPhotoHeight());
+                contentValues.put(UserPhotoTable.PHOTO_WIDTH, photo.getPhotoWidth());
+
+                databaseHelper.insertWithoutTransaction(writableDatabase, USER_PHOTO_TABLE_NAME, contentValues);
                 contentValues.clear();
             }
 
@@ -643,6 +697,11 @@ class DatabaseRepositoryHelper {
         return SELECT_FROM + tableName + String.format(DATABASE_WHERE, columnName, Constants.STRING_EQUALS, value);
     }
 
+    private String getUserPhotoLimitDatabaseQuery(int userId, int startPosition, int size) {
+        return SELECT_FROM + USER_PHOTO_TABLE_NAME + String.format(DATABASE_WHERE, UserPhotoTable.USER_ID, STRING_EQUALS, userId)
+                + String.format(DATABASE_LIMIT, startPosition, size);
+    }
+
     private void prepareIndexesUserColumns(Cursor cursor, boolean isFriendsTable) {
         if ((!isFriendsTable && !userColumnIndexesReady) || (isFriendsTable && !friendColumnIndexesReady)) {
             columnIndexUserId = cursor.getColumnIndex(UserTable.ID);
@@ -682,6 +741,16 @@ class DatabaseRepositoryHelper {
                 userColumnIndexesReady = true;
                 friendColumnIndexesReady = false;
             }
+        }
+    }
+
+    private void prepareIndexesUserhotoColumns(Cursor cursor) {
+        if (!userPhotosColumnIndexesReady) {
+            columnIndexPhotoUrl = cursor.getColumnIndex(UserPhotoTable.PHOTO_URL);
+            columnIndexPhotoHeight = cursor.getColumnIndex(UserPhotoTable.PHOTO_HEIGHT);
+            columnIndexPhotoWidth = cursor.getColumnIndex(UserPhotoTable.PHOTO_WIDTH);
+
+            groupColumnIndexesReady = true;
         }
     }
 

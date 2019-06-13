@@ -13,7 +13,7 @@ public class CropPhotoGsonTypeAdapter implements JsonDeserializer<CropPhoto> {
 
     @Override
     public CropPhoto deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        CropPhoto fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
+        CropPhoto fromJson = GsonHelper.getInstance().getGsonWithOnlyPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             if (fromJson.getPhoto() != null) {

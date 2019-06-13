@@ -13,13 +13,11 @@ public interface Constants {
     String STRING_SLASH = "/";
     String NAME_FORMAT = "%s %s";
     String AUDIO_FORMAT = "%s\n%s";
-    String FRIENDS_COUNT_FORMAT = "%s друзей • %s общих";
-    String FRIENDS_COMMON_COUNT_FORMAT = "%s общих друзей";
-    String EDUCATION_FORMAT = "%s\n%s";
+    String SEARCH_IN_GOOGLE_FORMAT = "https://www.google.com/search?q=%s %s";
+    String DATE_FORMAT = "dd MMMM HH:mm";
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
-    String SEARCH_IN_GOOGLE_FORMAT = "https://www.google.com/search?q=%s %s";
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
@@ -32,6 +30,7 @@ public interface Constants {
         String GROUP_TABLE_NAME = "GROUP_TABLE";
         String NEWS_TABLE_NAME = "NEWS_TABLE";
         String ATTACHMENT_TABLE_NAME = "ATTACHMENT_TABLE";
+        String USER_PHOTO_TABLE_NAME = "USER_PHOTO_TABLE";
 
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
@@ -75,6 +74,10 @@ public interface Constants {
         String LIKE_FIELDS = "?type=post&owner_id=%s&item_id=%s";
         String API_VK_SET_LIKE_POST = API_VK_METHOD + "likes.add" + LIKE_FIELDS + ACCESS_TOKEN;
         String API_VK_SET_DISLIKE_POST = API_VK_METHOD + "likes.delete" + LIKE_FIELDS + ACCESS_TOKEN;
+        String API_VK_GET_PHOTOS_URL = API_VK_METHOD + "photos.getAll?extended=0";
+        String PHOTOS_OWNER_ID = "&owner_id=";
+        String PHOTOS_OFFSET = "&offset=";
+        String PHOTOS_COUNT = "&count=";
     }
 
     interface ImageLoader {
@@ -91,5 +94,15 @@ public interface Constants {
         String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
         String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
         int VIEW_MARGIN = 16;
+    }
+
+    interface UserActivity {
+        String FRIENDS_COUNT_FORMAT = "%s друзей • %s общих";
+        String FRIENDS_COMMON_COUNT_FORMAT = "%s общих друзей";
+        String EDUCATION_FORMAT = "%s\n%s";
+        String FOLLOWERS_FORMAT = "%s подписчиков";
+        String ONLINE_FORMAT = "online - %s";
+        String STATE_ONLINE = "сейчас online";
+        String COUNT_PHOTO_FORMAT = "Фото %s";
     }
 }

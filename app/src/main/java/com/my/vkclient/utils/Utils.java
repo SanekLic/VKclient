@@ -10,7 +10,7 @@ public class Utils {
     private SimpleDateFormat simpleDateFormat;
 
     private Utils() {
-        simpleDateFormat = new SimpleDateFormat("dd MMMM HH:mm", Locale.US);
+        simpleDateFormat = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
     }
 
     public static Utils getInstance() {

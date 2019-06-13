@@ -2,6 +2,7 @@ package com.my.vkclient.repository;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.entities.Group;
+import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
@@ -60,6 +61,15 @@ class HttpRepositoryHelper {
         });
     }
 
+    void getUserPhotos(final int userId, final int startPosition, final int size, final ResultCallback<List<Photo>> resultCallback) {
+        getResultStringFromUrl(getUserPhotosRequest(userId, startPosition, size), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(GsonHelper.getInstance().getUserPhotosFromJson(result));
+            }
+        });
+    }
+
     void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
         getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
             @Override
@@ -94,6 +104,18 @@ class HttpRepositoryHelper {
                 Constants.API_VK.FRIENDS_OFFSET +
                 startPosition +
                 Constants.API_VK.FRIENDS_FIELDS +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
+    }
+
+    private String getUserPhotosRequest(int userId, int startPosition, int size) {
+        return Constants.API_VK.API_VK_GET_PHOTOS_URL +
+                Constants.API_VK.PHOTOS_OWNER_ID +
+                userId +
+                Constants.API_VK.PHOTOS_OFFSET +
+                startPosition +
+                Constants.API_VK.PHOTOS_COUNT +
+                size +
                 Constants.API_VK.ACCESS_TOKEN +
                 accessToken;
     }

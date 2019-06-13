@@ -13,7 +13,7 @@ public class DocGsonTypeAdapter implements JsonDeserializer<Doc> {
 
     @Override
     public Doc deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Doc fromJson = GsonHelper.getInstance().getGsonWithPhotoTypeAdapter().fromJson(json, typeOfT);
+        Doc fromJson = GsonHelper.getInstance().getGsonWithOnlyPhotoTypeAdapter().fromJson(json, typeOfT);
 
         if (fromJson != null) {
             if (fromJson.getPreview() != null && fromJson.getPreview().getPhoto() != null) {
