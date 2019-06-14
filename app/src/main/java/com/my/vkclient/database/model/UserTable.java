@@ -54,9 +54,6 @@ public class UserTable {
     @dbFloat
     public static final String CROP_RECT_Y_2 = "CROP_RECT_Y_2";
 
-    @dbLong
-    public static final String BIRTH_DATE = "BIRTH_DATE";
-
     @dbString
     public static final String ABOUT = "ABOUT";
 

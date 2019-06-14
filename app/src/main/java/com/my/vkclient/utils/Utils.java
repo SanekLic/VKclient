@@ -1,5 +1,8 @@
 package com.my.vkclient.utils;
 
+import android.view.View;
+import android.widget.TextView;
+
 import com.my.vkclient.Constants;
 
 import java.text.SimpleDateFormat;
@@ -37,5 +40,21 @@ public class Utils {
         int exp = (int) (Math.log(number) / Math.log(Constants.INT_THOUSAND));
 
         return String.format(Locale.US, Constants.STRING_NUMBER_FORMAT, number / Math.pow(Constants.INT_THOUSAND, exp), Constants.STRING_NUMBER_POSTFIX.charAt(exp - 1));
+    }
+
+    public void setInfoAndVisibilityFieldView(TextView textView, View labelView, String text) {
+        if (text == null || text.isEmpty()) {
+            if (textView.getVisibility() != View.GONE) {
+                textView.setVisibility(View.GONE);
+                labelView.setVisibility(View.GONE);
+            }
+        } else {
+            textView.setText(text);
+
+            if (textView.getVisibility() != View.VISIBLE) {
+                textView.setVisibility(View.VISIBLE);
+                labelView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

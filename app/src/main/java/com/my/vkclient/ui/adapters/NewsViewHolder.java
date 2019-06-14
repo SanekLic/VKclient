@@ -1,7 +1,6 @@
 package com.my.vkclient.ui.adapters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +20,7 @@ import com.my.vkclient.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIMATION;
 
 class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private TextView likesTextView;
@@ -135,11 +134,11 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
         if (news.getGroup() != null) {
             nameTextView.setText(news.getGroup().getName());
             iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getGroup().getPhoto100Url(), 0, 0, DEFAULT_ANIM);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getGroup().getPhoto100Url(), 0, 0, DEFAULT_ANIMATION);
         } else if (news.getUser() != null) {
             nameTextView.setText(String.format(Constants.NAME_FORMAT, news.getUser().getFirstName(), news.getUser().getLastName()));
             iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getUser().getPhoto100Url(), 0, 0, DEFAULT_ANIM);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getUser().getPhoto100Url(), 0, 0, DEFAULT_ANIMATION);
         }
     }
 

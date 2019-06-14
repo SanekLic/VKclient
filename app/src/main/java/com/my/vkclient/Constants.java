@@ -20,6 +20,7 @@ public interface Constants {
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
+    String USER_INFO_TAG = "User info";
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
@@ -43,7 +44,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 6;
+        int DATABASE_VERSION = 7;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -94,7 +95,7 @@ public interface Constants {
         int PERCENTAGE = 100;
 
         @AnimRes
-        int DEFAULT_ANIM = R.anim.item_fade_in_anim;
+        int DEFAULT_ANIMATION = R.anim.item_fade_in_anim;
     }
 
     interface SharedPreferences {

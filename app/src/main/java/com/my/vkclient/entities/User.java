@@ -66,18 +66,7 @@ public class User {
     @SerializedName("verified")
     private Boolean verified;
 
-    @SerializedName("bdate")
-    private long birthDate;
-
     public User() {
-    }
-
-    public long getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(long birthDate) {
-        this.birthDate = birthDate;
     }
 
     public String getAbout() {

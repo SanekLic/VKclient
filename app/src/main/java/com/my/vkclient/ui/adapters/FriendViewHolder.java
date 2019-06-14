@@ -8,7 +8,7 @@ import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ImageLoader;
 
-import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIMATION;
 import static com.my.vkclient.Constants.NAME_FORMAT;
 
 class FriendViewHolder extends BaseViewHolder<User> {
@@ -28,7 +28,7 @@ class FriendViewHolder extends BaseViewHolder<User> {
         friendNameView.setText(String.format(NAME_FORMAT, user.getFirstName(), user.getLastName()));
 
         friendPhotoView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-        ImageLoader.getInstance().getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0, DEFAULT_ANIM);
+        ImageLoader.getInstance().getImageFromUrl(friendPhotoView, user.getPhoto100Url(), 0, 0, DEFAULT_ANIMATION);
 
         if (user.getOnline()) {
             if (onlineStatusImageView.getVisibility() != View.VISIBLE) {

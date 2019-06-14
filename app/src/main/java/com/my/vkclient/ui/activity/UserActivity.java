@@ -21,13 +21,14 @@ import com.my.vkclient.entities.Rect;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.adapters.UserPhotoRecyclerViewAdapter;
+import com.my.vkclient.ui.fragment.UserInfoDialogFragment;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.utils.Utils;
 
 import java.util.List;
 
-import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIMATION;
 import static com.my.vkclient.Constants.IntentKey.USER_ID_INTENT_KEY;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.StateKey.IS_LOAD_COMPLETE_STATE_KEY;
@@ -59,6 +60,8 @@ public class UserActivity extends AppCompatActivity {
     private ImageView userEducationImageView;
     private TextView userEducationTextView;
     private TextView countPhotoTextView;
+    private TextView userMoreInfoTextView;
+    private ImageView userMoreInfoImageView;
     private RecyclerView userPhotoRecyclerView;
     private SwipeRefreshLayout swipeRefresh;
     private String photoUrl;
@@ -184,6 +187,20 @@ public class UserActivity extends AppCompatActivity {
         userEducationTextView = findViewById(R.id.userEducationTextView);
         countPhotoTextView = findViewById(R.id.countPhotoTextView);
         userScrollView = findViewById(R.id.userScrollView);
+        userMoreInfoImageView = findViewById(R.id.userMoreInfoImageView);
+        userMoreInfoTextView = findViewById(R.id.userMoreInfoTextView);
+        userMoreInfoTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userId != 0) {
+                    UserInfoDialogFragment userInfoDialogFragment = new UserInfoDialogFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(USER_ID_INTENT_KEY, userId);
+                    userInfoDialogFragment.setArguments(bundle);
+                    userInfoDialogFragment.show(getSupportFragmentManager(), Constants.USER_INFO_TAG);
+                }
+            }
+        });
     }
 
     private void setData() {
@@ -197,10 +214,10 @@ public class UserActivity extends AppCompatActivity {
                             userNameTextView.setText(String.format(Constants.NAME_FORMAT, user.getFirstName(), user.getLastName()));
 
                             setLastSeen(user);
-                            setInfoAndVisibilityField(userStatusTextView, userStatusImageView, user.getStatus());
+                            Utils.getInstance().setInfoAndVisibilityFieldView(userStatusTextView, userStatusImageView, user.getStatus());
                             setFriendsCount(user);
                             setFollowers(user);
-                            setInfoAndVisibilityField(userCityTextView, userCityImageView, user.getHomeTown());
+                            Utils.getInstance().setInfoAndVisibilityFieldView(userCityTextView, userCityImageView, user.getHomeTown());
                             setEducation(user);
 
                             if (user.getCounters() != null && user.getCounters().getPhotos() > 0) {
@@ -227,18 +244,37 @@ public class UserActivity extends AppCompatActivity {
                                 ImageLoader.getInstance().getImageFromUrl(userPhotoImageView,
                                         user.getCropPhoto().getCropPhotoUrl(),
                                         user.getCropPhoto().getCropPhotoWidth(),
-                                        user.getCropPhoto().getCropPhotoHeight(), DEFAULT_ANIM);
+                                        user.getCropPhoto().getCropPhotoHeight(), DEFAULT_ANIMATION);
                             } else {
                                 photoUrl = user.getPhotoMaxUrl();
 
                                 ImageLoader.getInstance().getImageFromUrl(userPhotoImageView,
-                                        user.getPhotoMaxUrl(), 0, 0, DEFAULT_ANIM);
+                                        user.getPhotoMaxUrl(), 0, 0, DEFAULT_ANIMATION);
                             }
+
+                            setAdditionalInfo(user);
                         }
                     }
                 });
             }
         });
+    }
+
+    private void setAdditionalInfo(User user) {
+        String additionalInfo = user.getInterests() + user.getMusic() + user.getMovies() + user.getGames() + user.getAbout();
+
+        if (additionalInfo.isEmpty() || (user.getInterests() == null && user.getMusic() == null &&
+                user.getMovies() == null && user.getGames() == null && user.getAbout() == null)) {
+            if (userMoreInfoTextView.getVisibility() != View.GONE) {
+                userMoreInfoTextView.setVisibility(View.GONE);
+                userMoreInfoImageView.setVisibility(View.GONE);
+            }
+        } else {
+            if (userMoreInfoTextView.getVisibility() != View.VISIBLE) {
+                userMoreInfoTextView.setVisibility(View.VISIBLE);
+                userMoreInfoImageView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void setFriendsCount(User user) {
@@ -250,12 +286,12 @@ public class UserActivity extends AppCompatActivity {
             friendsCountText = String.format(FRIENDS_COMMON_COUNT_FORMAT, user.getCommonFriendsCount());
         }
 
-        setInfoAndVisibilityField(userFriendsTextView, userFriendsImageView, friendsCountText);
+        Utils.getInstance().setInfoAndVisibilityFieldView(userFriendsTextView, userFriendsImageView, friendsCountText);
     }
 
     private void setFollowers(User user) {
         if (user.getFollowersCount() != 0) {
-            setInfoAndVisibilityField(userFollowersTextView, userFollowersImageView,
+            Utils.getInstance().setInfoAndVisibilityFieldView(userFollowersTextView, userFollowersImageView,
                     String.format(FOLLOWERS_FORMAT, user.getFollowersCount()));
 
             if (userFollowersTextView.getVisibility() != View.VISIBLE) {
@@ -272,7 +308,8 @@ public class UserActivity extends AppCompatActivity {
 
     private void setLastSeen(User user) {
         if (user.getLastSeen() != null || user.getOnline()) {
-            String onlineState = user.getOnline() ? STATE_ONLINE : String.format(ONLINE_FORMAT, Utils.getInstance().getSimpleDate(user.getLastSeen().getTime()));
+            String onlineState = user.getOnline() ? STATE_ONLINE : String.format(ONLINE_FORMAT,
+                    Utils.getInstance().getSimpleDate(user.getLastSeen().getTime()));
             lastSeenTextView.setText(onlineState);
 
             if (lastSeenTextView.getVisibility() != View.VISIBLE) {
@@ -289,29 +326,13 @@ public class UserActivity extends AppCompatActivity {
         if (user.getFacultyName() != null && !user.getFacultyName().isEmpty() &&
                 user.getUniversityName() != null && !user.getUniversityName().isEmpty()) {
 
-            setInfoAndVisibilityField(userEducationTextView, userEducationImageView,
+            Utils.getInstance().setInfoAndVisibilityFieldView(userEducationTextView, userEducationImageView,
                     String.format(EDUCATION_FORMAT, user.getUniversityName(), user.getFacultyName()));
 
         } else if (user.getFacultyName() != null && !user.getFacultyName().isEmpty()) {
-            setInfoAndVisibilityField(userEducationTextView, userEducationImageView, user.getFacultyName());
+            Utils.getInstance().setInfoAndVisibilityFieldView(userEducationTextView, userEducationImageView, user.getFacultyName());
         } else {
-            setInfoAndVisibilityField(userEducationTextView, userEducationImageView, user.getUniversityName());
-        }
-    }
-
-    private void setInfoAndVisibilityField(TextView textView, ImageView imageView, String text) {
-        if (text == null || text.isEmpty()) {
-            if (textView.getVisibility() != View.GONE) {
-                textView.setVisibility(View.GONE);
-                imageView.setVisibility(View.GONE);
-            }
-        } else {
-            textView.setText(text);
-
-            if (textView.getVisibility() != View.VISIBLE) {
-                textView.setVisibility(View.VISIBLE);
-                imageView.setVisibility(View.VISIBLE);
-            }
+            Utils.getInstance().setInfoAndVisibilityFieldView(userEducationTextView, userEducationImageView, user.getUniversityName());
         }
     }
 }

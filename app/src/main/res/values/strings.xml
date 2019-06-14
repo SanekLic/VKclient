@@ -24,4 +24,15 @@
     <string name="user_city_icon_content_description">user city icon</string>
     <string name="user_education_icon_content_description">user education icon</string>
     <string name="animation_setting_label">Анимация списков</string>
+    <string name="more_info_icon_content_description">more info icon</string>
+    <string name="more_info_label">Подробная информация</string>
+    <string name="status_label">Статус</string>
+    <string name="birth_day_label">День рождения</string>
+    <string name="home_town_label">Родной город</string>
+    <string name="education_label">ВУЗ</string>
+    <string name="interests_label">Интересы</string>
+    <string name="music_label">Любимая музыка</string>
+    <string name="movie_label">Любимые фильмы</string>
+    <string name="games_label">Любимые игры</string>
+    <string name="about_label">О себе</string>
 </resources>
