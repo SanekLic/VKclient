@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.my.vkclient.R;
 import com.my.vkclient.utils.ImageLoader;
 
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
 import static com.my.vkclient.Constants.IntentKey.IMAGE_URL_INTENT_KEY;
 
 public class ImageActivity extends AppCompatActivity {
@@ -37,6 +38,6 @@ public class ImageActivity extends AppCompatActivity {
 
     private void setupImageView(String imageUrl) {
         ImageView imageView = findViewById(R.id.imageView);
-        ImageLoader.getInstance().getImageFromUrl(imageView, imageUrl, 0, 0);
+        ImageLoader.getInstance().getImageFromUrl(imageView, imageUrl, 0, 0, DEFAULT_ANIM);
     }
 }

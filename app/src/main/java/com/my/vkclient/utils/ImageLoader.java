@@ -9,6 +9,7 @@ import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.AnimRes;
 import android.util.LruCache;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -75,7 +76,7 @@ public class ImageLoader {
         return inSampleSize;
     }
 
-    public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight) {
+    public void getImageFromUrl(final ImageView imageView, final String requestUrl, int initialWidth, int initialHeight, final @AnimRes int animation) {
         imageView.setTag(R.id.IMAGE_TAG_URL, requestUrl);
 
         if (initialWidth == 0 || initialHeight == 0) {
@@ -118,7 +119,7 @@ public class ImageLoader {
                         imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl) &&
                         !imageView.getTag(R.id.IMAGE_TAG_URL).equals(imageView.getTag(R.id.IMAGE_TAG_SHOW_URL))) {
                     imageView.setTag(R.id.IMAGE_TAG_SHOW_URL, requestUrl);
-                    setResultToImageView(imageView, resultBitmap);
+                    setResultToImageView(imageView, resultBitmap, animation);
                 }
             }
         });
@@ -190,7 +191,7 @@ public class ImageLoader {
         return null;
     }
 
-    private void setResultToImageView(final ImageView imageView, final Bitmap resultBitmap) {
+    private void setResultToImageView(final ImageView imageView, final Bitmap resultBitmap, final @AnimRes int animation) {
         final Boolean isCircular = (Boolean) imageView.getTag(R.id.IMAGE_TAG_IS_CIRCULAR);
         final Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
         final Bitmap postProcessedBitmap = getPostProcessedBitmap(resultBitmap, isCircular, crop);
@@ -199,7 +200,8 @@ public class ImageLoader {
             @Override
             public void run() {
                 imageView.setImageBitmap(postProcessedBitmap);
-                imageView.startAnimation(AnimationUtils.loadAnimation(imageView.getContext(), R.anim.item_fade_in_anim));
+
+                imageView.startAnimation(AnimationUtils.loadAnimation(imageView.getContext(), animation));
             }
         });
     }

@@ -3,6 +3,7 @@ package com.my.vkclient.ui.adapters;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.AnimRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,13 +29,22 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     private Handler mainLooperHandler;
     private boolean isLoading;
     private boolean isLoadComplete;
+    private boolean isAnimationEnable = true;
     private LinearLayoutManager linearLayoutManager;
     private List<T> itemList = new ArrayList<>();
     private ResultCallback<T> itemClickListener;
+    private int layoutProgressResource;
 
     BaseRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         this.context = context;
         this.linearLayoutManager = linearLayoutManager;
+
+        if (this.linearLayoutManager.getOrientation() == LinearLayoutManager.HORIZONTAL) {
+            layoutProgressResource = R.layout.layout_progress_horizontal;
+        } else {
+            layoutProgressResource = R.layout.layout_progress_vertical;
+        }
+
         mainLooperHandler = new Handler(Looper.getMainLooper());
         pageSize = getPageSize();
     }
@@ -44,7 +54,7 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     public BaseViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, @ViewType int viewType) {
         if (viewType == ViewType.LOADING) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_progress, parent, false);
+                    .inflate(layoutProgressResource, parent, false);
 
             return new BaseViewHolder<T>(view) {
                 @Override
@@ -78,10 +88,12 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
             loadMoreItems(itemList.size(), pageSize);
         }
 
-        if (previousPosition < holder.getAdapterPosition()) {
-            holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_down_up_anim));
-        } else {
-            holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_up_down_anim));
+        if (isAnimationEnable) {
+            if (previousPosition < holder.getAdapterPosition()) {
+                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, getAnimationToNextResource()));
+            } else {
+                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, getAnimationToPreviousResource()));
+            }
         }
 
         previousPosition = holder.getAdapterPosition();
@@ -98,7 +110,9 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
     public void onViewDetachedFromWindow(@NonNull BaseViewHolder<T> holder) {
         super.onViewDetachedFromWindow(holder);
 
-        holder.itemView.clearAnimation();
+        if (isAnimationEnable) {
+            holder.itemView.clearAnimation();
+        }
     }
 
     @ViewType
@@ -166,6 +180,20 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         isLoadComplete = false;
         initialLoadItems();
         notifyDataSetChanged();
+    }
+
+    public void setAnimationEnabled(boolean enable) {
+        isAnimationEnable = enable;
+    }
+
+    public @AnimRes
+    int getAnimationToNextResource() {
+        return R.anim.item_translate_up_anim;
+    }
+
+    public @AnimRes
+    int getAnimationToPreviousResource() {
+        return R.anim.item_translate_down_anim;
     }
 
     protected abstract BaseViewHolder<T> getViewHolder(@NonNull ViewGroup parent, @ViewType int viewType);

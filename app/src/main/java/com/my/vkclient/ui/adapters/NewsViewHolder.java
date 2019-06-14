@@ -21,6 +21,8 @@ import com.my.vkclient.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
+
 class NewsViewHolder extends BaseAttachmentViewHolder<News> {
     private TextView likesTextView;
     private ImageView likesImageView;
@@ -133,11 +135,11 @@ class NewsViewHolder extends BaseAttachmentViewHolder<News> {
         if (news.getGroup() != null) {
             nameTextView.setText(news.getGroup().getName());
             iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getGroup().getPhoto100Url(), 0, 0);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getGroup().getPhoto100Url(), 0, 0, DEFAULT_ANIM);
         } else if (news.getUser() != null) {
             nameTextView.setText(String.format(Constants.NAME_FORMAT, news.getUser().getFirstName(), news.getUser().getLastName()));
             iconImageView.setTag(R.id.IMAGE_TAG_IS_CIRCULAR, true);
-            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getUser().getPhoto100Url(), 0, 0);
+            ImageLoader.getInstance().getImageFromUrl(iconImageView, news.getUser().getPhoto100Url(), 0, 0, DEFAULT_ANIM);
         }
     }
 

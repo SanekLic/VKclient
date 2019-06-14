@@ -20,7 +20,7 @@ public class PhotoGsonTypeAdapter implements JsonDeserializer<Photo> {
             if (fromJson.getSizes() != null) {
                 Size maxSize = fromJson.getSizes().get(0);
                 for (Size size : fromJson.getSizes()) {
-                    if (maxSize.getWidth() < size.getWidth()) {
+                    if (maxSize.getWidth() <= size.getWidth()) {
                         maxSize = size;
                     }
                 }

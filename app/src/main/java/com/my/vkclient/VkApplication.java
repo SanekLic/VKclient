@@ -10,6 +10,6 @@ public class VkApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        VkRepository.getInstance().initialContext(getApplicationContext());
+        VkRepository.getInstance().initializeContext(getApplicationContext());
     }
 }

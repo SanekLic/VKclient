@@ -11,7 +11,7 @@ import com.my.vkclient.R;
 import com.my.vkclient.entities.Photo;
 
 public abstract class UserPhotoRecyclerViewAdapter extends BaseRecyclerViewAdapter<Photo> {
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 3;
 
     protected UserPhotoRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super(context, linearLayoutManager);

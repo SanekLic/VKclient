@@ -15,8 +15,8 @@ import com.my.vkclient.ui.adapters.BaseRecyclerViewAdapter;
 
 import java.util.List;
 
-import static com.my.vkclient.Constants.RecyclerView.IS_LOAD_COMPLETE_STATE_KEY;
-import static com.my.vkclient.Constants.RecyclerView.LINEAR_LAYOUT_MANAGER_STATE_KEY;
+import static com.my.vkclient.Constants.StateKey.IS_LOAD_COMPLETE_STATE_KEY;
+import static com.my.vkclient.Constants.StateKey.LINEAR_LAYOUT_MANAGER_STATE_KEY;
 
 public abstract class BaseFragment<T extends BaseRecyclerViewAdapter<E>, E> extends Fragment {
     public final Handler mainLooperHandler;

@@ -14,6 +14,7 @@ import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
 
 import static com.my.vkclient.Constants.AUDIO_FORMAT;
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
 import static com.my.vkclient.Constants.SEARCH_IN_GOOGLE_FORMAT;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 
@@ -138,7 +139,7 @@ abstract class BaseAttachmentViewHolder<T> extends BaseViewHolder<T> {
             }
 
             ImageLoader.getInstance().getImageFromUrl(attachImageView, attachmentPhoto.getPhotoUrl(),
-                    attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight());
+                    attachmentPhoto.getPhotoWidth(), attachmentPhoto.getPhotoHeight(), DEFAULT_ANIM);
         } else {
             attachImageView.setImageDrawable(null);
 

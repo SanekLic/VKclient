@@ -17,6 +17,6 @@ class UserPhotoViewHolder extends BaseViewHolder<Photo> {
     }
 
     public void bind(Photo photo) {
-        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, photo.getPhotoUrl(), photo.getPhotoWidth(), photo.getPhotoHeight());
+        ImageLoader.getInstance().getImageFromUrl(userPhotoImageView, photo.getPhotoUrl(), photo.getPhotoWidth(), photo.getPhotoHeight(), R.anim.item_scale_fade_in_anim);
     }
 }

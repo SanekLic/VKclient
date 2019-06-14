@@ -33,6 +33,8 @@ public class VkRepository {
     private HttpRepositoryHelper httpRepositoryHelper;
     private List<News> newsList = new ArrayList<>();
     private List<User> friendList = new ArrayList<>();
+    private List<Photo> userPhotoList = new ArrayList<>();
+    private User user;
 
     private VkRepository() {
         executor = Executors.newCachedThreadPool();
@@ -66,11 +68,22 @@ public class VkRepository {
         databaseRepositoryHelper.clearFriends();
     }
 
+    public List<Photo> getLastUserPhotoList() {
+        return userPhotoList;
+    }
+
+    public void refreshUser(int userId) {
+        userPhotoList.clear();
+        user = null;
+        databaseRepositoryHelper.clearUser(userId);
+        databaseRepositoryHelper.clearUserPhoto(userId);
+    }
+
     public boolean isOfflineAccess() {
         return offlineAccess;
     }
 
-    public void initialContext(@NonNull final Context context) {
+    public void initializeContext(@NonNull final Context context) {
         databaseRepositoryHelper = new DatabaseRepositoryHelper(context);
 
         sharedPreferences = context.getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
@@ -128,27 +141,32 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                databaseRepositoryHelper.getUser(userId, new ResultCallback<User>() {
-                    @Override
-                    public void onResult(User result) {
-                        if (result != null) {
-                            resultCallback.onResult(result);
-                        }
-
-                        httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
-                            @Override
-                            public void onResult(User user) {
-                                resultCallback.onResult(user);
-
-                                if (user != null) {
-                                    databaseRepositoryHelper.putUser(user);
-                                }
+                if (user != null && user.getId() == userId) {
+                    resultCallback.onResult(user);
+                } else {
+                    databaseRepositoryHelper.getUser(userId, new ResultCallback<User>() {
+                        @Override
+                        public void onResult(User result) {
+                            if (result != null) {
+                                user = result;
+                                resultCallback.onResult(result);
                             }
-                        });
 
-                    }
-                });
+                            httpRepositoryHelper.getUser(userId, new ResultCallback<User>() {
+                                @Override
+                                public void onResult(User result) {
+                                    resultCallback.onResult(result);
 
+                                    if (result != null) {
+                                        user = result;
+                                        databaseRepositoryHelper.putUser(result);
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+                }
             }
         });
     }
@@ -157,10 +175,14 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                if (user != null && user.getId() != userId) {
+                    userPhotoList.clear();
+                }
                 databaseRepositoryHelper.getUserPhotos(userId, startPosition, size, new ResultCallback<List<Photo>>() {
                     @Override
                     public void onResult(List<Photo> result) {
                         if (result != null && result.size() > 0) {
+                            userPhotoList.addAll(result);
                             resultCallback.onResult(result);
                         } else {
                             httpRepositoryHelper.getUserPhotos(userId, startPosition, size, new ResultCallback<List<Photo>>() {
@@ -169,6 +191,7 @@ public class VkRepository {
                                     resultCallback.onResult(result);
 
                                     if (result != null) {
+                                        userPhotoList.addAll(result);
                                         databaseRepositoryHelper.putUserPhotos(userId, result);
                                     }
                                 }

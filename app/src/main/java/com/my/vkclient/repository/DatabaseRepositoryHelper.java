@@ -46,6 +46,7 @@ import static com.my.vkclient.Constants.Database.DATABASE_LIMIT;
 import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_ASC;
 import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_DESC;
 import static com.my.vkclient.Constants.Database.DATABASE_WHERE;
+import static com.my.vkclient.Constants.Database.DATABASE_WHERE_CLAUSE;
 import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.GROUP_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.NEWS_TABLE_NAME;
@@ -369,6 +370,14 @@ class DatabaseRepositoryHelper {
 
     void clearFriends() {
         databaseHelper.delete(FRIEND_TABLE_NAME, null);
+    }
+
+    void clearUserPhoto(int userId) {
+        databaseHelper.delete(USER_PHOTO_TABLE_NAME, String.format(DATABASE_WHERE_CLAUSE, UserPhotoTable.USER_ID, STRING_EQUALS, userId));
+    }
+
+    void clearUser(int userId) {
+        databaseHelper.delete(USER_TABLE_NAME, String.format(DATABASE_WHERE_CLAUSE, UserTable.ID, STRING_EQUALS, userId));
     }
 
     private void putUserToContentValue(User user, ContentValues contentValues) {

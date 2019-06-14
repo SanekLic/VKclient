@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.my.vkclient.Constants;
@@ -25,8 +27,12 @@ import com.my.vkclient.utils.Utils;
 
 import java.util.List;
 
+import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIM;
 import static com.my.vkclient.Constants.IntentKey.USER_ID_INTENT_KEY;
 import static com.my.vkclient.Constants.STRING_EMPTY;
+import static com.my.vkclient.Constants.StateKey.IS_LOAD_COMPLETE_STATE_KEY;
+import static com.my.vkclient.Constants.StateKey.LINEAR_LAYOUT_MANAGER_STATE_KEY;
+import static com.my.vkclient.Constants.StateKey.SCROLL_VIEW_POSITION_STATE_KEY;
 import static com.my.vkclient.Constants.UserActivity.COUNT_PHOTO_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.EDUCATION_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.FOLLOWERS_FORMAT;
@@ -52,15 +58,26 @@ public class UserActivity extends AppCompatActivity {
     private TextView userCityTextView;
     private ImageView userEducationImageView;
     private TextView userEducationTextView;
-    private String photoUrl;
     private TextView countPhotoTextView;
     private RecyclerView userPhotoRecyclerView;
+    private SwipeRefreshLayout swipeRefresh;
+    private String photoUrl;
     private int userId;
+    private ScrollView userScrollView;
 
     public static void show(final Context context, final int userId) {
         Intent intent = new Intent(context, UserActivity.class);
         intent.putExtra(Constants.IntentKey.USER_ID_INTENT_KEY, userId);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY, linearLayoutManager.onSaveInstanceState());
+        outState.putBoolean(IS_LOAD_COMPLETE_STATE_KEY, userPhotoRecyclerViewAdapter.isLoadComplete());
+        outState.putInt(SCROLL_VIEW_POSITION_STATE_KEY, userScrollView.getScrollX());
     }
 
     @Override
@@ -72,9 +89,39 @@ public class UserActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userId = intent.getIntExtra(USER_ID_INTENT_KEY, 0);
 
+        setupSwipeRefresh();
         setupView();
-        getData();
+        setData();
         setupPhotoRecyclerView();
+
+        if (savedInstanceState != null) {
+            userPhotoRecyclerViewAdapter.addItems(VkRepository.getInstance().getLastUserPhotoList());
+            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
+            int scrollViewPosition = savedInstanceState.getInt(SCROLL_VIEW_POSITION_STATE_KEY);
+            userScrollView.scrollTo(scrollViewPosition, 0);
+
+            if (savedInstanceState.getBoolean(IS_LOAD_COMPLETE_STATE_KEY)) {
+                userPhotoRecyclerViewAdapter.setLoadComplete();
+            }
+        } else {
+            userPhotoRecyclerViewAdapter.initialLoadItems();
+        }
+    }
+
+    private void setupSwipeRefresh() {
+        swipeRefresh = findViewById(R.id.swipeRefresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorSwipeRefresh);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!userPhotoRecyclerViewAdapter.isLoading()) {
+                    VkRepository.getInstance().refreshUser(userId);
+                    setData();
+                    userPhotoRecyclerViewAdapter.refreshItems();
+                    swipeRefresh.setRefreshing(false);
+                }
+            }
+        });
     }
 
     private void setupPhotoRecyclerView() {
@@ -99,8 +146,10 @@ public class UserActivity extends AppCompatActivity {
 
             @Override
             public void onLoadStateChanged(boolean state) {
+                swipeRefresh.setEnabled(!state);
             }
         };
+        userPhotoRecyclerViewAdapter.setAnimationEnabled(false);
         userPhotoRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<Photo>() {
             @Override
             public void onResult(Photo photo) {
@@ -109,8 +158,6 @@ public class UserActivity extends AppCompatActivity {
         });
 
         userPhotoRecyclerView.setAdapter(userPhotoRecyclerViewAdapter);
-
-        userPhotoRecyclerViewAdapter.initialLoadItems();
     }
 
     private void setupView() {
@@ -136,9 +183,10 @@ public class UserActivity extends AppCompatActivity {
         userEducationImageView = findViewById(R.id.userEducationImageView);
         userEducationTextView = findViewById(R.id.userEducationTextView);
         countPhotoTextView = findViewById(R.id.countPhotoTextView);
+        userScrollView = findViewById(R.id.userScrollView);
     }
 
-    private void getData() {
+    private void setData() {
         VkRepository.getInstance().getUser(userId, new ResultCallback<User>() {
             @Override
             public void onResult(final User user) {
@@ -158,14 +206,14 @@ public class UserActivity extends AppCompatActivity {
                             if (user.getCounters() != null && user.getCounters().getPhotos() > 0) {
                                 countPhotoTextView.setText(String.format(COUNT_PHOTO_FORMAT, user.getCounters().getPhotos()));
 
-                                if (countPhotoTextView.getVisibility() != View.VISIBLE) {
-                                    countPhotoTextView.setVisibility(View.VISIBLE);
+                                if (userPhotoRecyclerView.getVisibility() != View.VISIBLE) {
                                     userPhotoRecyclerView.setVisibility(View.VISIBLE);
+                                    countPhotoTextView.setVisibility(View.VISIBLE);
                                 }
                             } else {
-                                if (countPhotoTextView.getVisibility() != View.GONE) {
-                                    countPhotoTextView.setVisibility(View.GONE);
+                                if (userPhotoRecyclerView.getVisibility() != View.GONE) {
                                     userPhotoRecyclerView.setVisibility(View.GONE);
+                                    countPhotoTextView.setVisibility(View.GONE);
                                 }
                             }
 
@@ -179,12 +227,12 @@ public class UserActivity extends AppCompatActivity {
                                 ImageLoader.getInstance().getImageFromUrl(userPhotoImageView,
                                         user.getCropPhoto().getCropPhotoUrl(),
                                         user.getCropPhoto().getCropPhotoWidth(),
-                                        user.getCropPhoto().getCropPhotoHeight());
+                                        user.getCropPhoto().getCropPhotoHeight(), DEFAULT_ANIM);
                             } else {
                                 photoUrl = user.getPhotoMaxUrl();
 
                                 ImageLoader.getInstance().getImageFromUrl(userPhotoImageView,
-                                        user.getPhotoMaxUrl(), 0, 0);
+                                        user.getPhotoMaxUrl(), 0, 0, DEFAULT_ANIM);
                             }
                         }
                     }

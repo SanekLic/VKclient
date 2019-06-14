@@ -1,5 +1,7 @@
 package com.my.vkclient;
 
+import android.support.annotation.AnimRes;
+
 public interface Constants {
     String STRING_EQUALS = "=";
     String STRING_NOT_EQUALS = "<>";
@@ -24,6 +26,12 @@ public interface Constants {
         String IMAGE_URL_INTENT_KEY = "IMAGE_URL_INTENT_KEY";
     }
 
+    interface StateKey {
+        String SCROLL_VIEW_POSITION_STATE_KEY = "SCROLL_VIEW_POSITION";
+        String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
+        String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
+    }
+
     interface Database {
         String USER_TABLE_NAME = "USER_TABLE";
         String FRIEND_TABLE_NAME = "FRIEND_TABLE";
@@ -41,6 +49,7 @@ public interface Constants {
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
         String SELECT_FROM = "SELECT * FROM ";
         String DATABASE_WHERE = " WHERE %s %s %s";
+        String DATABASE_WHERE_CLAUSE = "%s %s %s";
         String DATABASE_JOIN = " JOIN %s ON %s = %s order by %s, %s";
         String DATABASE_LIMIT = " LIMIT %s,%s";
         String DATABASE_ORDER_BY_DESC = " ORDER BY %s DESC";
@@ -83,6 +92,9 @@ public interface Constants {
 
     interface ImageLoader {
         int PERCENTAGE = 100;
+
+        @AnimRes
+        int DEFAULT_ANIM = R.anim.item_fade_in_anim;
     }
 
     interface SharedPreferences {
@@ -92,8 +104,6 @@ public interface Constants {
     }
 
     interface RecyclerView {
-        String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
-        String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
         int VIEW_MARGIN = 16;
     }
 
