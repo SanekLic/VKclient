@@ -35,7 +35,7 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 4;
+        int DATABASE_VERSION = 6;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
@@ -44,8 +44,9 @@ public interface Constants {
         String DATABASE_JOIN = " JOIN %s ON %s = %s order by %s, %s";
         String DATABASE_LIMIT = " LIMIT %s,%s";
         String DATABASE_ORDER_BY_DESC = " ORDER BY %s DESC";
+        String DATABASE_ORDER_BY_ASC = " ORDER BY %s ASC";
 
-        String FIELD_DONT_HAVE_TYPE_ANNOTATION = "Field don't have type annotation";
+        String FIELD_DO_NOT_HAVE_TYPE_ANNOTATION = "Field don't have type annotation";
     }
 
     interface API_VK {

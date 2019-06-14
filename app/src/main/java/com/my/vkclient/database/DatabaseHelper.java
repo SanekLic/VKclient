@@ -16,34 +16,29 @@ import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
 import com.my.vkclient.database.fields.dbString;
-import com.my.vkclient.database.model.AttachmentTable;
-import com.my.vkclient.database.model.FriendTable;
-import com.my.vkclient.database.model.GroupTable;
-import com.my.vkclient.database.model.NewsTable;
-import com.my.vkclient.database.model.UserPhotoTable;
-import com.my.vkclient.database.model.UserTable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.my.vkclient.Constants.Database.DROP_TABLE_IF_EXISTS;
-import static com.my.vkclient.Constants.Database.FIELD_DONT_HAVE_TYPE_ANNOTATION;
+import static com.my.vkclient.Constants.Database.FIELD_DO_NOT_HAVE_TYPE_ANNOTATION;
 import static com.my.vkclient.Constants.Database.SQL_TABLE_CREATE_TEMPLATE;
 import static com.my.vkclient.Constants.STRING_COMMA;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.STRING_SPACE;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    private List<Class<?>> tableClasses;
 
-    public DatabaseHelper(@NonNull final Context context) {
+    public DatabaseHelper(@NonNull final Context context, @NonNull List<Class<?>> tableClasses) {
         super(context, Constants.Database.DATABASE_NAME, null, Constants.Database.DATABASE_VERSION);
+
+        this.tableClasses = tableClasses;
     }
 
-    private static List<Class<?>> getTables() {
-        return Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class,
-                NewsTable.class, AttachmentTable.class, UserPhotoTable.class);
+    private List<Class<?>> getTables() {
+        return tableClasses;
     }
 
     private String getCreateTableString(final Class<?> tableClass) {
@@ -74,7 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     } else if (typeAnnotation instanceof dbLong) {
                         type = ((dbLong) typeAnnotation).name();
                     } else if (!(typeAnnotation instanceof dbPrimaryKey) && !(typeAnnotation instanceof dbAutoincrement)) {
-                        throw new IllegalStateException(FIELD_DONT_HAVE_TYPE_ANNOTATION);
+                        throw new IllegalStateException(FIELD_DO_NOT_HAVE_TYPE_ANNOTATION);
                     }
                 }
 

@@ -35,6 +35,7 @@ import com.my.vkclient.entities.Views;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.List;
 import static com.my.vkclient.Constants.Database.ATTACHMENT_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.DATABASE_JOIN;
 import static com.my.vkclient.Constants.Database.DATABASE_LIMIT;
+import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_ASC;
 import static com.my.vkclient.Constants.Database.DATABASE_ORDER_BY_DESC;
 import static com.my.vkclient.Constants.Database.DATABASE_WHERE;
 import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
@@ -126,7 +128,10 @@ class DatabaseRepositoryHelper {
     private int columnIndexPhotoWidth;
 
     DatabaseRepositoryHelper(@NonNull final Context context) {
-        databaseHelper = new DatabaseHelper(context);
+        List<Class<?>> tableClasses = Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class,
+                NewsTable.class, AttachmentTable.class, UserPhotoTable.class);
+
+        databaseHelper = new DatabaseHelper(context, tableClasses);
     }
 
     void getUser(final int userId, final ResultCallback<User> resultCallback) {
@@ -208,7 +213,7 @@ class DatabaseRepositoryHelper {
         try (Cursor userPhotosCursor = databaseHelper.query(getUserPhotoLimitDatabaseQuery(userId, startPosition, size))) {
             if (userPhotosCursor.getCount() > 0) {
                 List<Photo> photoList = new ArrayList<>();
-                prepareIndexesUserhotoColumns(userPhotosCursor);
+                prepareIndexesUserPhotoColumns(userPhotosCursor);
 
                 while (userPhotosCursor.moveToNext()) {
                     Photo photo = new Photo();
@@ -237,6 +242,7 @@ class DatabaseRepositoryHelper {
             ContentValues contentValues = new ContentValues();
             for (Photo photo : photoList) {
                 contentValues.put(UserPhotoTable.ID, photo.getId());
+                contentValues.put(UserPhotoTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
                 contentValues.put(UserPhotoTable.USER_ID, userId);
                 contentValues.put(UserPhotoTable.PHOTO_URL, photo.getPhotoUrl());
                 contentValues.put(UserPhotoTable.PHOTO_HEIGHT, photo.getPhotoHeight());
@@ -699,7 +705,7 @@ class DatabaseRepositoryHelper {
 
     private String getUserPhotoLimitDatabaseQuery(int userId, int startPosition, int size) {
         return SELECT_FROM + USER_PHOTO_TABLE_NAME + String.format(DATABASE_WHERE, UserPhotoTable.USER_ID, STRING_EQUALS, userId)
-                + String.format(DATABASE_LIMIT, startPosition, size);
+                + String.format(DATABASE_ORDER_BY_ASC, UserPhotoTable.LAST_UPDATE) + String.format(DATABASE_LIMIT, startPosition, size);
     }
 
     private void prepareIndexesUserColumns(Cursor cursor, boolean isFriendsTable) {
@@ -744,13 +750,13 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    private void prepareIndexesUserhotoColumns(Cursor cursor) {
+    private void prepareIndexesUserPhotoColumns(Cursor cursor) {
         if (!userPhotosColumnIndexesReady) {
             columnIndexPhotoUrl = cursor.getColumnIndex(UserPhotoTable.PHOTO_URL);
             columnIndexPhotoHeight = cursor.getColumnIndex(UserPhotoTable.PHOTO_HEIGHT);
             columnIndexPhotoWidth = cursor.getColumnIndex(UserPhotoTable.PHOTO_WIDTH);
 
-            groupColumnIndexesReady = true;
+            userPhotosColumnIndexesReady = true;
         }
     }
 

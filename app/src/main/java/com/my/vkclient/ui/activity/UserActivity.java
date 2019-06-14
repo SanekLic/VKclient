@@ -37,6 +37,8 @@ import static com.my.vkclient.Constants.UserActivity.STATE_ONLINE;
 
 public class UserActivity extends AppCompatActivity {
 
+    UserPhotoRecyclerViewAdapter userPhotoRecyclerViewAdapter;
+    LinearLayoutManager linearLayoutManager;
     private TextView userNameTextView;
     private ImageView userPhotoImageView;
     private TextView lastSeenTextView;
@@ -53,8 +55,6 @@ public class UserActivity extends AppCompatActivity {
     private String photoUrl;
     private TextView countPhotoTextView;
     private RecyclerView userPhotoRecyclerView;
-    UserPhotoRecyclerViewAdapter userPhotoRecyclerViewAdapter;
-    LinearLayoutManager linearLayoutManager;
     private int userId;
 
     public static void show(final Context context, final int userId) {
@@ -77,10 +77,10 @@ public class UserActivity extends AppCompatActivity {
         setupPhotoRecyclerView();
     }
 
-    private void setupPhotoRecyclerView(){
+    private void setupPhotoRecyclerView() {
         userPhotoRecyclerView = findViewById(R.id.userPhotoRecyclerView);
 
-        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         userPhotoRecyclerView.setLayoutManager(linearLayoutManager);
         userPhotoRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -91,27 +91,26 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
-
         userPhotoRecyclerViewAdapter = new UserPhotoRecyclerViewAdapter(this, linearLayoutManager) {
             @Override
             public void load(int startPosition, int size, ResultCallback<List<Photo>> listResultCallback) {
-                VkRepository.getInstance().getFriends(startPosition, size, listResultCallback);
+                VkRepository.getInstance().getUserPhotos(userId, startPosition, size, listResultCallback);
             }
 
             @Override
             public void onLoadStateChanged(boolean state) {
-                swipeRefresh.setEnabled(!state);
             }
         };
         userPhotoRecyclerViewAdapter.setOnItemClickListener(new ResultCallback<Photo>() {
             @Override
             public void onResult(Photo photo) {
-                ImageActivity.show(UserActivity.this, photoUrl);
+                ImageActivity.show(UserActivity.this, photo.getPhotoUrl());
             }
         });
 
-
         userPhotoRecyclerView.setAdapter(userPhotoRecyclerViewAdapter);
+
+        userPhotoRecyclerViewAdapter.initialLoadItems();
     }
 
     private void setupView() {

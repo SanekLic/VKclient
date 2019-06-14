@@ -3,7 +3,6 @@ package com.my.vkclient.ui.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import android.view.ViewGroup;
 import com.my.vkclient.R;
 import com.my.vkclient.entities.Photo;
 
-public abstract class UserPhotoRecyclerViewAdapter extends RecyclerView.Adapter<UserPhotoViewHolder> {
-    private static final int PAGE_SIZE = 10;
+public abstract class UserPhotoRecyclerViewAdapter extends BaseRecyclerViewAdapter<Photo> {
+    private static final int PAGE_SIZE = 5;
 
     protected UserPhotoRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super(context, linearLayoutManager);
