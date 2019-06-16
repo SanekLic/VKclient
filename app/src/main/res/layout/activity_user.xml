@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorActivityBackground">
+
+    <ScrollView
+        android:id="@+id/userScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:descendantFocusability="beforeDescendants"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <ImageView
+                android:id="@+id/userPhotoImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/user_photo_content_description"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/userNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/lastSeenTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="name" />
+
+            <View
+                android:id="@+id/frameInfoView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_setting_item"
+                app:layout_constraintBottom_toTopOf="@+id/countPhotoTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userPhotoImageView" />
+
+            <TextView
+                android:id="@+id/lastSeenTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/userPhotoImageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="last seen" />
+
+            <ImageView
+                android:id="@+id/userStatusImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/user_status_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userStatusTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userStatusTextView"
+                app:srcCompat="@drawable/ic_user_status" />
+
+            <TextView
+                android:id="@+id/userStatusTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@color/colorUserInfoIcon"
+                app:layout_constraintEnd_toEndOf="@+id/editStatusImageView"
+                app:layout_constraintStart_toEndOf="@+id/userStatusImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userPhotoImageView"
+                tools:text="status" />
+
+            <ImageView
+                android:id="@+id/userFriendsImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/user_friends_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userFriendsTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userFriendsTextView"
+                app:srcCompat="@drawable/ic_user_friends" />
+
+            <TextView
+                android:id="@+id/userFriendsTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@color/colorUserInfoIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/userFriendsImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userStatusTextView"
+                tools:text="15 friends" />
+
+            <ImageView
+                android:id="@+id/userFollowersImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/user_followers_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userFollowersTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userFollowersTextView"
+                app:srcCompat="@drawable/ic_user_followers" />
+
+            <TextView
+                android:id="@+id/userFollowersTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@color/colorUserInfoIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/userFollowersImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userFriendsTextView"
+                tools:text="15 followers" />
+
+            <ImageView
+                android:id="@+id/userCityImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/user_city_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userCityTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userCityTextView"
+                app:srcCompat="@drawable/ic_user_city" />
+
+            <TextView
+                android:id="@+id/userCityTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@color/colorUserInfoIcon"
+                app:layout_constraintEnd_toEndOf="@+id/editCityImageView"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/userCityImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userFollowersTextView"
+                tools:text="city" />
+
+            <ImageView
+                android:id="@+id/userEducationImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/user_education_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userEducationTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userEducationTextView"
+                app:srcCompat="@drawable/ic_user_education" />
+
+            <TextView
+                android:id="@+id/userEducationTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@color/colorUserInfoIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/userEducationImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userCityTextView"
+                tools:text="education" />
+
+            <ImageView
+                android:id="@+id/userMoreInfoImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/more_info_icon_content_description"
+                app:layout_constraintBottom_toBottomOf="@+id/userMoreInfoTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userMoreInfoTextView"
+                app:srcCompat="@drawable/ic_user_more_info" />
+
+            <TextView
+                android:id="@+id/userMoreInfoTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/more_info_label"
+                android:textColor="@color/colorUserMoreInfo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/userMoreInfoImageView"
+                app:layout_constraintTop_toBottomOf="@+id/userEducationTextView" />
+
+            <View
+                android:id="@+id/framePhotoView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_setting_item"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userMoreInfoTextView"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/countPhotoTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/framePhotoView"
+                tools:text="Photo" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/userPhotoRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/countPhotoTextView" />
+
+            <ImageView
+                android:id="@+id/editStatusImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/userStatusTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userStatusTextView"
+                app:srcCompat="@drawable/ic_user_edit"
+                tools:visibility="visible"
+                android:contentDescription="@string/edit_status_content_description" />
+
+            <ImageView
+                android:id="@+id/editCityImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/userCityTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/userCityTextView"
+                app:srcCompat="@drawable/ic_user_edit"
+                tools:visibility="visible"
+                android:contentDescription="@string/edit_city_content_description" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>
