@@ -21,14 +21,18 @@ import com.my.vkclient.entities.Rect;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.adapters.UserPhotoRecyclerViewAdapter;
+import com.my.vkclient.ui.fragment.UserEditFieldDialogFragment;
 import com.my.vkclient.ui.fragment.UserInfoDialogFragment;
 import com.my.vkclient.utils.ImageLoader;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.SharedPreferencesHelper;
 import com.my.vkclient.utils.Utils;
 
 import java.util.List;
 
 import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIMATION;
+import static com.my.vkclient.Constants.IntentKey.EDIT_CITY_INTENT_KEY;
+import static com.my.vkclient.Constants.IntentKey.EDIT_STATUS_INTENT_KEY;
 import static com.my.vkclient.Constants.IntentKey.USER_ID_INTENT_KEY;
 import static com.my.vkclient.Constants.STRING_EMPTY;
 import static com.my.vkclient.Constants.StateKey.IS_LOAD_COMPLETE_STATE_KEY;
@@ -47,6 +51,7 @@ public class UserActivity extends AppCompatActivity {
 
     UserPhotoRecyclerViewAdapter userPhotoRecyclerViewAdapter;
     LinearLayoutManager linearLayoutManager;
+    private SwipeRefreshLayout swipeRefresh;
     private TextView userNameTextView;
     private ImageView userPhotoImageView;
     private TextView lastSeenTextView;
@@ -64,7 +69,6 @@ public class UserActivity extends AppCompatActivity {
     private TextView userMoreInfoTextView;
     private ImageView userMoreInfoImageView;
     private RecyclerView userPhotoRecyclerView;
-    private SwipeRefreshLayout swipeRefresh;
     private String photoUrl;
     private int userId;
     private ScrollView userScrollView;
@@ -198,10 +202,45 @@ public class UserActivity extends AppCompatActivity {
                     Bundle bundle = new Bundle();
                     bundle.putInt(USER_ID_INTENT_KEY, userId);
                     userInfoDialogFragment.setArguments(bundle);
-                    userInfoDialogFragment.show(getSupportFragmentManager(), Constants.FragmentTag.USER_INFO_FRAGMENT_TAG);
+                    userInfoDialogFragment.show(getSupportFragmentManager(), Constants.DialogFragment.USER_INFO_DIALOG_FRAGMENT_TAG);
                 }
             }
         });
+
+        if (userId == SharedPreferencesHelper.getInstance().getProfileId()) {
+            ImageView editStatusImageView = findViewById(R.id.editStatusImageView);
+            editStatusImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(EDIT_STATUS_INTENT_KEY, true);
+                    showUserEditFieldDialogFragment(bundle);
+                }
+            });
+            ImageView editCityImageView = findViewById(R.id.editCityImageView);
+            editCityImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(EDIT_CITY_INTENT_KEY, true);
+                    showUserEditFieldDialogFragment(bundle);
+                }
+            });
+            editStatusImageView.setVisibility(View.VISIBLE);
+            editCityImageView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showUserEditFieldDialogFragment(Bundle bundle) {
+        UserEditFieldDialogFragment userEditFieldDialogFragment = new UserEditFieldDialogFragment();
+        userEditFieldDialogFragment.setArguments(bundle);
+        userEditFieldDialogFragment.setOnApplyEditField(new ResultCallback<User>() {
+            @Override
+            public void onResult(User result) {
+                setData();
+            }
+        });
+        userEditFieldDialogFragment.show(getSupportFragmentManager(), Constants.DialogFragment.EDIT_USER_DIALOG_FRAGMENT_TAG);
     }
 
     private void setData() {
@@ -215,10 +254,16 @@ public class UserActivity extends AppCompatActivity {
                             userNameTextView.setText(String.format(Constants.NAME_FORMAT, user.getFirstName(), user.getLastName()));
 
                             setLastSeen(user);
-                            Utils.getInstance().setInfoAndVisibilityFieldView(userStatusTextView, userStatusImageView, user.getStatus());
+                            if (userId == SharedPreferencesHelper.getInstance().getProfileId()) {
+                                userStatusTextView.setText(user.getStatus());
+                                userCityTextView.setText(user.getHomeTown());
+                            } else {
+                                Utils.getInstance().setInfoAndVisibilityFieldView(userStatusTextView, userStatusImageView, user.getStatus());
+                                Utils.getInstance().setInfoAndVisibilityFieldView(userCityTextView, userCityImageView, user.getHomeTown());
+                            }
+
                             setFriendsCount(user);
                             setFollowers(user);
-                            Utils.getInstance().setInfoAndVisibilityFieldView(userCityTextView, userCityImageView, user.getHomeTown());
                             setEducation(user);
 
                             if (user.getCounters() != null && user.getCounters().getPhotos() > 0) {

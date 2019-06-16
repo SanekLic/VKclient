@@ -1,15 +1,11 @@
 package com.my.vkclient.ui.fragment;
 
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.R;
 import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.activity.UserActivity;
@@ -19,11 +15,6 @@ import com.my.vkclient.utils.ResultCallback;
 import java.util.List;
 
 public class FriendsFragment extends BaseFragment<FriendRecyclerViewAdapter, User> {
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_friends, container, false);
-    }
 
     @Override
     public RecyclerView.ItemDecoration getItemDecoration() {

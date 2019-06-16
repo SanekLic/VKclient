@@ -25,11 +25,14 @@ public interface Constants {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
         String GROUP_ID_INTENT_KEY = "GROUP_ID_INTENT_KEY";
         String IMAGE_URL_INTENT_KEY = "IMAGE_URL_INTENT_KEY";
+        String EDIT_STATUS_INTENT_KEY = "EDIT_STATUS_INTENT_KEY";
+        String EDIT_CITY_INTENT_KEY = "EDIT_CITY_INTENT_KEY";
     }
 
-    interface FragmentTag{
-        String USER_INFO_FRAGMENT_TAG = "USER_INFO_FRAGMENT_TAG";
-        String GROUP_INFO_FRAGMENT_TAG = "GROUP_INFO_FRAGMENT_TAG";
+    interface DialogFragment {
+        String USER_INFO_DIALOG_FRAGMENT_TAG = "USER_INFO_DIALOG_FRAGMENT_TAG";
+        String GROUP_INFO_DIALOG_FRAGMENT_TAG = "GROUP_INFO_DIALOG_FRAGMENT_TAG";
+        String EDIT_USER_DIALOG_FRAGMENT_TAG = "EDIT_USER_DIALOG_FRAGMENT_TAG";
     }
 
     interface StateKey {
@@ -98,6 +101,9 @@ public interface Constants {
         String NEWS_START_FROM = "&start_from=";
         String NEWS_FIELDS = USER_FIELDS + GROUPS_FIELDS;
         String NEWS_COUNT = "&count=";
+        String API_VK_SAVE_PROFILE = API_VK_METHOD + "account.saveProfileInfo";
+        String SAVE_STATUS = "?status=";
+        String SAVE_HOME_TOWN = "?home_town=";
     }
 
     interface ImageLoader {

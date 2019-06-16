@@ -7,8 +7,9 @@ import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.entities.response.LikesResponse;
+import com.my.vkclient.entities.response.LikeResponse;
 import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.entities.response.ProfileEditResponse;
 import com.my.vkclient.utils.ResultCallback;
 import com.my.vkclient.utils.SharedPreferencesHelper;
 
@@ -122,9 +123,9 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                httpRepositoryHelper.setLikeNews(news.getSourceId(), news.getId(), like, new ResultCallback<LikesResponse.Response>() {
+                httpRepositoryHelper.setLikeNews(news.getSourceId(), news.getId(), like, new ResultCallback<LikeResponse.Response>() {
                     @Override
-                    public void onResult(LikesResponse.Response likesResponse) {
+                    public void onResult(LikeResponse.Response likesResponse) {
                         if (likesResponse != null) {
                             news.getLikes().setUserLikes(like);
                             news.getLikes().setCount(likesResponse.getLikesCount());
@@ -132,6 +133,48 @@ public class VkRepository {
                             newsResultCallback.onResult(news);
 
                             databaseRepositoryHelper.putNewsWithoutAttachments(news);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void setStatusToUser(final User editUser, final String status, final ResultCallback<User> newsResultCallback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                httpRepositoryHelper.setProfileStatus(status, new ResultCallback<ProfileEditResponse.Response>() {
+                    @Override
+                    public void onResult(ProfileEditResponse.Response profileEditResponse) {
+                        if (profileEditResponse != null) {
+                            editUser.setStatus(status);
+                            user = editUser;
+
+                            newsResultCallback.onResult(editUser);
+
+                            databaseRepositoryHelper.putUser(editUser);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void setHomeTownToUser(final User editUser, final String homeTown, final ResultCallback<User> newsResultCallback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                httpRepositoryHelper.setProfileHomeTown(homeTown, new ResultCallback<ProfileEditResponse.Response>() {
+                    @Override
+                    public void onResult(ProfileEditResponse.Response profileEditResponse) {
+                        if (profileEditResponse != null) {
+                            editUser.setHomeTown(homeTown);
+                            user = editUser;
+
+                            newsResultCallback.onResult(editUser);
+
+                            databaseRepositoryHelper.putUser(editUser);
                         }
                     }
                 });

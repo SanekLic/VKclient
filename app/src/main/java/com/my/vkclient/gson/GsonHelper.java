@@ -12,8 +12,9 @@ import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.Video;
 import com.my.vkclient.entities.response.FriendResponse;
 import com.my.vkclient.entities.response.GroupResponse;
-import com.my.vkclient.entities.response.LikesResponse;
+import com.my.vkclient.entities.response.LikeResponse;
 import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.entities.response.ProfileEditResponse;
 import com.my.vkclient.entities.response.UserGroupResponse;
 import com.my.vkclient.entities.response.UserPhotoResponse;
 import com.my.vkclient.entities.response.UserResponse;
@@ -130,14 +131,24 @@ public class GsonHelper {
         return newsResponse.getResponse();
     }
 
-    public LikesResponse.Response getLikesResponseFromJson(String jsonNews) {
-        LikesResponse likesResponse = gson.fromJson(jsonNews, LikesResponse.class);
+    public LikeResponse.Response getLikesResponseFromJson(String jsonNews) {
+        LikeResponse likeResponse = gson.fromJson(jsonNews, LikeResponse.class);
 
-        if (likesResponse == null || likesResponse.getResponse() == null) {
+        if (likeResponse == null || likeResponse.getResponse() == null) {
             return null;
         }
 
-        return likesResponse.getResponse();
+        return likeResponse.getResponse();
+    }
+
+    public ProfileEditResponse.Response getProfileEditResponseFromJson(String jsonNews) {
+        ProfileEditResponse profileEditResponse = gson.fromJson(jsonNews, ProfileEditResponse.class);
+
+        if (profileEditResponse == null || profileEditResponse.getResponse() == null) {
+            return null;
+        }
+
+        return profileEditResponse.getResponse();
     }
 
     private void setOwnerToNews(NewsResponse newsResponse, News news) {

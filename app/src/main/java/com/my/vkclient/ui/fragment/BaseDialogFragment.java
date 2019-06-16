@@ -44,8 +44,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         scrollView = view.findViewById(R.id.scrollView);

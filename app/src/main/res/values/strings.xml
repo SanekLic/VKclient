@@ -47,4 +47,8 @@
     <string name="group_description_icon_content_description">group description icon</string>
     <string name="connection_error_label">Отсутствует подключение к интернету</string>
     <string name="repeated_connection">Повторить подключение</string>
+    <string name="edit_city_content_description">edit city</string>
+    <string name="edit_status_content_description">edit status</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
 </resources>

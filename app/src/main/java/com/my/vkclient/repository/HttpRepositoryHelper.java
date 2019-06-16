@@ -4,8 +4,9 @@ import com.my.vkclient.Constants;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.Photo;
 import com.my.vkclient.entities.User;
-import com.my.vkclient.entities.response.LikesResponse;
+import com.my.vkclient.entities.response.LikeResponse;
 import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.entities.response.ProfileEditResponse;
 import com.my.vkclient.gson.GsonHelper;
 import com.my.vkclient.utils.ResultCallback;
 
@@ -25,11 +26,29 @@ class HttpRepositoryHelper {
         this.accessToken = accessToken;
     }
 
-    void setLikeNews(int sourceId, int newsId, boolean like, final ResultCallback<LikesResponse.Response> resultCallback) {
+    void setLikeNews(int sourceId, int newsId, boolean like, final ResultCallback<LikeResponse.Response> resultCallback) {
         getResultStringFromUrl(getLikeRequest(sourceId, newsId, like), new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getLikesResponseFromJson(result));
+            }
+        });
+    }
+
+    void setProfileStatus(final String status, final ResultCallback<ProfileEditResponse.Response> resultCallback) {
+        getResultStringFromUrl(getEditStatusRequest(status), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(GsonHelper.getInstance().getProfileEditResponseFromJson(result));
+            }
+        });
+    }
+
+    void setProfileHomeTown(final String homeTown, final ResultCallback<ProfileEditResponse.Response> resultCallback) {
+        getResultStringFromUrl(getEditHomeTownRequest(homeTown), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(GsonHelper.getInstance().getProfileEditResponseFromJson(result));
             }
         });
     }
@@ -193,5 +212,23 @@ class HttpRepositoryHelper {
         } else {
             return String.format(API_VK_SET_DISLIKE_POST + accessToken, sourceId, newsId);
         }
+    }
+
+    private String getEditStatusRequest(String status) {
+        return Constants.API_VK.API_VK_SAVE_PROFILE +
+                Constants.API_VK.SAVE_STATUS +
+                status +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
+
+    }
+
+    private String getEditHomeTownRequest(String homeTown) {
+        return Constants.API_VK.API_VK_SAVE_PROFILE +
+                Constants.API_VK.SAVE_HOME_TOWN +
+                homeTown +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
+
     }
 }

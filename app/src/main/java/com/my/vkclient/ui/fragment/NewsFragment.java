@@ -6,12 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.my.vkclient.Constants;
-import com.my.vkclient.R;
 import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
 import com.my.vkclient.entities.User;
@@ -26,11 +23,6 @@ import java.util.List;
 import static com.my.vkclient.Constants.IntentKey.GROUP_ID_INTENT_KEY;
 
 public class NewsFragment extends BaseFragment<NewsRecyclerViewAdapter, News> {
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_news, container, false);
-    }
 
     @Override
     public RecyclerView.ItemDecoration getItemDecoration() {
@@ -122,7 +114,7 @@ public class NewsFragment extends BaseFragment<NewsRecyclerViewAdapter, News> {
                     Bundle bundle = new Bundle();
                     bundle.putInt(GROUP_ID_INTENT_KEY, group.getId());
                     groupInfoDialogFragment.setArguments(bundle);
-                    groupInfoDialogFragment.show(getActivity().getSupportFragmentManager(), Constants.FragmentTag.GROUP_INFO_FRAGMENT_TAG);
+                    groupInfoDialogFragment.show(getActivity().getSupportFragmentManager(), Constants.DialogFragment.GROUP_INFO_DIALOG_FRAGMENT_TAG);
                 }
             }
         });

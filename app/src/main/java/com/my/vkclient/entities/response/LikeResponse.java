@@ -2,7 +2,7 @@ package com.my.vkclient.entities.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LikesResponse {
+public class LikeResponse {
     @SerializedName("response")
     private Response response;
 

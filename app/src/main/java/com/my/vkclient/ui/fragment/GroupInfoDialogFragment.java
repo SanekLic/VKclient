@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.my.vkclient.R;
@@ -19,7 +18,6 @@ import com.my.vkclient.utils.Utils;
 
 import static com.my.vkclient.Constants.ImageLoader.DEFAULT_ANIMATION;
 import static com.my.vkclient.Constants.IntentKey.GROUP_ID_INTENT_KEY;
-import static com.my.vkclient.Constants.StateKey.SCROLL_VIEW_POSITION_STATE_KEY;
 
 public class GroupInfoDialogFragment extends BaseDialogFragment {
     private ImageView groupPhotoImageView;
