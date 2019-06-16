@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static com.my.vkclient.Constants.ImageLoader.PERCENTAGE;
+
 public class ImageLoader {
     private static ImageLoader instance;
     private final LruCache<String, Bitmap> lruCache;
@@ -85,9 +87,12 @@ public class ImageLoader {
             Rect crop = (Rect) imageView.getTag(R.id.IMAGE_TAG_CROP);
 
             if (crop != null) {
-                imageView.setImageBitmap(cropBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8), crop));
+                float aspect = (float) initialWidth / initialHeight * PERCENTAGE;
+                Rect rect = calculateCrop((int) aspect, PERCENTAGE, crop);
+                imageView.setImageBitmap(Bitmap.createBitmap((int) (rect.getX2() - rect.getX()), (int) (rect.getY2() - rect.getY()), Bitmap.Config.ALPHA_8));
             } else {
-                imageView.setImageBitmap(Bitmap.createBitmap(initialWidth, initialHeight, Bitmap.Config.ALPHA_8));
+                float aspect = (float) initialWidth / initialHeight * PERCENTAGE;
+                imageView.setImageBitmap(Bitmap.createBitmap((int) aspect, PERCENTAGE, Bitmap.Config.ALPHA_8));
             }
         }
 
@@ -116,7 +121,7 @@ public class ImageLoader {
                 }
 
                 if (resultBitmap != null &&
-                        imageView.getTag(R.id.IMAGE_TAG_URL).equals(requestUrl) &&
+                        requestUrl.equals(imageView.getTag(R.id.IMAGE_TAG_URL)) &&
                         !imageView.getTag(R.id.IMAGE_TAG_URL).equals(imageView.getTag(R.id.IMAGE_TAG_SHOW_URL))) {
                     imageView.setTag(R.id.IMAGE_TAG_SHOW_URL, requestUrl);
                     setResultToImageView(imageView, resultBitmap, animation);
@@ -238,13 +243,18 @@ public class ImageLoader {
     }
 
     private Bitmap cropBitmap(Bitmap input, Rect crop) {
-        int width = input.getWidth();
-        int height = input.getHeight();
-        float x = width * crop.getX() / Constants.ImageLoader.PERCENTAGE;
-        float y = height * crop.getY() / Constants.ImageLoader.PERCENTAGE;
-        float x2 = width * crop.getX2() / Constants.ImageLoader.PERCENTAGE;
-        float y2 = height * crop.getY2() / Constants.ImageLoader.PERCENTAGE;
+        Rect rect = calculateCrop(input.getWidth(), input.getHeight(), crop);
 
-        return Bitmap.createBitmap(input, (int) x, (int) y, (int) (x2 - x), (int) (y2 - y));
+        return Bitmap.createBitmap(input, (int) rect.getX(), (int) rect.getY(),
+                (int) (rect.getX2() - rect.getX()), (int) (rect.getY2() - rect.getY()));
+    }
+
+    private Rect calculateCrop(int width, int height, Rect crop) {
+        float x = width * crop.getX() / PERCENTAGE;
+        float y = height * crop.getY() / PERCENTAGE;
+        float x2 = width * crop.getX2() / PERCENTAGE;
+        float y2 = height * crop.getY2() / PERCENTAGE;
+
+        return new Rect(x, y, x2, y2);
     }
 }

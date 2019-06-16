@@ -1,6 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file(var)
+            storePassword var
+            keyAlias = var
+            keyPassword var
+        }
+        debug {
+            storeFile file(var)
+            storePassword var
+            keyAlias = var
+            keyPassword var
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.my.vkclient"
@@ -15,6 +29,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 }

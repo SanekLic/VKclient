@@ -20,15 +20,20 @@ public interface Constants {
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
-    String USER_INFO_TAG = "User info";
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
+        String GROUP_ID_INTENT_KEY = "GROUP_ID_INTENT_KEY";
         String IMAGE_URL_INTENT_KEY = "IMAGE_URL_INTENT_KEY";
     }
 
+    interface FragmentTag{
+        String USER_INFO_FRAGMENT_TAG = "USER_INFO_FRAGMENT_TAG";
+        String GROUP_INFO_FRAGMENT_TAG = "GROUP_INFO_FRAGMENT_TAG";
+    }
+
     interface StateKey {
-        String SCROLL_VIEW_POSITION_STATE_KEY = "SCROLL_VIEW_POSITION";
+        String SCROLL_VIEW_POSITION_STATE_KEY = "SCROLL_VIEW_POSITION_STATE_KEY";
         String LINEAR_LAYOUT_MANAGER_STATE_KEY = "LINEAR_LAYOUT_MANAGER_STATE_KEY";
         String IS_LOAD_COMPLETE_STATE_KEY = "IS_LOAD_COMPLETE_STATE_KEY";
     }
@@ -40,18 +45,19 @@ public interface Constants {
         String NEWS_TABLE_NAME = "NEWS_TABLE";
         String ATTACHMENT_TABLE_NAME = "ATTACHMENT_TABLE";
         String USER_PHOTO_TABLE_NAME = "USER_PHOTO_TABLE";
+        String USER_GROUP_TABLE_NAME = "USER_GROUP_TABLE";
 
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 7;
+        int DATABASE_VERSION = 6;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
         String SELECT_FROM = "SELECT * FROM ";
         String DATABASE_WHERE = " WHERE %s %s %s";
         String DATABASE_WHERE_CLAUSE = "%s %s %s";
-        String DATABASE_JOIN = " JOIN %s ON %s = %s order by %s, %s";
+        String DATABASE_JOIN = " JOIN %s ON %s = %s ORDER BY %s, %s";
         String DATABASE_LIMIT = " LIMIT %s,%s";
         String DATABASE_ORDER_BY_DESC = " ORDER BY %s DESC";
         String DATABASE_ORDER_BY_ASC = " ORDER BY %s ASC";
@@ -72,15 +78,10 @@ public interface Constants {
         String API_VK_METHOD = "https://api.vk.com/method/";
         String API_VK_GET_USER_URL = API_VK_METHOD + "users.get?name_case=nom";
         String USER_ID = "&user_ids=";
-        String USER_FIELDS = "&fields=online,photo_100,photo_max_orig,crop_photo,about,common_count,counters,education,followers_count,games,home_town,interests,last_seen,movies,music,status,verified";
+        String FIELDS = "&fields=";
+        String USER_FIELDS = "online,photo_100,photo_max_orig,crop_photo,about,common_count,counters,education,followers_count,games,home_town,interests,last_seen,movies,music,status,verified,";
         String API_VK_GET_FRIENDS_URL = API_VK_METHOD + "friends.get?order=name";
-        String FRIENDS_COUNT = "&count=";
-        String FRIENDS_OFFSET = "&offset=";
         String FRIENDS_FIELDS = USER_FIELDS;
-        String API_VK_GET_NEWS_URL = API_VK_METHOD + "newsfeed.get?filters=post";
-        String NEWS_START_FROM = "&start_from=";
-        String NEWS_FIELDS = USER_FIELDS;
-        String NEWS_COUNT = "&count=";
         String API_VK_GET_GROUP_URL = API_VK_METHOD + "groups.getById?group_id=";
         String LIKE_FIELDS = "?type=post&owner_id=%s&item_id=%s";
         String API_VK_SET_LIKE_POST = API_VK_METHOD + "likes.add" + LIKE_FIELDS + ACCESS_TOKEN;
@@ -89,6 +90,14 @@ public interface Constants {
         String PHOTOS_OWNER_ID = "&owner_id=";
         String PHOTOS_OFFSET = "&offset=";
         String PHOTOS_COUNT = "&count=";
+        String API_VK_GET_GROUPS_URL = API_VK_METHOD + "groups.get?extended=1";
+        String GROUPS_FIELDS = "activity,description,status,site,verified";
+        String REQUEST_COUNT = "&count=";
+        String REQUEST_OFFSET = "&offset=";
+        String API_VK_GET_NEWS_URL = API_VK_METHOD + "newsfeed.get?filters=post";
+        String NEWS_START_FROM = "&start_from=";
+        String NEWS_FIELDS = USER_FIELDS + GROUPS_FIELDS;
+        String NEWS_COUNT = "&count=";
     }
 
     interface ImageLoader {
@@ -99,9 +108,11 @@ public interface Constants {
     }
 
     interface SharedPreferences {
-        String APP_SETTINGS = "AppSettings";
-        String ACCESS_TOKEN_SHARED_KEY = "accessTokenSharedKey";
-        String NEWS_START_FROM_SHARED_KEY = "newsStartFromSharedKey";
+        String APP_SETTINGS = "APP_SETTINGS";
+        String ACCESS_TOKEN_SHARED_KEY = "ACCESS_TOKEN";
+        String NEWS_START_FROM_SHARED_KEY = "NEWS_START_FROM";
+        String ANIMATION_ENABLE_SHARED_KEY = "ANIMATION_ENABLE";
+        String PROFILE_ID_SHARED_KEY = "PROFILE_ID";
     }
 
     interface RecyclerView {
@@ -110,6 +121,7 @@ public interface Constants {
 
     interface UserActivity {
         String FRIENDS_COUNT_FORMAT = "%s друзей • %s общих";
+        String FRIENDS_ONLY_COUNT_FORMAT = "%s друзей";
         String FRIENDS_COMMON_COUNT_FORMAT = "%s общих друзей";
         String EDUCATION_FORMAT = "%s\n%s";
         String FOLLOWERS_FORMAT = "%s подписчиков";

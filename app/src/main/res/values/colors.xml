@@ -13,6 +13,8 @@
     <color name="colorUserMoreInfo">#FF528BCC</color>
     <color name="colorNewsIcon">#99A2AD</color>
     <color name="colorUserInfoIcon">#99A2AD</color>
+    <color name="colorGroupInfoIcon">#99A2AD</color>
     <color name="colorBottomNavigation">#F9F9F9</color>
     <color name="colorActivityBackground">#EBEDF0</color>
+    <color name="colorLink">#2975CC</color>
 </resources>

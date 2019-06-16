@@ -35,7 +35,15 @@ class HttpRepositoryHelper {
     }
 
     void getUser(final int userId, final ResultCallback<User> resultCallback) {
-        getResultStringFromUrl(getUserRequest(userId), new ResultCallback<String>() {
+        String requestUrl;
+
+        if (userId == 0) {
+            requestUrl = getProfileRequest();
+        } else {
+            requestUrl = getUserRequest(userId);
+        }
+
+        getResultStringFromUrl(requestUrl, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getUserFromJson(result));
@@ -79,6 +87,15 @@ class HttpRepositoryHelper {
         });
     }
 
+    void getUserGroups(final int startPosition, final int size, final ResultCallback<List<Group>> resultCallback) {
+        getResultStringFromUrl(getUserGroupsRequestRequest(startPosition, size), new ResultCallback<String>() {
+            @Override
+            public void onResult(String result) {
+                resultCallback.onResult(GsonHelper.getInstance().getUserGroupsFromJson(result));
+            }
+        });
+    }
+
     private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
         try (InputStream inputStream = new URL(requestUrl).openStream();
              ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream()) {
@@ -99,10 +116,11 @@ class HttpRepositoryHelper {
 
     private String getFriendsRequest(int startPosition, int size) {
         return Constants.API_VK.API_VK_GET_FRIENDS_URL +
-                Constants.API_VK.FRIENDS_COUNT +
+                Constants.API_VK.REQUEST_COUNT +
                 size +
-                Constants.API_VK.FRIENDS_OFFSET +
+                Constants.API_VK.REQUEST_OFFSET +
                 startPosition +
+                Constants.API_VK.FIELDS +
                 Constants.API_VK.FRIENDS_FIELDS +
                 Constants.API_VK.ACCESS_TOKEN +
                 accessToken;
@@ -120,10 +138,19 @@ class HttpRepositoryHelper {
                 accessToken;
     }
 
+    private String getProfileRequest() {
+        return Constants.API_VK.API_VK_GET_USER_URL +
+                Constants.API_VK.FIELDS +
+                Constants.API_VK.USER_FIELDS +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
+    }
+
     private String getUserRequest(int userId) {
         return Constants.API_VK.API_VK_GET_USER_URL +
                 Constants.API_VK.USER_ID +
                 userId +
+                Constants.API_VK.FIELDS +
                 Constants.API_VK.USER_FIELDS +
                 Constants.API_VK.ACCESS_TOKEN +
                 accessToken;
@@ -135,6 +162,7 @@ class HttpRepositoryHelper {
                 startFrom +
                 Constants.API_VK.NEWS_COUNT +
                 size +
+                Constants.API_VK.FIELDS +
                 Constants.API_VK.NEWS_FIELDS +
                 Constants.API_VK.ACCESS_TOKEN +
                 accessToken;
@@ -143,6 +171,18 @@ class HttpRepositoryHelper {
     private String getGroupRequest(int userId) {
         return Constants.API_VK.API_VK_GET_GROUP_URL +
                 userId +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
+    }
+
+    private String getUserGroupsRequestRequest(int startPosition, int size) {
+        return Constants.API_VK.API_VK_GET_GROUPS_URL +
+                Constants.API_VK.REQUEST_COUNT +
+                size +
+                Constants.API_VK.REQUEST_OFFSET +
+                startPosition +
+                Constants.API_VK.FIELDS +
+                Constants.API_VK.GROUPS_FIELDS +
                 Constants.API_VK.ACCESS_TOKEN +
                 accessToken;
     }

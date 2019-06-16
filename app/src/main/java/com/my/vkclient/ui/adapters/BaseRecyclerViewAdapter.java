@@ -3,7 +3,6 @@ package com.my.vkclient.ui.adapters;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.AnimRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +14,7 @@ import android.view.animation.AnimationUtils;
 
 import com.my.vkclient.R;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.SharedPreferencesHelper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -88,11 +88,11 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
             loadMoreItems(itemList.size(), pageSize);
         }
 
-        if (isAnimationEnable) {
+        if (isAnimationEnable && SharedPreferencesHelper.getInstance().isAnimationEnable()) {
             if (previousPosition < holder.getAdapterPosition()) {
-                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, getAnimationToNextResource()));
-            } else {
-                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, getAnimationToPreviousResource()));
+                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_translate_up_anim));
+            } else if (previousPosition > holder.getAdapterPosition()){
+                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.item_translate_down_anim));
             }
         }
 
@@ -184,16 +184,6 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
 
     public void setAnimationEnabled(boolean enable) {
         isAnimationEnable = enable;
-    }
-
-    public @AnimRes
-    int getAnimationToNextResource() {
-        return R.anim.item_translate_up_anim;
-    }
-
-    public @AnimRes
-    int getAnimationToPreviousResource() {
-        return R.anim.item_translate_down_anim;
     }
 
     protected abstract BaseViewHolder<T> getViewHolder(@NonNull ViewGroup parent, @ViewType int viewType);

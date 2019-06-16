@@ -12,13 +12,18 @@ import android.view.ViewGroup;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.R;
+import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
+import com.my.vkclient.entities.User;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.activity.ImageActivity;
+import com.my.vkclient.ui.activity.UserActivity;
 import com.my.vkclient.ui.adapters.NewsRecyclerViewAdapter;
 import com.my.vkclient.utils.ResultCallback;
 
 import java.util.List;
+
+import static com.my.vkclient.Constants.IntentKey.GROUP_ID_INTENT_KEY;
 
 public class NewsFragment extends BaseFragment<NewsRecyclerViewAdapter, News> {
 
@@ -100,6 +105,24 @@ public class NewsFragment extends BaseFragment<NewsRecyclerViewAdapter, News> {
             public void onResult(String result) {
                 if (!result.isEmpty()) {
                     ImageActivity.show(NewsFragment.this.getContext(), result);
+                }
+            }
+        });
+        recyclerViewAdapter.setOnUserClickListener(new ResultCallback<User>() {
+            @Override
+            public void onResult(User user) {
+                UserActivity.show(NewsFragment.this.getContext(), user.getId());
+            }
+        });
+        recyclerViewAdapter.setOnGroupClickListener(new ResultCallback<Group>() {
+            @Override
+            public void onResult(Group group) {
+                if (getActivity() != null) {
+                    GroupInfoDialogFragment groupInfoDialogFragment = new GroupInfoDialogFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(GROUP_ID_INTENT_KEY, group.getId());
+                    groupInfoDialogFragment.setArguments(bundle);
+                    groupInfoDialogFragment.show(getActivity().getSupportFragmentManager(), Constants.FragmentTag.GROUP_INFO_FRAGMENT_TAG);
                 }
             }
         });

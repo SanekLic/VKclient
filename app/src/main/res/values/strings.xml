@@ -35,4 +35,16 @@
     <string name="movie_label">Любимые фильмы</string>
     <string name="games_label">Любимые игры</string>
     <string name="about_label">О себе</string>
+    <string name="source_verified_icon_content_description">source verified icon</string>
+    <string name="from_verified_icon_content_description">from verified icon</string>
+    <string name="news_title">news</string>
+    <string name="friends_title">friends</string>
+    <string name="settings_title">settings</string>
+    <string name="groups_title">groups</string>
+    <string name="group_photo_content_description">group photo</string>
+    <string name="verified_icon_content_description">verified icon</string>
+    <string name="group_site_icon_content_description">group site icon</string>
+    <string name="group_description_icon_content_description">group description icon</string>
+    <string name="connection_error_label">Отсутствует подключение к интернету</string>
+    <string name="repeated_connection">Повторить подключение</string>
 </resources>

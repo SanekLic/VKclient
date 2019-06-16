@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.my.vkclient.R;
+import com.my.vkclient.entities.Group;
 import com.my.vkclient.entities.News;
+import com.my.vkclient.entities.User;
 import com.my.vkclient.utils.ResultCallback;
 
 public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<News> {
@@ -16,6 +18,8 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
     private ResultCallback<News> onLikeClickListener;
     private ResultCallback<String> onAttachmentClickListener;
     private ResultCallback<String> onPhotoClickListener;
+    private ResultCallback<User> onUserClickListener;
+    private ResultCallback<Group> onGroupClickListener;
 
     protected NewsRecyclerViewAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super(context, linearLayoutManager);
@@ -30,6 +34,8 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
         holder.setOnLikeClickListener(onLikeClickListener);
         holder.setOnAttachmentClickListener(onAttachmentClickListener);
         holder.setOnPhotoClickListener(onPhotoClickListener);
+        holder.setOnGroupClickListener(onGroupClickListener);
+        holder.setOnUserClickListener(onUserClickListener);
 
         return holder;
     }
@@ -44,6 +50,14 @@ public abstract class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<Ne
 
     public void setOnPhotoClickListener(ResultCallback<String> onPhotoClickListener) {
         this.onPhotoClickListener = onPhotoClickListener;
+    }
+
+    public void setOnUserClickListener(ResultCallback<User> onUserClickListener) {
+        this.onUserClickListener = onUserClickListener;
+    }
+
+    public void setOnGroupClickListener(ResultCallback<Group> onGroupClickListener) {
+        this.onGroupClickListener = onGroupClickListener;
     }
 
     int getPageSize() {

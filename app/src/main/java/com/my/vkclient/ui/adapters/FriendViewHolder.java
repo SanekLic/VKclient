@@ -15,6 +15,7 @@ class FriendViewHolder extends BaseViewHolder<User> {
     private ImageView friendPhotoView;
     private TextView friendNameView;
     private ImageView onlineStatusImageView;
+    private ImageView verifiedIconImageView;
 
     FriendViewHolder(View itemView) {
         super(itemView);
@@ -22,6 +23,7 @@ class FriendViewHolder extends BaseViewHolder<User> {
         friendPhotoView = itemView.findViewById(R.id.friendPhotoImageView);
         friendNameView = itemView.findViewById(R.id.friendNameTextView);
         onlineStatusImageView = itemView.findViewById(R.id.onlineStatusImageView);
+        verifiedIconImageView = itemView.findViewById(R.id.verifiedIconImageView);
     }
 
     public void bind(User user) {
@@ -37,6 +39,16 @@ class FriendViewHolder extends BaseViewHolder<User> {
         } else {
             if (onlineStatusImageView.getVisibility() != View.GONE) {
                 onlineStatusImageView.setVisibility(View.GONE);
+            }
+        }
+
+        if (user.getVerified() != null && user.getVerified()) {
+            if (verifiedIconImageView.getVisibility() != View.VISIBLE) {
+                verifiedIconImageView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (verifiedIconImageView.getVisibility() != View.GONE) {
+                verifiedIconImageView.setVisibility(View.GONE);
             }
         }
     }

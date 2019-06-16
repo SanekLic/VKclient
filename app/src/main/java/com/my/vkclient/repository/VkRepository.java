@@ -1,7 +1,6 @@
 package com.my.vkclient.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.my.vkclient.entities.Group;
@@ -11,30 +10,28 @@ import com.my.vkclient.entities.User;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.SharedPreferencesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.my.vkclient.Constants.STRING_EMPTY;
-import static com.my.vkclient.Constants.SharedPreferences.ACCESS_TOKEN_SHARED_KEY;
-import static com.my.vkclient.Constants.SharedPreferences.APP_SETTINGS;
-import static com.my.vkclient.Constants.SharedPreferences.NEWS_START_FROM_SHARED_KEY;
 
 public class VkRepository {
     private static VkRepository instance;
-    private String newsStartFrom = STRING_EMPTY;
+    private String newsStartFrom;
     private Executor executor;
     private boolean offlineAccess;
     private DatabaseRepositoryHelper databaseRepositoryHelper;
-    private SharedPreferences sharedPreferences;
     private HttpRepositoryHelper httpRepositoryHelper;
     private List<News> newsList = new ArrayList<>();
     private List<User> friendList = new ArrayList<>();
+    private List<Group> userGroupList = new ArrayList<>();
     private List<Photo> userPhotoList = new ArrayList<>();
     private User user;
+    private Group group;
 
     private VkRepository() {
         executor = Executors.newCachedThreadPool();
@@ -79,6 +76,16 @@ public class VkRepository {
         databaseRepositoryHelper.clearUserPhoto(userId);
     }
 
+    public List<Group> getUserGroupList() {
+        return userGroupList;
+    }
+
+    public void refreshUserGroups() {
+        userGroupList.clear();
+        group = null;
+        databaseRepositoryHelper.clearUserGroups();
+    }
+
     public boolean isOfflineAccess() {
         return offlineAccess;
     }
@@ -86,9 +93,8 @@ public class VkRepository {
     public void initializeContext(@NonNull final Context context) {
         databaseRepositoryHelper = new DatabaseRepositoryHelper(context);
 
-        sharedPreferences = context.getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
-        String newAccessToken = sharedPreferences.getString(ACCESS_TOKEN_SHARED_KEY, null);
-        newsStartFrom = sharedPreferences.getString(NEWS_START_FROM_SHARED_KEY, STRING_EMPTY);
+        String newAccessToken = SharedPreferencesHelper.getInstance().getAccessToke();
+        newsStartFrom = SharedPreferencesHelper.getInstance().getNewsStartFrom();
 
         if (newAccessToken != null) {
             httpRepositoryHelper.setAccessToken(newAccessToken);
@@ -98,16 +104,12 @@ public class VkRepository {
 
     public void setAccessToken(String newAccessToken) {
         httpRepositoryHelper.setAccessToken(newAccessToken);
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(ACCESS_TOKEN_SHARED_KEY, newAccessToken);
-        editor.apply();
+        offlineAccess = true;
+        SharedPreferencesHelper.getInstance().setAccessToken(newAccessToken);
     }
 
     public void logout() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
+        SharedPreferencesHelper.getInstance().clear();
 
         databaseRepositoryHelper.clearAllTables();
         clearData();
@@ -144,6 +146,7 @@ public class VkRepository {
                 if (user != null && user.getId() == userId) {
                     resultCallback.onResult(user);
                 } else {
+                    userPhotoList.clear();
                     databaseRepositoryHelper.getUser(userId, new ResultCallback<User>() {
                         @Override
                         public void onResult(User result) {
@@ -175,9 +178,6 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (user != null && user.getId() != userId) {
-                    userPhotoList.clear();
-                }
                 databaseRepositoryHelper.getUserPhotos(userId, startPosition, size, new ResultCallback<List<Photo>>() {
                     @Override
                     public void onResult(List<Photo> result) {
@@ -207,19 +207,56 @@ public class VkRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                databaseRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                if (group != null && group.getId() == groupId) {
+                    resultCallback.onResult(group);
+                } else {
+                    databaseRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                        @Override
+                        public void onResult(Group result) {
+                            if (result != null) {
+                                group = result;
+                                resultCallback.onResult(result);
+                            } else {
+                                httpRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                                    @Override
+                                    public void onResult(Group result) {
+                                        resultCallback.onResult(result);
+
+                                        if (result != null) {
+                                            group = result;
+                                            databaseRepositoryHelper.putGroup(result);
+                                        }
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void getUserGroups(final int startPosition, final int size, final ResultCallback<List<Group>> resultCallback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                databaseRepositoryHelper.getUserGroups(startPosition, size, new ResultCallback<List<Group>>() {
                     @Override
-                    public void onResult(Group result) {
-                        if (result != null) {
+                    public void onResult(List<Group> result) {
+                        if (result != null && result.size() > 0) {
+                            userGroupList.addAll(result);
                             resultCallback.onResult(result);
                         } else {
-                            httpRepositoryHelper.getGroup(groupId, new ResultCallback<Group>() {
+                            httpRepositoryHelper.getUserGroups(startPosition, size, new ResultCallback<List<Group>>() {
                                 @Override
-                                public void onResult(Group group) {
-                                    resultCallback.onResult(group);
+                                public void onResult(List<Group> result) {
+                                    resultCallback.onResult(result);
 
-                                    if (group != null) {
-                                        databaseRepositoryHelper.putGroup(group);
+                                    if (result != null) {
+                                        userGroupList.addAll(result);
+                                        databaseRepositoryHelper.putUserGroupList(result);
+                                        databaseRepositoryHelper.putGroupList(result);
                                     }
                                 }
                             });
@@ -279,17 +316,17 @@ public class VkRepository {
                                         setNewsStartFrom(newsResponse.getNextFrom());
                                         resultCallback.onResult(newsResponse.getNewsList());
 
+                                        if (newsResponse.getNewsList() != null) {
+                                            newsList.addAll(newsResponse.getNewsList());
+                                            databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
+                                        }
+
                                         if (newsResponse.getGroupList() != null) {
                                             databaseRepositoryHelper.putGroupList(newsResponse.getGroupList());
                                         }
 
                                         if (newsResponse.getUserList() != null) {
                                             databaseRepositoryHelper.putUserList(newsResponse.getUserList());
-                                        }
-
-                                        if (newsResponse.getNewsList() != null) {
-                                            newsList.addAll(newsResponse.getNewsList());
-                                            databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
                                         }
                                     }
                                 }
@@ -304,14 +341,16 @@ public class VkRepository {
     private void setNewsStartFrom(String newsNextFrom) {
         newsStartFrom = newsNextFrom;
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(NEWS_START_FROM_SHARED_KEY, newsStartFrom);
-        editor.apply();
+        SharedPreferencesHelper.getInstance().setNewsStartFrom(newsStartFrom);
     }
 
     private void clearData() {
         newsList.clear();
         friendList.clear();
+        userGroupList.clear();
+        userPhotoList.clear();
+        user = null;
+        group = null;
 
         newsStartFrom = STRING_EMPTY;
     }

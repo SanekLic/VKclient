@@ -39,6 +39,7 @@ import static com.my.vkclient.Constants.UserActivity.EDUCATION_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.FOLLOWERS_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.FRIENDS_COMMON_COUNT_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.FRIENDS_COUNT_FORMAT;
+import static com.my.vkclient.Constants.UserActivity.FRIENDS_ONLY_COUNT_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.ONLINE_FORMAT;
 import static com.my.vkclient.Constants.UserActivity.STATE_ONLINE;
 
@@ -67,6 +68,7 @@ public class UserActivity extends AppCompatActivity {
     private String photoUrl;
     private int userId;
     private ScrollView userScrollView;
+    private int scrollViewPosition;
 
     public static void show(final Context context, final int userId) {
         Intent intent = new Intent(context, UserActivity.class);
@@ -80,7 +82,7 @@ public class UserActivity extends AppCompatActivity {
 
         outState.putParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY, linearLayoutManager.onSaveInstanceState());
         outState.putBoolean(IS_LOAD_COMPLETE_STATE_KEY, userPhotoRecyclerViewAdapter.isLoadComplete());
-        outState.putInt(SCROLL_VIEW_POSITION_STATE_KEY, userScrollView.getScrollX());
+        outState.putInt(SCROLL_VIEW_POSITION_STATE_KEY, userScrollView.getScrollY());
     }
 
     @Override
@@ -97,11 +99,10 @@ public class UserActivity extends AppCompatActivity {
         setData();
         setupPhotoRecyclerView();
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && VkRepository.getInstance().getLastUserPhotoList().size() > 0) {
             userPhotoRecyclerViewAdapter.addItems(VkRepository.getInstance().getLastUserPhotoList());
             linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
-            int scrollViewPosition = savedInstanceState.getInt(SCROLL_VIEW_POSITION_STATE_KEY);
-            userScrollView.scrollTo(scrollViewPosition, 0);
+            scrollViewPosition = savedInstanceState.getInt(SCROLL_VIEW_POSITION_STATE_KEY);
 
             if (savedInstanceState.getBoolean(IS_LOAD_COMPLETE_STATE_KEY)) {
                 userPhotoRecyclerViewAdapter.setLoadComplete();
@@ -197,7 +198,7 @@ public class UserActivity extends AppCompatActivity {
                     Bundle bundle = new Bundle();
                     bundle.putInt(USER_ID_INTENT_KEY, userId);
                     userInfoDialogFragment.setArguments(bundle);
-                    userInfoDialogFragment.show(getSupportFragmentManager(), Constants.USER_INFO_TAG);
+                    userInfoDialogFragment.show(getSupportFragmentManager(), Constants.FragmentTag.USER_INFO_FRAGMENT_TAG);
                 }
             }
         });
@@ -253,6 +254,8 @@ public class UserActivity extends AppCompatActivity {
                             }
 
                             setAdditionalInfo(user);
+
+                            restoreScrollPosition();
                         }
                     }
                 });
@@ -280,8 +283,10 @@ public class UserActivity extends AppCompatActivity {
     private void setFriendsCount(User user) {
         String friendsCountText = STRING_EMPTY;
 
-        if (user.getCounters() != null && user.getCounters().getFriends() != 0) {
+        if (user.getCounters() != null && user.getCounters().getFriends() != 0 && user.getCommonFriendsCount() != 0) {
             friendsCountText = String.format(FRIENDS_COUNT_FORMAT, user.getCounters().getFriends(), user.getCommonFriendsCount());
+        } else if (user.getCounters() != null && user.getCounters().getFriends() != 0) {
+            friendsCountText = String.format(FRIENDS_ONLY_COUNT_FORMAT, user.getCounters().getFriends());
         } else if (user.getCommonFriendsCount() != 0) {
             friendsCountText = String.format(FRIENDS_COMMON_COUNT_FORMAT, user.getCommonFriendsCount());
         }
@@ -333,6 +338,12 @@ public class UserActivity extends AppCompatActivity {
             Utils.getInstance().setInfoAndVisibilityFieldView(userEducationTextView, userEducationImageView, user.getFacultyName());
         } else {
             Utils.getInstance().setInfoAndVisibilityFieldView(userEducationTextView, userEducationImageView, user.getUniversityName());
+        }
+    }
+
+    private void restoreScrollPosition() {
+        if (scrollViewPosition != 0) {
+            userScrollView.scrollTo(0, scrollViewPosition);
         }
     }
 }

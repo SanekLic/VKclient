@@ -34,7 +34,7 @@ public abstract class BaseFragment<T extends BaseRecyclerViewAdapter<E>, E> exte
         setupSwipeRefresh(view);
         setupRecyclerView(view);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && getItemsFromRepository().size() > 0) {
             recyclerViewAdapter.addItems(getItemsFromRepository());
             linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
 

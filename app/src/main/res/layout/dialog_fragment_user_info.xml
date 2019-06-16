@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorActivityBackground">
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
@@ -25,9 +30,10 @@
             android:id="@+id/userStatusTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="статус" />
 
         <TextView
             android:id="@+id/userHomeTownLabelTextView"
@@ -41,9 +47,10 @@
             android:id="@+id/userHomeTownTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="город" />
 
         <TextView
             android:id="@+id/userEducationLabelTextView"
@@ -57,15 +64,17 @@
             android:id="@+id/userUniversityTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="вуз" />
 
         <TextView
             android:id="@+id/userFacultyTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorUserInfoIcon" />
+            android:textColor="@color/colorUserInfoIcon"
+            tools:text="факультет" />
 
         <TextView
             android:id="@+id/userInterestsLabelTextView"
@@ -79,9 +88,10 @@
             android:id="@+id/userInterestsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="интересы" />
 
         <TextView
             android:id="@+id/userMusicLabelTextView"
@@ -95,9 +105,10 @@
             android:id="@+id/userMusicTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="музыка" />
 
         <TextView
             android:id="@+id/userMovieLabelTextView"
@@ -111,9 +122,10 @@
             android:id="@+id/userMovieTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="фильмы" />
 
         <TextView
             android:id="@+id/userGamesLabelTextView"
@@ -127,9 +139,10 @@
             android:id="@+id/userGamesTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="игры" />
 
         <TextView
             android:id="@+id/userAboutLabelTextView"
@@ -143,9 +156,10 @@
             android:id="@+id/userAboutTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="о себе" />
 
     </LinearLayout>
 </ScrollView>

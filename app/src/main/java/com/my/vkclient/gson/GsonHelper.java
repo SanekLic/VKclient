@@ -14,6 +14,7 @@ import com.my.vkclient.entities.response.FriendResponse;
 import com.my.vkclient.entities.response.GroupResponse;
 import com.my.vkclient.entities.response.LikesResponse;
 import com.my.vkclient.entities.response.NewsResponse;
+import com.my.vkclient.entities.response.UserGroupResponse;
 import com.my.vkclient.entities.response.UserPhotoResponse;
 import com.my.vkclient.entities.response.UserResponse;
 import com.my.vkclient.gson.typeadapter.BooleanGsonTypeAdapter;
@@ -77,6 +78,16 @@ public class GsonHelper {
         }
 
         return userPhotoResponse.getResponse().getUserPhotos();
+    }
+
+    public List<Group> getUserGroupsFromJson(String jsonFriends) {
+        UserGroupResponse userGroupResponse = gson.fromJson(jsonFriends, UserGroupResponse.class);
+
+        if (userGroupResponse == null || userGroupResponse.getResponse() == null) {
+            return null;
+        }
+
+        return userGroupResponse.getResponse().getGroupList();
     }
 
     public User getUserFromJson(String jsonUser) {

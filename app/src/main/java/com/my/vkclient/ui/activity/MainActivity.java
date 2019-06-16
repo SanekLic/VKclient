@@ -17,6 +17,7 @@ import com.my.vkclient.R;
 import com.my.vkclient.repository.VkRepository;
 import com.my.vkclient.ui.adapters.ViewPagerAdapter;
 import com.my.vkclient.ui.fragment.FriendsFragment;
+import com.my.vkclient.ui.fragment.GroupsFragment;
 import com.my.vkclient.ui.fragment.NewsFragment;
 import com.my.vkclient.ui.fragment.SettingsFragment;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private NewsFragment newsFragment;
     private FriendsFragment friendsFragment;
+    private GroupsFragment groupsFragment;
     private SettingsFragment settingsFragment;
 
     public static void show(final Context context) {
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(newsFragment);
         viewPagerAdapter.addFragment(friendsFragment);
+        viewPagerAdapter.addFragment(groupsFragment);
         viewPagerAdapter.addFragment(settingsFragment);
         contentViewPager.setAdapter(viewPagerAdapter);
         contentViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+        groupsFragment= new GroupsFragment();
     }
 
     private void clearCookies() {
@@ -108,8 +112,12 @@ public class MainActivity extends AppCompatActivity {
                         contentViewPager.setCurrentItem(1);
 
                         return true;
-                    case R.id.action_settings:
+                    case R.id.action_groups:
                         contentViewPager.setCurrentItem(2);
+
+                        return true;
+                    case R.id.action_settings:
+                        contentViewPager.setCurrentItem(3);
 
                         return true;
                 }

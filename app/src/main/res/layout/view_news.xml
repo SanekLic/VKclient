@@ -8,17 +8,19 @@
 
     <TextView
         android:id="@+id/sourceNameTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="24dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/sourceIconImageView"
         app:layout_constraintTop_toTopOf="@+id/sourceIconImageView"
         tools:text="Name" />
@@ -45,28 +47,40 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
+        android:id="@+id/sourceVerifiedIconImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/source_verified_icon_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/sourceNameTextView"
+        app:layout_constraintStart_toEndOf="@+id/sourceNameTextView"
+        app:layout_constraintTop_toTopOf="@+id/sourceNameTextView"
+        app:srcCompat="@drawable/ic_verified" />
+
+    <ImageView
         android:id="@+id/fromNameImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:contentDescription="@string/empty_content_description"
         app:layout_constraintStart_toEndOf="@+id/fromIconImageView"
         app:layout_constraintTop_toTopOf="@+id/fromIconImageView"
-        app:srcCompat="@drawable/ic_copy_news"
-        android:contentDescription="@string/empty_content_description" />
+        app:srcCompat="@drawable/ic_copy_news" />
 
     <TextView
         android:id="@+id/fromNameTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="24dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/colorNewsTitle"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/fromNameImageView"
         app:layout_constraintTop_toTopOf="@+id/fromIconImageView"
         tools:text="Name" />
@@ -91,6 +105,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sourceIconImageView"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/fromVerifiedIconImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/from_verified_icon_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/fromNameTextView"
+        app:layout_constraintStart_toEndOf="@+id/fromNameTextView"
+        app:layout_constraintTop_toTopOf="@+id/fromNameTextView"
+        app:srcCompat="@drawable/ic_verified" />
 
     <TextView
         android:id="@+id/newsTextView"
@@ -121,7 +145,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newsTextView"
-        tools:layout_height="128dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
@@ -176,11 +199,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:contentDescription="@string/likes_icon_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
-        app:srcCompat="@drawable/ic_likes"
-        android:contentDescription="@string/likes_icon_content_description" />
+        app:srcCompat="@drawable/ic_likes" />
 
     <TextView
         android:id="@+id/likesTextView"
@@ -201,10 +224,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/comments_icon_content_description"
         app:layout_constraintStart_toEndOf="@+id/likesTextView"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
-        app:srcCompat="@drawable/ic_comments"
-        android:contentDescription="@string/comments_icon_content_description"  />
+        app:srcCompat="@drawable/ic_comments" />
 
     <TextView
         android:id="@+id/commentsTextView"
@@ -225,10 +248,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/reposts_icon_content_description"
         app:layout_constraintStart_toEndOf="@+id/commentsTextView"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
-        app:srcCompat="@drawable/ic_reposts"
-        android:contentDescription="@string/reposts_icon_content_description" />
+        app:srcCompat="@drawable/ic_reposts" />
 
     <TextView
         android:id="@+id/repostsTextView"
@@ -262,11 +285,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
+        android:contentDescription="@string/views_icon_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/viewsTextView"
         app:layout_constraintEnd_toStartOf="@+id/viewsTextView"
         app:layout_constraintTop_toBottomOf="@+id/attachmentRecyclerView"
         app:layout_constraintTop_toTopOf="@+id/viewsTextView"
-        app:srcCompat="@drawable/ic_views"
-        android:contentDescription="@string/views_icon_content_description"  />
+        app:srcCompat="@drawable/ic_views" />
 
 </android.support.constraint.ConstraintLayout>

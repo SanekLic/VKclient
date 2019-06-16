@@ -2,6 +2,7 @@ package com.my.vkclient.database.model;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
+import com.my.vkclient.database.fields.dbBoolean;
 import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
@@ -21,4 +22,19 @@ public class GroupTable {
 
     @dbString
     public static final String PHOTO_100_URL = "PHOTO_100_URL";
+
+    @dbString
+    public static final String ACTIVITY = "ACTIVITY";
+
+    @dbString
+    public static final String DESCRIPTION = "DESCRIPTION";
+
+    @dbString
+    public static final String STATUS = "STATUS";
+
+    @dbString
+    public static final String SITE = "SITE";
+
+    @dbBoolean
+    public static final String VERIFIED = "VERIFIED";
 }

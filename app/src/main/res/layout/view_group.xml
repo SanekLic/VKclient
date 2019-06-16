@@ -6,51 +6,58 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <TextView
+        android:id="@+id/groupActivityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:singleLine="true"
+        android:textColor="@color/colorGroupInfoIcon"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/groupPhotoImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/groupPhotoImageView"
+        tools:text="Activity" />
+
     <ImageView
-        android:id="@+id/friendPhotoImageView"
+        android:id="@+id/groupPhotoImageView"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:contentDescription="@string/friend_photo_content_description"
+        android:contentDescription="@string/group_photo_content_description"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/friendNameTextView"
+        android:id="@+id/groupNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:singleLine="true"
         android:textSize="18sp"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="@+id/friendPhotoImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/friendPhotoImageView"
-        app:layout_constraintTop_toTopOf="@+id/friendPhotoImageView"
+        app:layout_constraintStart_toEndOf="@+id/groupPhotoImageView"
+        app:layout_constraintTop_toTopOf="@+id/groupPhotoImageView"
         tools:text="Name" />
-
-    <ImageView
-        android:id="@+id/onlineStatusImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/online_status_icon_content_description"
-        app:layout_constraintBottom_toBottomOf="@+id/friendPhotoImageView"
-        app:layout_constraintEnd_toEndOf="@+id/friendPhotoImageView"
-        app:srcCompat="@drawable/ic_online_status" />
 
     <ImageView
         android:id="@+id/verifiedIconImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/verified_icon_content_description"
-        app:layout_constraintBottom_toBottomOf="@+id/friendNameTextView"
-        app:layout_constraintStart_toEndOf="@+id/friendNameTextView"
-        app:layout_constraintTop_toTopOf="@+id/friendNameTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/groupNameTextView"
+        app:layout_constraintStart_toEndOf="@+id/groupNameTextView"
+        app:layout_constraintTop_toTopOf="@+id/groupNameTextView"
         app:srcCompat="@drawable/ic_verified" />
 
 </android.support.constraint.ConstraintLayout>

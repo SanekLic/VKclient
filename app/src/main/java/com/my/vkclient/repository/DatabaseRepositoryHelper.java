@@ -12,6 +12,7 @@ import com.my.vkclient.database.model.AttachmentTable;
 import com.my.vkclient.database.model.FriendTable;
 import com.my.vkclient.database.model.GroupTable;
 import com.my.vkclient.database.model.NewsTable;
+import com.my.vkclient.database.model.UserGroupTable;
 import com.my.vkclient.database.model.UserPhotoTable;
 import com.my.vkclient.database.model.UserTable;
 import com.my.vkclient.entities.Attachment;
@@ -51,6 +52,7 @@ import static com.my.vkclient.Constants.Database.FRIEND_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.GROUP_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.NEWS_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.SELECT_FROM;
+import static com.my.vkclient.Constants.Database.USER_GROUP_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.USER_PHOTO_TABLE_NAME;
 import static com.my.vkclient.Constants.Database.USER_TABLE_NAME;
 import static com.my.vkclient.Constants.INT_ZERO;
@@ -61,6 +63,7 @@ class DatabaseRepositoryHelper {
     private boolean userColumnIndexesReady;
     private boolean friendColumnIndexesReady;
     private boolean groupColumnIndexesReady;
+    private boolean userGroupColumnIndexesReady;
     private boolean newsColumnIndexesReady;
     private boolean attachmentColumnIndexesReady;
     private boolean userPhotosColumnIndexesReady;
@@ -95,6 +98,11 @@ class DatabaseRepositoryHelper {
     private int columnIndexGroupId;
     private int columnIndexGroupName;
     private int columnIndexGroupPhoto100Url;
+    private int columnIndexGroupActivity;
+    private int columnIndexGroupDescription;
+    private int columnIndexGroupStatus;
+    private int columnIndexGroupSite;
+    private int columnIndexGroupVerified;
     private int columnIndexNewsId;
     private int columnIndexNewsType;
     private int columnIndexNewsSourceId;
@@ -129,7 +137,7 @@ class DatabaseRepositoryHelper {
 
     DatabaseRepositoryHelper(@NonNull final Context context) {
         List<Class<?>> tableClasses = Arrays.asList(UserTable.class, GroupTable.class, FriendTable.class,
-                NewsTable.class, AttachmentTable.class, UserPhotoTable.class);
+                NewsTable.class, AttachmentTable.class, UserPhotoTable.class, UserGroupTable.class);
 
         databaseHelper = new DatabaseHelper(context, tableClasses);
     }
@@ -175,7 +183,7 @@ class DatabaseRepositoryHelper {
     void getGroup(final int groupId, final ResultCallback<Group> resultCallback) {
         try (Cursor groupCursor = databaseHelper.query(getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(groupId)))) {
             if (groupCursor.moveToFirst()) {
-                resultCallback.onResult(getGroupFromCursor(groupCursor));
+                resultCallback.onResult(getGroupFromCursor(groupCursor, false));
 
                 return;
             }
@@ -249,6 +257,44 @@ class DatabaseRepositoryHelper {
                 contentValues.put(UserPhotoTable.PHOTO_WIDTH, photo.getPhotoWidth());
 
                 databaseHelper.insertWithoutTransaction(writableDatabase, USER_PHOTO_TABLE_NAME, contentValues);
+                contentValues.clear();
+            }
+
+            writableDatabase.setTransactionSuccessful();
+        } finally {
+            writableDatabase.endTransaction();
+        }
+    }
+
+    void getUserGroups(int startPosition, int size, ResultCallback<List<Group>> resultCallback) {
+        try (Cursor userGroupsCursor = databaseHelper.query(getUserGroupsJoinGroupDatabaseQuery(startPosition, size))) {
+            if (userGroupsCursor.getCount() > 0) {
+                List<Group> userGroupList = new ArrayList<>();
+
+                while (userGroupsCursor.moveToNext()) {
+                    userGroupList.add(getGroupFromCursor(userGroupsCursor, true));
+                }
+
+                resultCallback.onResult(userGroupList);
+
+                return;
+            }
+        }
+
+        resultCallback.onResult(null);
+    }
+
+    void putUserGroupList(final List<Group> userGroupList) {
+        SQLiteDatabase writableDatabase = databaseHelper.getWritableDatabase();
+        writableDatabase.beginTransaction();
+
+        try {
+            ContentValues contentValues = new ContentValues();
+            for (Group group : userGroupList) {
+                contentValues.put(UserGroupTable.GROUP_ID, group.getId());
+                contentValues.put(FriendTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+
+                databaseHelper.insertWithoutTransaction(writableDatabase, USER_GROUP_TABLE_NAME, contentValues);
                 contentValues.clear();
             }
 
@@ -379,6 +425,10 @@ class DatabaseRepositoryHelper {
         databaseHelper.delete(USER_TABLE_NAME, String.format(DATABASE_WHERE_CLAUSE, UserTable.ID, STRING_EQUALS, userId));
     }
 
+    void clearUserGroups() {
+        databaseHelper.delete(USER_TABLE_NAME, null);
+    }
+
     private void putUserToContentValue(User user, ContentValues contentValues) {
         contentValues.put(UserTable.ID, user.getId());
         contentValues.put(UserTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
@@ -415,9 +465,9 @@ class DatabaseRepositoryHelper {
 
         if (user.getLastSeen() != null) {
             contentValues.put(UserTable.LAST_SEEN, user.getLastSeen().getTime());
-            contentValues.put(UserTable.MOVIES, user.getMovies());
         }
 
+        contentValues.put(UserTable.MOVIES, user.getMovies());
         contentValues.put(UserTable.MUSIC, user.getMusic());
         contentValues.put(UserTable.STATUS, user.getStatus());
         contentValues.put(UserTable.VERIFIED, user.getVerified());
@@ -428,6 +478,11 @@ class DatabaseRepositoryHelper {
         contentValues.put(GroupTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
         contentValues.put(GroupTable.NAME, group.getName());
         contentValues.put(GroupTable.PHOTO_100_URL, group.getPhoto100Url());
+        contentValues.put(GroupTable.ACTIVITY, group.getActivity());
+        contentValues.put(GroupTable.DESCRIPTION, group.getDescription());
+        contentValues.put(GroupTable.STATUS, group.getStatus());
+        contentValues.put(GroupTable.SITE, group.getSite());
+        contentValues.put(GroupTable.VERIFIED, group.getVerified());
     }
 
     private void putNewsWithoutTransaction(SQLiteDatabase writableDatabase, ContentValues contentValues, News news, boolean withAttachments) {
@@ -471,13 +526,18 @@ class DatabaseRepositoryHelper {
         databaseHelper.insertWithoutTransaction(writableDatabase, NEWS_TABLE_NAME, contentValues);
     }
 
-    private Group getGroupFromCursor(Cursor groupCursor) {
+    private Group getGroupFromCursor(Cursor groupCursor, boolean isUserGroupTable) {
         Group group = new Group();
-        prepareIndexesGroupColumns(groupCursor);
+        prepareIndexesGroupColumns(groupCursor, isUserGroupTable);
 
         group.setId(groupCursor.getInt(columnIndexGroupId));
         group.setName(groupCursor.getString(columnIndexGroupName));
         group.setPhoto100Url(groupCursor.getString(columnIndexGroupPhoto100Url));
+        group.setActivity(groupCursor.getString(columnIndexGroupActivity));
+        group.setDescription(groupCursor.getString(columnIndexGroupDescription));
+        group.setStatus(groupCursor.getString(columnIndexGroupStatus));
+        group.setSite(groupCursor.getString(columnIndexGroupSite));
+        group.setVerified(groupCursor.getInt(columnIndexGroupVerified) > 0);
 
         return group;
     }
@@ -591,7 +651,7 @@ class DatabaseRepositoryHelper {
             try (Cursor groupCursor = databaseHelper.query(
                     getSelectDatabaseQuery(GROUP_TABLE_NAME, GroupTable.ID, String.valueOf(ownerId)))) {
                 if (groupCursor.moveToFirst()) {
-                    news.setGroup(getGroupFromCursor(groupCursor));
+                    news.setGroup(getGroupFromCursor(groupCursor, false));
                 }
             }
         }
@@ -714,6 +774,13 @@ class DatabaseRepositoryHelper {
                 + String.format(DATABASE_ORDER_BY_ASC, UserPhotoTable.LAST_UPDATE) + String.format(DATABASE_LIMIT, startPosition, size);
     }
 
+    private String getUserGroupsJoinGroupDatabaseQuery(int startPosition, int size) {
+        return SELECT_FROM + USER_GROUP_TABLE_NAME +
+                String.format(DATABASE_JOIN, GROUP_TABLE_NAME, UserGroupTable.GROUP_ID,
+                        GroupTable.ID, UserGroupTable.GROUP_COUNTER, UserGroupTable.GROUP_COUNTER) +
+                String.format(DATABASE_LIMIT, startPosition, size);
+    }
+
     private void prepareIndexesUserColumns(Cursor cursor, boolean isFriendsTable) {
         if ((!isFriendsTable && !userColumnIndexesReady) || (isFriendsTable && !friendColumnIndexesReady)) {
             columnIndexUserId = cursor.getColumnIndex(UserTable.ID);
@@ -765,13 +832,24 @@ class DatabaseRepositoryHelper {
         }
     }
 
-    private void prepareIndexesGroupColumns(Cursor cursor) {
-        if (!groupColumnIndexesReady) {
+    private void prepareIndexesGroupColumns(Cursor cursor, boolean isUserGroupTable) {
+        if ((!isUserGroupTable && !groupColumnIndexesReady) || (isUserGroupTable && !userGroupColumnIndexesReady)) {
             columnIndexGroupId = cursor.getColumnIndex(GroupTable.ID);
             columnIndexGroupName = cursor.getColumnIndex(GroupTable.NAME);
             columnIndexGroupPhoto100Url = cursor.getColumnIndex(GroupTable.PHOTO_100_URL);
+            columnIndexGroupActivity = cursor.getColumnIndex(GroupTable.ACTIVITY);
+            columnIndexGroupDescription = cursor.getColumnIndex(GroupTable.DESCRIPTION);
+            columnIndexGroupStatus = cursor.getColumnIndex(GroupTable.STATUS);
+            columnIndexGroupSite = cursor.getColumnIndex(GroupTable.SITE);
+            columnIndexGroupVerified = cursor.getColumnIndex(GroupTable.VERIFIED);
 
-            groupColumnIndexesReady = true;
+            if (isUserGroupTable) {
+                groupColumnIndexesReady = false;
+                userGroupColumnIndexesReady = true;
+            } else {
+                groupColumnIndexesReady = true;
+                userGroupColumnIndexesReady = false;
+            }
         }
     }
 

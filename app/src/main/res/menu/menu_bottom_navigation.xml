@@ -3,13 +3,17 @@
     <item
         android:id="@+id/action_news"
         android:icon="@drawable/ic_news_action"
-        android:title="news" />
+        android:title="@string/news_title" />
     <item
         android:id="@+id/action_friends"
         android:icon="@drawable/ic_friends_action"
-        android:title="friends" />
+        android:title="@string/friends_title" />
+    <item
+        android:id="@+id/action_groups"
+        android:icon="@drawable/ic_groups_action"
+        android:title="@string/groups_title" />
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_action"
-        android:title="settings" />
+        android:title="@string/settings_title" />
 </menu>

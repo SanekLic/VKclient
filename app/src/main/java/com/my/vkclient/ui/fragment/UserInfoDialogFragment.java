@@ -3,7 +3,6 @@ package com.my.vkclient.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,24 +16,24 @@ import com.my.vkclient.utils.Utils;
 
 import static com.my.vkclient.Constants.IntentKey.USER_ID_INTENT_KEY;
 
-public class UserInfoDialogFragment extends DialogFragment {
-    TextView userStatusTextView;
-    TextView userHomeTownTextView;
-    TextView userUniversityTextView;
-    TextView userFacultyTextView;
-    TextView userInterestsTextView;
-    TextView userMusicTextView;
-    TextView userMovieTextView;
-    TextView userGamesTextView;
-    TextView userAboutTextView;
-    TextView userStatusLabelTextView;
-    TextView userHomeTownLabelTextView;
-    TextView userEducationLabelTextView;
-    TextView userInterestsLabelTextView;
-    TextView userMusicLabelTextView;
-    TextView userMovieLabelTextView;
-    TextView userGamesLabelTextView;
-    TextView userAboutLabelTextView;
+public class UserInfoDialogFragment extends BaseDialogFragment {
+    private TextView userStatusTextView;
+    private TextView userHomeTownTextView;
+    private TextView userUniversityTextView;
+    private TextView userFacultyTextView;
+    private TextView userInterestsTextView;
+    private TextView userMusicTextView;
+    private TextView userMovieTextView;
+    private TextView userGamesTextView;
+    private TextView userAboutTextView;
+    private TextView userStatusLabelTextView;
+    private TextView userHomeTownLabelTextView;
+    private TextView userEducationLabelTextView;
+    private TextView userInterestsLabelTextView;
+    private TextView userMusicLabelTextView;
+    private TextView userMovieLabelTextView;
+    private TextView userGamesLabelTextView;
+    private TextView userAboutLabelTextView;
 
     @Nullable
     @Override
@@ -55,7 +54,9 @@ public class UserInfoDialogFragment extends DialogFragment {
             VkRepository.getInstance().getUser(userId, new ResultCallback<User>() {
                 @Override
                 public void onResult(User result) {
-                    setUser(result);
+                    if (result != null) {
+                        setUser(result);
+                    }
                 }
             });
         }
@@ -71,6 +72,8 @@ public class UserInfoDialogFragment extends DialogFragment {
         Utils.getInstance().setInfoAndVisibilityFieldView(userMovieTextView, userMovieLabelTextView, user.getMovies());
         Utils.getInstance().setInfoAndVisibilityFieldView(userGamesTextView, userGamesLabelTextView, user.getGames());
         Utils.getInstance().setInfoAndVisibilityFieldView(userAboutTextView, userAboutLabelTextView, user.getAbout());
+
+        restoreScrollPosition();
     }
 
     private void setupView(@NonNull View view) {
@@ -83,7 +86,6 @@ public class UserInfoDialogFragment extends DialogFragment {
         userMovieTextView = view.findViewById(R.id.userMovieTextView);
         userGamesTextView = view.findViewById(R.id.userGamesTextView);
         userAboutTextView = view.findViewById(R.id.userAboutTextView);
-
         userStatusLabelTextView = view.findViewById(R.id.userStatusLabelTextView);
         userHomeTownLabelTextView = view.findViewById(R.id.userHomeTownLabelTextView);
         userEducationLabelTextView = view.findViewById(R.id.userEducationLabelTextView);

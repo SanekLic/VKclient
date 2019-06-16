@@ -6,26 +6,71 @@
     android:layout_height="match_parent"
     android:background="@color/colorActivityBackground">
 
+    <View
+        android:id="@+id/frameProfileView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_setting_item"
+        app:layout_constraintBottom_toTopOf="@+id/animationSwitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profilePhotoImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/friend_photo_content_description"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/profileNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:singleLine="true"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/profilePhotoImageView"
+        app:layout_constraintEnd_toEndOf="@+id/frameProfileView"
+        app:layout_constraintStart_toEndOf="@+id/profilePhotoImageView"
+        app:layout_constraintTop_toTopOf="@+id/profilePhotoImageView"
+        tools:text="Name"
+        tools:visibility="visible" />
+
     <Switch
         android:id="@+id/animationSwitch"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/bg_setting_item"
         android:paddingStart="16dp"
         android:text="@string/animation_setting_label"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePhotoImageView"
         tools:ignore="RtlSymmetry" />
 
     <Button
         android:id="@+id/logoutButton"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
