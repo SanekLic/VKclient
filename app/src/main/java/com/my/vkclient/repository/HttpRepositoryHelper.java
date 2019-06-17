@@ -9,6 +9,7 @@ import com.my.vkclient.entities.response.NewsResponse;
 import com.my.vkclient.entities.response.ProfileEditResponse;
 import com.my.vkclient.gson.GsonHelper;
 import com.my.vkclient.utils.ResultCallback;
+import com.my.vkclient.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static com.my.vkclient.Constants.API_VK.API_VK_SET_DISLIKE_POST;
 import static com.my.vkclient.Constants.API_VK.API_VK_SET_LIKE_POST;
+import static com.my.vkclient.Constants.TIME_TO_RE_REQUEST;
 
 class HttpRepositoryHelper {
     private String accessToken;
@@ -27,7 +29,7 @@ class HttpRepositoryHelper {
     }
 
     void setLikeNews(int sourceId, int newsId, boolean like, final ResultCallback<LikeResponse.Response> resultCallback) {
-        getResultStringFromUrl(getLikeRequest(sourceId, newsId, like), new ResultCallback<String>() {
+        getResultStringFromUrl(getLikeRequest(sourceId, newsId, like), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getLikesResponseFromJson(result));
@@ -36,7 +38,7 @@ class HttpRepositoryHelper {
     }
 
     void setProfileStatus(final String status, final ResultCallback<ProfileEditResponse.Response> resultCallback) {
-        getResultStringFromUrl(getEditStatusRequest(status), new ResultCallback<String>() {
+        getResultStringFromUrl(getEditStatusRequest(status), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getProfileEditResponseFromJson(result));
@@ -45,7 +47,7 @@ class HttpRepositoryHelper {
     }
 
     void setProfileHomeTown(final String homeTown, final ResultCallback<ProfileEditResponse.Response> resultCallback) {
-        getResultStringFromUrl(getEditHomeTownRequest(homeTown), new ResultCallback<String>() {
+        getResultStringFromUrl(getEditHomeTownRequest(homeTown), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getProfileEditResponseFromJson(result));
@@ -62,7 +64,7 @@ class HttpRepositoryHelper {
             requestUrl = getUserRequest(userId);
         }
 
-        getResultStringFromUrl(requestUrl, new ResultCallback<String>() {
+        getResultStringFromUrl(requestUrl, 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getUserFromJson(result));
@@ -71,7 +73,7 @@ class HttpRepositoryHelper {
     }
 
     void getGroup(final int groupId, final ResultCallback<Group> resultCallback) {
-        getResultStringFromUrl(getGroupRequest(groupId), new ResultCallback<String>() {
+        getResultStringFromUrl(getGroupRequest(groupId), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getGroupFromJson(result));
@@ -80,7 +82,7 @@ class HttpRepositoryHelper {
     }
 
     void getFriends(final int startPosition, final int size, final ResultCallback<List<User>> resultCallback) {
-        getResultStringFromUrl(getFriendsRequest(startPosition, size), new ResultCallback<String>() {
+        getResultStringFromUrl(getFriendsRequest(startPosition, size), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getFriendsFromJson(result));
@@ -89,7 +91,7 @@ class HttpRepositoryHelper {
     }
 
     void getUserPhotos(final int userId, final int startPosition, final int size, final ResultCallback<List<Photo>> resultCallback) {
-        getResultStringFromUrl(getUserPhotosRequest(userId, startPosition, size), new ResultCallback<String>() {
+        getResultStringFromUrl(getUserPhotosRequest(userId, startPosition, size), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getUserPhotosFromJson(result));
@@ -98,7 +100,7 @@ class HttpRepositoryHelper {
     }
 
     void getNews(final String startFrom, final int size, final ResultCallback<NewsResponse.Response> resultCallback) {
-        getResultStringFromUrl(getNewsRequest(startFrom, size), new ResultCallback<String>() {
+        getResultStringFromUrl(getNewsRequest(startFrom, size), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getNewsFromJson(result));
@@ -107,7 +109,7 @@ class HttpRepositoryHelper {
     }
 
     void getUserGroups(final int startPosition, final int size, final ResultCallback<List<Group>> resultCallback) {
-        getResultStringFromUrl(getUserGroupsRequestRequest(startPosition, size), new ResultCallback<String>() {
+        getResultStringFromUrl(getUserGroupsRequestRequest(startPosition, size), 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
                 resultCallback.onResult(GsonHelper.getInstance().getUserGroupsFromJson(result));
@@ -115,7 +117,7 @@ class HttpRepositoryHelper {
         });
     }
 
-    private void getResultStringFromUrl(final String requestUrl, final ResultCallback<String> resultCallback) {
+    private void getResultStringFromUrl(final String requestUrl, int counter, final ResultCallback<String> resultCallback) {
         try (InputStream inputStream = new URL(requestUrl).openStream();
              ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream()) {
 
@@ -128,8 +130,17 @@ class HttpRepositoryHelper {
 
             String result = resultOutputStream.toString();
             resultCallback.onResult(result);
+
+            return;
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if (counter < 10) {
+            Utils.getInstance().threadSaveSleep(TIME_TO_RE_REQUEST);
+            counter++;
+
+            getResultStringFromUrl(requestUrl, counter, resultCallback);
         }
     }
 

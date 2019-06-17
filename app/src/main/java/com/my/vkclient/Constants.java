@@ -4,15 +4,12 @@ import android.support.annotation.AnimRes;
 
 public interface Constants {
     String STRING_EQUALS = "=";
-    String STRING_NOT_EQUALS = "<>";
-    String STRING_QUESTION = "?";
     String STRING_AND = "&";
     String STRING_COMMA = ",";
     String STRING_NUMBER_FORMAT = "%.1f%c";
     String STRING_NUMBER_POSTFIX = "KMGTPE";
     String STRING_EMPTY = "";
     String STRING_SPACE = " ";
-    String STRING_SLASH = "/";
     String NAME_FORMAT = "%s %s";
     String AUDIO_FORMAT = "%s\n%s";
     String SEARCH_IN_GOOGLE_FORMAT = "https://www.google.com/search?q=%s %s";
@@ -20,6 +17,7 @@ public interface Constants {
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
+    int TIME_TO_RE_REQUEST = 500;
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";

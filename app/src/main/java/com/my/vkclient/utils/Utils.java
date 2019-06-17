@@ -57,4 +57,12 @@ public class Utils {
             }
         }
     }
+
+    public void threadSaveSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

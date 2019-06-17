@@ -28,6 +28,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static com.my.vkclient.Constants.ImageLoader.PERCENTAGE;
+import static com.my.vkclient.Constants.TIME_TO_RE_REQUEST;
 
 public class ImageLoader {
     private static ImageLoader instance;
@@ -112,7 +113,7 @@ public class ImageLoader {
                     resultBitmap = getFromDiskCache(imageCacheFile, imageView);
 
                     if (resultBitmap == null) {
-                        resultBitmap = getFromNetwork(imageCacheFile, imageView, requestUrl);
+                        resultBitmap = getFromNetwork(imageCacheFile, imageView, requestUrl, 0);
                     }
 
                     if (resultBitmap != null) {
@@ -166,7 +167,7 @@ public class ImageLoader {
         }
     }
 
-    private Bitmap getFromNetwork(final File imageCacheFile, final ImageView imageView, final String requestUrl) {
+    private Bitmap getFromNetwork(final File imageCacheFile, final ImageView imageView, final String requestUrl, int counter) {
         try (InputStream urlInputStream = new URL(requestUrl).openStream();
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 
@@ -193,7 +194,14 @@ public class ImageLoader {
             e.printStackTrace();
         }
 
-        return null;
+        if (counter < 10) {
+            Utils.getInstance().threadSaveSleep(TIME_TO_RE_REQUEST);
+            counter++;
+
+            return getFromNetwork(imageCacheFile, imageView, requestUrl, counter);
+        } else {
+            return null;
+        }
     }
 
     private void setResultToImageView(final ImageView imageView, final Bitmap resultBitmap, final @AnimRes int animation) {
