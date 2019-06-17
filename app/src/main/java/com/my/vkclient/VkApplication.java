@@ -10,7 +10,7 @@ public class VkApplication extends Application {
 
     @Override
     public void onCreate() {
-        if (this.getResources().getBoolean(R.bool.developer_mode)) {
+        if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectDiskReads()
                     .detectDiskWrites()

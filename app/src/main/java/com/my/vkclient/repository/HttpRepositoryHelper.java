@@ -17,9 +17,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import static com.my.vkclient.Constants.API_VK.API_VK_SET_DISLIKE_POST;
-import static com.my.vkclient.Constants.API_VK.API_VK_SET_LIKE_POST;
-import static com.my.vkclient.Constants.TIME_TO_RE_REQUEST;
+import static com.my.vkclient.Constants.Http.COUNT_RE_REQUEST;
+import static com.my.vkclient.Constants.Http.TIME_TO_RE_REQUEST;
 
 class HttpRepositoryHelper {
     private String accessToken;
@@ -56,14 +55,7 @@ class HttpRepositoryHelper {
     }
 
     void getUser(final int userId, final ResultCallback<User> resultCallback) {
-        String requestUrl;
-
-        if (userId == 0) {
-            requestUrl = getProfileRequest();
-        } else {
-            requestUrl = getUserRequest(userId);
-        }
-
+        String requestUrl = userId == 0 ? getProfileRequest() : getUserRequest(userId);
         getResultStringFromUrl(requestUrl, 0, new ResultCallback<String>() {
             @Override
             public void onResult(String result) {
@@ -136,7 +128,7 @@ class HttpRepositoryHelper {
             e.printStackTrace();
         }
 
-        if (counter < 10) {
+        if (counter < COUNT_RE_REQUEST) {
             Utils.getInstance().threadSaveSleep(TIME_TO_RE_REQUEST);
             counter++;
 
@@ -217,12 +209,17 @@ class HttpRepositoryHelper {
                 accessToken;
     }
 
-    private String getLikeRequest(int sourceId, int newsId, boolean like) {
-        if (like) {
-            return String.format(API_VK_SET_LIKE_POST + accessToken, sourceId, newsId);
-        } else {
-            return String.format(API_VK_SET_DISLIKE_POST + accessToken, sourceId, newsId);
-        }
+    private String getLikeRequest(int ownerId, int itemId, boolean like) {
+        String likePost = like ? Constants.API_VK.LIKE_POST : Constants.API_VK.DISLIKE_POST;
+
+        return Constants.API_VK.API_VK_METHOD +
+                likePost +
+                Constants.API_VK.LIKE_OWNER_ID +
+                ownerId +
+                Constants.API_VK.LIKE_ITEM_ID +
+                itemId +
+                Constants.API_VK.ACCESS_TOKEN +
+                accessToken;
     }
 
     private String getEditStatusRequest(String status) {

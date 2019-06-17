@@ -2,6 +2,7 @@ package com.my.vkclient.database.model;
 
 import com.my.vkclient.Constants;
 import com.my.vkclient.database.Table;
+import com.my.vkclient.database.fields.dbAutoincrement;
 import com.my.vkclient.database.fields.dbInt;
 import com.my.vkclient.database.fields.dbLong;
 import com.my.vkclient.database.fields.dbPrimaryKey;
@@ -11,6 +12,10 @@ import com.my.vkclient.database.fields.dbString;
 public class UserPhotoTable {
     @dbInt
     @dbPrimaryKey
+    @dbAutoincrement
+    public static final String PHOTO_COUNTER = "PHOTO_COUNTER";
+
+    @dbInt
     public static final String ID = "ID";
 
     @dbLong

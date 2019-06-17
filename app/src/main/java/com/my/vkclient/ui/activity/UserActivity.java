@@ -104,13 +104,13 @@ public class UserActivity extends AppCompatActivity {
         setupPhotoRecyclerView();
 
         if (savedInstanceState != null && VkRepository.getInstance().getLastUserPhotoList().size() > 0) {
-            userPhotoRecyclerViewAdapter.addItems(VkRepository.getInstance().getLastUserPhotoList());
-            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
-            scrollViewPosition = savedInstanceState.getInt(SCROLL_VIEW_POSITION_STATE_KEY);
-
             if (savedInstanceState.getBoolean(IS_LOAD_COMPLETE_STATE_KEY)) {
                 userPhotoRecyclerViewAdapter.setLoadComplete();
             }
+
+            userPhotoRecyclerViewAdapter.addItems(VkRepository.getInstance().getLastUserPhotoList());
+            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
+            scrollViewPosition = savedInstanceState.getInt(SCROLL_VIEW_POSITION_STATE_KEY);
         } else {
             userPhotoRecyclerViewAdapter.initialLoadItems();
         }
@@ -122,7 +122,7 @@ public class UserActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!userPhotoRecyclerViewAdapter.isLoading()) {
+                if (userPhotoRecyclerViewAdapter.isNoLoading()) {
                     VkRepository.getInstance().refreshUser(userId);
                     setData();
                     userPhotoRecyclerViewAdapter.refreshItems();

@@ -27,8 +27,9 @@ import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static com.my.vkclient.Constants.Http.COUNT_RE_REQUEST;
 import static com.my.vkclient.Constants.ImageLoader.PERCENTAGE;
-import static com.my.vkclient.Constants.TIME_TO_RE_REQUEST;
+import static com.my.vkclient.Constants.Http.TIME_TO_RE_REQUEST;
 
 public class ImageLoader {
     private static ImageLoader instance;
@@ -194,7 +195,7 @@ public class ImageLoader {
             e.printStackTrace();
         }
 
-        if (counter < 10) {
+        if (counter < COUNT_RE_REQUEST) {
             Utils.getInstance().threadSaveSleep(TIME_TO_RE_REQUEST);
             counter++;
 

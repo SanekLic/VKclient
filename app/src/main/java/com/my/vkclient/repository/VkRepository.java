@@ -288,7 +288,7 @@ public class VkRepository {
                     @Override
                     public void onResult(List<Group> result) {
                         if (result != null && result.size() > 0) {
-                            userGroupList.addAll(result);
+                            addUserGroups(result);
                             resultCallback.onResult(result);
                         } else {
                             httpRepositoryHelper.getUserGroups(startPosition, size, new ResultCallback<List<Group>>() {
@@ -297,7 +297,7 @@ public class VkRepository {
                                     resultCallback.onResult(result);
 
                                     if (result != null) {
-                                        userGroupList.addAll(result);
+                                        addUserGroups(result);
                                         databaseRepositoryHelper.putUserGroupList(result);
                                         databaseRepositoryHelper.putGroupList(result);
                                     }
@@ -318,7 +318,7 @@ public class VkRepository {
                     @Override
                     public void onResult(List<User> result) {
                         if (result != null && result.size() > 0) {
-                            friendList.addAll(result);
+                            addFriends(result);
                             resultCallback.onResult(result);
                         } else {
                             httpRepositoryHelper.getFriends(startPosition, size, new ResultCallback<List<User>>() {
@@ -327,7 +327,7 @@ public class VkRepository {
                                     resultCallback.onResult(result);
 
                                     if (result != null) {
-                                        friendList.addAll(result);
+                                        addFriends(result);
                                         databaseRepositoryHelper.putFriendList(result);
                                         databaseRepositoryHelper.putUserList(result);
                                     }
@@ -348,19 +348,18 @@ public class VkRepository {
                     @Override
                     public void onResult(List<News> result) {
                         if (result != null && result.size() > 0) {
-                            newsList.addAll(result);
+                            addNews(result);
                             resultCallback.onResult(result);
                         } else {
                             httpRepositoryHelper.getNews(newsStartFrom, size, new ResultCallback<NewsResponse.Response>() {
                                 @Override
                                 public void onResult(NewsResponse.Response newsResponse) {
-
                                     if (newsResponse != null) {
                                         setNewsStartFrom(newsResponse.getNextFrom());
                                         resultCallback.onResult(newsResponse.getNewsList());
 
                                         if (newsResponse.getNewsList() != null) {
-                                            newsList.addAll(newsResponse.getNewsList());
+                                            addNews(newsResponse.getNewsList());
                                             databaseRepositoryHelper.putNewsList(newsResponse.getNewsList());
                                         }
 
@@ -379,6 +378,63 @@ public class VkRepository {
                 });
             }
         });
+    }
+
+    private void addNews(List<News> result) {
+        boolean isExist;
+        for (News newNews : result) {
+            isExist = false;
+
+            for (News news : newsList) {
+                if (newNews.getId() == news.getId()) {
+                    isExist = true;
+
+                    break;
+                }
+            }
+
+            if (!isExist) {
+                newsList.add(newNews);
+            }
+        }
+    }
+
+    private void addFriends(List<User> result) {
+        boolean isExist;
+        for (User newUser : result) {
+            isExist = false;
+
+            for (User user : friendList) {
+                if (newUser.getId() == user.getId()) {
+                    isExist = true;
+
+                    break;
+                }
+            }
+
+            if (!isExist) {
+                friendList.add(newUser);
+            }
+        }
+    }
+
+    private void addUserGroups(List<Group> result) {
+        boolean isExist;
+        for (Group newGroup : result) {
+            isExist = false;
+
+            for (Group group : userGroupList) {
+                if (newGroup.getId() == group.getId()) {
+                    isExist = true;
+
+                    break;
+                }
+            }
+
+            if (!isExist) {
+                userGroupList.add(newGroup);
+            }
+        }
     }
 
     private void setNewsStartFrom(String newsNextFrom) {

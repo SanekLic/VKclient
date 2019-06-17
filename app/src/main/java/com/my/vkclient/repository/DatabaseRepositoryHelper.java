@@ -292,7 +292,7 @@ class DatabaseRepositoryHelper {
             ContentValues contentValues = new ContentValues();
             for (Group group : userGroupList) {
                 contentValues.put(UserGroupTable.GROUP_ID, group.getId());
-                contentValues.put(FriendTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
+                contentValues.put(UserGroupTable.LAST_UPDATE, Calendar.getInstance().getTime().getTime());
 
                 databaseHelper.insertWithoutTransaction(writableDatabase, USER_GROUP_TABLE_NAME, contentValues);
                 contentValues.clear();
@@ -771,13 +771,13 @@ class DatabaseRepositoryHelper {
 
     private String getUserPhotoLimitDatabaseQuery(int userId, int startPosition, int size) {
         return SELECT_FROM + USER_PHOTO_TABLE_NAME + String.format(DATABASE_WHERE, UserPhotoTable.USER_ID, STRING_EQUALS, userId)
-                + String.format(DATABASE_ORDER_BY_ASC, UserPhotoTable.LAST_UPDATE) + String.format(DATABASE_LIMIT, startPosition, size);
+                + String.format(DATABASE_ORDER_BY_ASC, UserPhotoTable.PHOTO_COUNTER) + String.format(DATABASE_LIMIT, startPosition, size);
     }
 
     private String getUserGroupsJoinGroupDatabaseQuery(int startPosition, int size) {
         return SELECT_FROM + USER_GROUP_TABLE_NAME +
                 String.format(DATABASE_JOIN, GROUP_TABLE_NAME, UserGroupTable.GROUP_ID,
-                        GroupTable.ID, UserGroupTable.GROUP_COUNTER, UserGroupTable.GROUP_COUNTER) +
+                        GroupTable.ID, UserGroupTable.GROUP_COUNTER, UserGroupTable.LAST_UPDATE) +
                 String.format(DATABASE_LIMIT, startPosition, size);
     }
 

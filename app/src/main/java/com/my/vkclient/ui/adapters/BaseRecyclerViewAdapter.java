@@ -166,8 +166,8 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
         }
     }
 
-    public boolean isLoading() {
-        return isLoading;
+    public boolean isNoLoading() {
+        return !isLoading;
     }
 
     private void setLoading(boolean loading) {
@@ -217,11 +217,10 @@ public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<Ba
 
     private boolean validateLoadMoreItems() {
         if (!isLoading && !isLoadComplete) {
-            int totalItemCount = linearLayoutManager.getItemCount();
             int visibleItemCount = linearLayoutManager.getChildCount();
             int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
 
-            return (visibleItemCount + firstVisibleItemPosition + pageSize) >= totalItemCount
+            return (visibleItemCount + firstVisibleItemPosition + pageSize) >= getItemCount()
                     && firstVisibleItemPosition >= 0;
         }
 

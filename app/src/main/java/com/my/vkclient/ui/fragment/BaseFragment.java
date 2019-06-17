@@ -42,12 +42,12 @@ public abstract class BaseFragment<T extends BaseRecyclerViewAdapter<E>, E> exte
         setupRecyclerView(view);
 
         if (savedInstanceState != null && getItemsFromRepository().size() > 0) {
-            recyclerViewAdapter.addItems(getItemsFromRepository());
-            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
-
             if (savedInstanceState.getBoolean(IS_LOAD_COMPLETE_STATE_KEY)) {
                 recyclerViewAdapter.setLoadComplete();
             }
+
+            recyclerViewAdapter.addItems(getItemsFromRepository());
+            linearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LINEAR_LAYOUT_MANAGER_STATE_KEY));
         } else {
             recyclerViewAdapter.initialLoadItems();
         }
@@ -69,7 +69,7 @@ public abstract class BaseFragment<T extends BaseRecyclerViewAdapter<E>, E> exte
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!recyclerViewAdapter.isLoading()) {
+                if (recyclerViewAdapter.isNoLoading()) {
                     refreshRepository();
                     recyclerViewAdapter.refreshItems();
                     swipeRefresh.setRefreshing(false);

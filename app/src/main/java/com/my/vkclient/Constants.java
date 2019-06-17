@@ -17,7 +17,6 @@ public interface Constants {
     int INT_ZERO = 0;
     int INT_THOUSAND = 1000;
     int INT_ONE_KB = 1024;
-    int TIME_TO_RE_REQUEST = 500;
 
     interface IntentKey {
         String USER_ID_INTENT_KEY = "USER_ID_INTENT_KEY";
@@ -51,13 +50,13 @@ public interface Constants {
         String DATABASE_NAME = "VkDatabase.db";
         String PRIMARY_KEY = "PRIMARY KEY";
         String AUTOINCREMENT = "AUTOINCREMENT";
-        int DATABASE_VERSION = 6;
+        int DATABASE_VERSION = 7;
 
         String SQL_TABLE_CREATE_TEMPLATE = "CREATE TABLE IF NOT EXISTS %s (%s);";
         String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS %s;";
         String SELECT_FROM = "SELECT * FROM ";
-        String DATABASE_WHERE = " WHERE %s %s %s";
         String DATABASE_WHERE_CLAUSE = "%s %s %s";
+        String DATABASE_WHERE = " WHERE " + DATABASE_WHERE_CLAUSE;
         String DATABASE_JOIN = " JOIN %s ON %s = %s ORDER BY %s, %s";
         String DATABASE_LIMIT = " LIMIT %s,%s";
         String DATABASE_ORDER_BY_DESC = " ORDER BY %s DESC";
@@ -84,9 +83,10 @@ public interface Constants {
         String API_VK_GET_FRIENDS_URL = API_VK_METHOD + "friends.get?order=name";
         String FRIENDS_FIELDS = USER_FIELDS;
         String API_VK_GET_GROUP_URL = API_VK_METHOD + "groups.getById?group_id=";
-        String LIKE_FIELDS = "?type=post&owner_id=%s&item_id=%s";
-        String API_VK_SET_LIKE_POST = API_VK_METHOD + "likes.add" + LIKE_FIELDS + ACCESS_TOKEN;
-        String API_VK_SET_DISLIKE_POST = API_VK_METHOD + "likes.delete" + LIKE_FIELDS + ACCESS_TOKEN;
+        String LIKE_POST = "likes.add?type=post";
+        String DISLIKE_POST = "likes.delete?type=post";
+        String LIKE_OWNER_ID = "&owner_id=";
+        String LIKE_ITEM_ID = "&item_id=";
         String API_VK_GET_PHOTOS_URL = API_VK_METHOD + "photos.getAll?extended=0";
         String PHOTOS_OWNER_ID = "&owner_id=";
         String PHOTOS_OFFSET = "&offset=";
@@ -124,13 +124,18 @@ public interface Constants {
     }
 
     interface UserActivity {
-        String FRIENDS_COUNT_FORMAT = "%s друзей • %s общих";
-        String FRIENDS_ONLY_COUNT_FORMAT = "%s друзей";
-        String FRIENDS_COMMON_COUNT_FORMAT = "%s общих друзей";
+        String FRIENDS_COUNT_FORMAT = "друзей: %s • общих: %s";
+        String FRIENDS_ONLY_COUNT_FORMAT = "друзей: %s";
+        String FRIENDS_COMMON_COUNT_FORMAT = "общих друзей: %s";
         String EDUCATION_FORMAT = "%s\n%s";
-        String FOLLOWERS_FORMAT = "%s подписчиков";
+        String FOLLOWERS_FORMAT = "подписчиков: %s";
         String ONLINE_FORMAT = "online - %s";
         String STATE_ONLINE = "сейчас online";
         String COUNT_PHOTO_FORMAT = "Фото %s";
+    }
+
+    interface Http{
+        int TIME_TO_RE_REQUEST = 500;
+        int COUNT_RE_REQUEST = 20;
     }
 }
